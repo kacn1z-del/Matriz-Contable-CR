@@ -2,691 +2,619 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Matriz Contable CR v12</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
-
+/* ── TOKENS ─────────────────────────────────────────────── */
 :root {
-  --bg: #f0faf2;
-  --bg2: #ffffff;
-  --bg3: #e6f7ea;
-  --primary: #5abf2a;
-  --primary2: #3a9e10;
-  --primary3: #84e04a;
-  --accent: #1a7a00;
-  --text: #1a2e1a;
-  --text2: #5a7a5a;
-  --border: #c2e8c2;
-  --border2: #a8d8a8;
-  --glass: rgba(255,255,255,0.75);
-  --glass2: rgba(230,247,234,0.85);
-  --danger: #e05a2a;
-  --shadow: 0 4px 24px rgba(58,158,16,0.10);
-  --shadow2: 0 2px 12px rgba(58,158,16,0.08);
+  --g1:#5abf2a; --g2:#3a9e10; --g3:#2d7a0c;
+  --white:#fff; --off:#f8fef4; --bg2:#f0fae8; --bg3:#e6f5d8;
+  --border:#d4edbc; --border2:#b8df94;
+  --text:#1a2e0f; --text2:#4a6b2a; --text3:#7a9b5a;
+  --danger:#dc2626; --warn:#d97706;
+  --shadow:0 4px 24px rgba(58,158,16,.13);
+  --shadow2:0 8px 40px rgba(58,158,16,.18);
+  --radius:14px; --radius2:20px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--white);color:var(--text);min-height:100vh}
+
+/* ── HERO HEADER ─────────────────────────────────────────── */
+.hero-header{
+  background:linear-gradient(135deg,#5abf2a 0%,#3a9e10 35%,#e8f5e0 70%,#ffffff 100%);
+  padding:36px 32px 0;
+  position:relative;overflow:hidden;
+}
+.hero-header::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 70% 50%,rgba(255,255,255,.35) 0%,transparent 70%);
+}
+.hero-top{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;}
+.hero-logo{display:flex;align-items:center;gap:12px;}
+.hero-logo-icon{width:44px;height:44px;background:rgba(255,255,255,.25);backdrop-filter:blur(8px);border:1.5px solid rgba(255,255,255,.5);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;}
+.hero-title-block h1{font-size:22px;font-weight:800;color:#fff;letter-spacing:-.3px;line-height:1.1;}
+.hero-title-block p{font-size:11px;font-weight:600;color:rgba(255,255,255,.8);letter-spacing:2px;text-transform:uppercase;margin-top:2px;}
+.hero-actions{display:flex;align-items:center;gap:8px;}
+.btn-hero{display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;border:none;transition:all .18s;}
+.btn-hero-white{background:rgba(255,255,255,.95);color:var(--g3);}
+.btn-hero-white:hover{background:#fff;box-shadow:0 4px 16px rgba(0,0,0,.12);}
+.btn-hero-ghost{background:rgba(255,255,255,.18);backdrop-filter:blur(6px);border:1.5px solid rgba(255,255,255,.4);color:#fff;}
+.btn-hero-ghost:hover{background:rgba(255,255,255,.28);}
+.lang-select{background:rgba(255,255,255,.18);backdrop-filter:blur(6px);border:1.5px solid rgba(255,255,255,.35);border-radius:9px;color:#fff;padding:6px 10px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;}
+.lang-select option{color:var(--text);background:#fff;}
+
+/* ── RIBBON (tabs like Office) ───────────────────────────── */
+.ribbon{
+  position:relative;z-index:2;
+  background:rgba(255,255,255,.72);
+  backdrop-filter:blur(20px);
+  border-top:1px solid rgba(255,255,255,.6);
+  padding:0 32px;
+  display:flex;align-items:stretch;gap:2px;
+}
+.ribbon-tab{
+  display:flex;align-items:center;gap:6px;
+  padding:13px 18px;font-size:13px;font-weight:600;
+  color:var(--text2);cursor:pointer;
+  border:none;background:none;font-family:inherit;
+  border-bottom:3px solid transparent;
+  transition:all .15s;white-space:nowrap;
+}
+.ribbon-tab:hover{color:var(--g2);background:rgba(90,191,42,.06);}
+.ribbon-tab.active{color:var(--g2);border-bottom-color:var(--g2);background:rgba(90,191,42,.08);}
+.ribbon-tab svg{width:15px;height:15px;flex-shrink:0;}
+.ribbon-ia{
+  margin-left:auto;display:flex;align-items:center;gap:6px;
+  padding:8px 16px;border-radius:10px;
+  background:linear-gradient(135deg,var(--g1),var(--g3));
+  color:#fff;font-size:13px;font-weight:700;
+  border:none;cursor:pointer;font-family:inherit;
+  box-shadow:0 2px 12px rgba(58,158,16,.3);
+  transition:all .18s;align-self:center;margin-right:0;
+}
+.ribbon-ia:hover{transform:translateY(-1px);box-shadow:0 4px 18px rgba(58,158,16,.4);}
+
+/* ── RIBBON PANELS ───────────────────────────────────────── */
+.ribbon-panels{background:rgba(255,255,255,.85);backdrop-filter:blur(16px);border-bottom:1.5px solid var(--border);}
+.ribbon-panel{display:none;padding:12px 32px;gap:6px;flex-wrap:wrap;align-items:center;}
+.ribbon-panel.active{display:flex;}
+.rpanel-group{display:flex;align-items:center;gap:4px;padding:0 10px;border-right:1px solid var(--border);position:relative;}
+.rpanel-group:last-child{border-right:none;}
+.rpanel-group-label{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px;position:absolute;bottom:-18px;left:50%;transform:translateX(-50%);white-space:nowrap;}
+.rb{display:flex;align-items:center;gap:5px;padding:7px 13px;border-radius:9px;border:none;background:transparent;color:var(--text2);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s;white-space:nowrap;}
+.rb:hover{background:var(--bg2);color:var(--g2);}
+.rb.primary{background:linear-gradient(135deg,var(--g1),var(--g2));color:#fff;box-shadow:0 2px 10px rgba(58,158,16,.25);}
+.rb.primary:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(58,158,16,.35);}
+.rb svg{width:15px;height:15px;flex-shrink:0;}
+.rb-sep{width:1px;height:28px;background:var(--border);margin:0 4px;}
+
+/* ── MAIN CANVAS AREA ────────────────────────────────────── */
+.workspace{min-height:calc(100vh - 180px);padding:28px 32px;background:var(--white);}
+#canvas{
+  min-height:340px;
+  background:var(--off);
+  border:1.5px dashed var(--border2);
+  border-radius:var(--radius2);
+  padding:24px;
+  position:relative;
+  transition:all .2s;
+}
+#canvas:hover{border-color:var(--g2);}
+#canvas-placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;height:280px;gap:12px;color:var(--text3);}
+#canvas-placeholder svg{width:48px;height:48px;opacity:.35;}
+#canvas-placeholder p{font-size:14px;font-weight:600;}
+#canvas-placeholder small{font-size:12px;opacity:.7;}
+
+/* ── STATUS BAR ──────────────────────────────────────────── */
+.statusbar{
+  position:fixed;bottom:0;left:0;right:0;
+  background:linear-gradient(90deg,var(--g2),var(--g3));
+  color:rgba(255,255,255,.9);
+  padding:5px 32px;font-size:11px;font-weight:600;
+  display:flex;align-items:center;justify-content:space-between;
+  z-index:100;letter-spacing:.3px;
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; }
+/* ── MODALS ──────────────────────────────────────────────── */
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);backdrop-filter:blur(4px);z-index:1000;align-items:center;justify-content:center;padding:16px;}
+.modal.active{display:flex;}
+.modal-box{background:#fff;border-radius:20px;box-shadow:0 24px 80px rgba(0,0,0,.18);width:100%;max-width:760px;max-height:90vh;overflow:hidden;display:flex;flex-direction:column;}
+.modal-box.narrow{max-width:480px;}
+.modal-head{display:flex;align-items:center;justify-content:space-between;padding:18px 24px 14px;border-bottom:1.5px solid var(--border);}
+.modal-head h3{font-size:16px;font-weight:800;color:var(--g3);}
+.modal-close{background:var(--bg2);border:none;border-radius:8px;width:30px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text2);transition:all .15s;}
+.modal-close:hover{background:var(--bg3);color:var(--g3);}
+.modal-body{overflow-y:auto;flex:1;}
+.modal-footer{padding:14px 24px;border-top:1.5px solid var(--border);display:flex;gap:8px;justify-content:flex-end;}
 
-body {
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  line-height: 1.6;
-  min-height: 100vh;
-  background-image:
-    radial-gradient(ellipse 80% 40% at 50% -10%, rgba(90,191,42,0.18) 0%, transparent 70%),
-    radial-gradient(ellipse 60% 30% at 100% 100%, rgba(90,191,42,0.08) 0%, transparent 60%);
+/* ── TABLES ──────────────────────────────────────────────── */
+.tbl{width:100%;border-collapse:collapse;font-size:13px;}
+.tbl th{background:var(--bg3);padding:9px 12px;text-align:left;font-weight:700;color:var(--g3);font-size:12px;border-bottom:2px solid var(--border2);}
+.tbl td{padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text);}
+.tbl td[contenteditable="true"]:focus{outline:2px solid var(--g1);border-radius:4px;background:rgba(90,191,42,.04);}
+
+/* ── INPUT ───────────────────────────────────────────────── */
+.inp{width:100%;background:var(--bg2);border:1.5px solid var(--border2);border-radius:9px;padding:8px 12px;font-size:13px;color:var(--text);font-family:inherit;outline:none;transition:border-color .15s;}
+.inp:focus{border-color:var(--g1);background:#fff;}
+label.lbl{font-size:12px;font-weight:700;color:var(--text2);display:block;margin-bottom:4px;}
+.field{margin-bottom:12px;}
+
+/* ── SIBÖ PANEL ──────────────────────────────────────────── */
+.sibo-panel{
+  position:fixed;right:20px;bottom:48px;
+  width:360px;background:#fff;
+  border-radius:20px;box-shadow:0 8px 48px rgba(58,158,16,.22);
+  border:1.5px solid var(--border2);
+  display:none;flex-direction:column;z-index:900;
+  overflow:hidden;max-height:520px;
 }
-
-/* ===== HEADER ===== */
-.header {
-  position: sticky; top: 0; z-index: 100;
-  background: var(--glass);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-bottom: 1.5px solid var(--border);
-  padding: 10px 20px;
-  display: flex; align-items: center; justify-content: space-between;
-  box-shadow: var(--shadow2);
+.sibo-panel.open{display:flex;}
+.sibo-head{
+  background:linear-gradient(135deg,var(--g1),var(--g3));
+  padding:14px 16px;display:flex;align-items:center;justify-content:space-between;
 }
+.sibo-head-left{display:flex;align-items:center;gap:8px;color:#fff;}
+.sibo-head-left strong{font-size:15px;font-weight:800;}
+.sibo-badge{background:rgba(255,255,255,.25);border-radius:6px;padding:2px 7px;font-size:10px;font-weight:800;letter-spacing:1px;}
+.sibo-close{background:rgba(255,255,255,.2);border:none;border-radius:8px;color:#fff;width:28px;height:28px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;}
+.sibo-shortcuts{padding:8px 12px;display:flex;gap:5px;flex-wrap:wrap;border-bottom:1px solid var(--border);}
+.sibo-chip{background:var(--bg2);border:1.5px solid var(--border);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;color:var(--g2);cursor:pointer;border:none;font-family:inherit;transition:all .15s;}
+.sibo-chip:hover{background:var(--bg3);color:var(--g3);}
+.sibo-msgs{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px;min-height:200px;}
+.msg-bot,.msg-user{padding:9px 13px;border-radius:12px;font-size:13px;line-height:1.5;max-width:90%;}
+.msg-bot{background:var(--bg2);border:1px solid var(--border);color:var(--text);align-self:flex-start;border-bottom-left-radius:4px;}
+.msg-user{background:linear-gradient(135deg,var(--g1),var(--g2));color:#fff;align-self:flex-end;border-bottom-right-radius:4px;}
+.sibo-typing{padding:4px 12px;font-size:11px;color:var(--text3);display:none;}
+.sibo-input-row{display:flex;gap:6px;padding:10px 12px;border-top:1px solid var(--border);}
+.sibo-input-row input{flex:1;background:var(--bg2);border:1.5px solid var(--border2);border-radius:10px;padding:8px 12px;font-size:13px;color:var(--text);outline:none;font-family:inherit;}
+.sibo-input-row input:focus{border-color:var(--g1);}
+.sibo-send{background:linear-gradient(135deg,var(--g1),var(--g2));border:none;border-radius:10px;color:#fff;width:36px;height:36px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 
-.logo { display: flex; align-items: center; gap: 12px; }
+/* ── APPS GRID ───────────────────────────────────────────── */
+.apps-filters{display:flex;gap:6px;flex-wrap:wrap;padding:16px 24px 0;}
+.af{padding:5px 14px;border-radius:20px;border:1.5px solid var(--border2);background:var(--bg2);font-size:12px;font-weight:700;color:var(--text2);cursor:pointer;font-family:inherit;transition:all .15s;}
+.af.on{background:var(--g2);color:#fff;border-color:var(--g2);}
+.apps-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;padding:16px 24px;max-height:460px;overflow-y:auto;}
+.app-card{background:var(--off);border:1.5px solid var(--border);border-radius:14px;padding:14px;transition:all .18s;cursor:default;}
+.app-card:hover{border-color:var(--g1);transform:translateY(-2px);box-shadow:0 4px 16px rgba(90,191,42,.12);}
+.app-icon{font-size:20px;margin-bottom:6px;}
+.app-name{font-weight:800;font-size:14px;color:var(--g3);margin-bottom:3px;}
+.app-desc{font-size:11px;color:var(--text3);line-height:1.4;margin-bottom:8px;}
+.app-bottom{display:flex;justify-content:space-between;align-items:center;}
+.app-price{font-size:11px;font-weight:700;color:var(--g2);}
+.app-badge{font-size:10px;background:var(--bg3);border-radius:999px;padding:2px 8px;font-weight:600;color:var(--text2);}
 
-.logo-icon {
-  width: 40px; height: 40px; border-radius: 12px;
-  background: linear-gradient(135deg, var(--primary), var(--primary2));
-  display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 4px 12px rgba(90,191,42,0.35);
+/* ── FN LIBRARY ──────────────────────────────────────────── */
+.fn-layout{display:grid;grid-template-columns:220px 1fr;height:500px;}
+.fn-sidebar{background:var(--off);border-right:1.5px solid var(--border);overflow-y:auto;padding:10px;}
+.fn-cat{padding:7px 12px;border-radius:9px;font-size:12px;font-weight:700;cursor:pointer;color:var(--text2);transition:all .12s;display:flex;justify-content:space-between;align-items:center;}
+.fn-cat:hover{background:var(--bg2);color:var(--g2);}
+.fn-cat.on{background:var(--g2);color:#fff;}
+.fn-cat span{font-size:10px;opacity:.7;}
+.fn-main{display:flex;flex-direction:column;overflow:hidden;}
+.fn-search-box{padding:12px 16px;border-bottom:1px solid var(--border);}
+.fn-list{flex:1;overflow-y:auto;padding:10px 14px;display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:7px;align-content:start;}
+.fn-card{background:var(--off);border:1.5px solid var(--border);border-radius:10px;padding:9px 11px;cursor:pointer;transition:all .12s;}
+.fn-card:hover{border-color:var(--g1);background:rgba(90,191,42,.05);}
+.fn-card-name{font-weight:700;font-size:13px;color:var(--g3);}
+.fn-card-en{font-size:10px;color:var(--g1);font-family:'JetBrains Mono',monospace;}
+.fn-card-desc{font-size:11px;color:var(--text3);line-height:1.35;margin-top:2px;}
+.fn-detail{padding:14px 16px;border-top:1.5px solid var(--border);background:#fff;display:none;}
+.fn-detail-name{font-size:15px;font-weight:800;color:var(--g3);margin-bottom:4px;}
+.fn-detail-syntax{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--g2);background:var(--bg3);padding:6px 10px;border-radius:8px;margin-bottom:6px;}
+.fn-detail-desc{font-size:13px;color:var(--text2);margin-bottom:6px;}
+.fn-detail-ex{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text3);background:var(--off);padding:5px 8px;border-radius:6px;}
+
+/* ── FACTURA ─────────────────────────────────────────────── */
+.factura-section{padding:16px 24px;display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.factura-section.full{grid-column:1/-1;}
+.fe-table{width:100%;border-collapse:collapse;font-size:13px;}
+.fe-table th{background:var(--bg3);padding:7px 10px;text-align:left;font-weight:700;color:var(--g3);font-size:11px;border-bottom:2px solid var(--border2);}
+.fe-table td{padding:5px 8px;border-bottom:1px solid var(--border);}
+.fe-inp{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:4px 8px;font-size:12px;font-family:inherit;color:var(--text);outline:none;}
+.fe-inp:focus{border-color:var(--g1);}
+
+/* ── PLANTILLA TOOLBAR ───────────────────────────────────── */
+.pl-bar{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;}
+.pl-btn{padding:5px 12px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s;}
+
+/* ── TOTAL ROW ───────────────────────────────────────────── */
+.total-row{font-weight:700;background:var(--bg3) !important;}
+
+/* ── SCROLLBAR ───────────────────────────────────────────── */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:10px}
+
+/* ── SIBO FAB ────────────────────────────────────────────── */
+.sibo-fab{
+  position:fixed;right:20px;bottom:58px;
+  width:50px;height:50px;border-radius:50%;
+  background:linear-gradient(135deg,var(--g1),var(--g3));
+  border:none;cursor:pointer;
+  box-shadow:0 4px 20px rgba(58,158,16,.4);
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;z-index:901;
+  transition:all .18s;
 }
+.sibo-fab:hover{transform:scale(1.08);box-shadow:0 6px 28px rgba(58,158,16,.5);}
 
-.logo h1 {
-  font-size: 17px; font-weight: 800; letter-spacing: -0.3px;
-  color: var(--accent);
-}
-
-.header-actions { display: flex; gap: 8px; align-items: center; }
-
-.btn {
-  min-height: 40px; min-width: 40px; padding: 8px 16px;
-  border: 1.5px solid var(--border2); border-radius: 12px;
-  background: var(--bg2); color: var(--text);
-  font-size: 13px; font-family: 'Plus Jakarta Sans', sans-serif;
-  font-weight: 600; cursor: pointer; transition: all 0.18s ease;
-  display: inline-flex; align-items: center; gap: 7px;
-  box-shadow: var(--shadow2);
-}
-.btn:hover {
-  background: var(--bg3); border-color: var(--primary);
-  transform: translateY(-1px); box-shadow: 0 6px 18px rgba(90,191,42,0.15);
-}
-.btn:active { transform: translateY(0); }
-
-.btn-primary {
-  background: linear-gradient(135deg, var(--primary), var(--primary2));
-  border: none; color: white; font-weight: 700;
-  box-shadow: 0 4px 14px rgba(90,191,42,0.35);
-}
-.btn-primary:hover {
-  background: linear-gradient(135deg, var(--primary3), var(--primary));
-  border: none; color: white;
-}
-
-.btn-icon { padding: 8px 12px; }
-
-select {
-  min-height: 40px; padding: 8px 12px; border-radius: 12px;
-  background: var(--bg2); color: var(--text);
-  border: 1.5px solid var(--border2);
-  font-size: 13px; font-family: 'Plus Jakarta Sans', sans-serif;
-  font-weight: 500; cursor: pointer;
-  box-shadow: var(--shadow2);
-}
-select:focus { outline: none; border-color: var(--primary); }
-
-/* ===== HERO ===== */
-.hero {
-  padding: 56px 20px 40px;
-  text-align: center;
-  position: relative;
-}
-
-.hero-badge {
-  display: inline-flex; align-items: center; gap: 6px;
-  background: rgba(90,191,42,0.12); border: 1.5px solid rgba(90,191,42,0.3);
-  color: var(--primary2); font-size: 12px; font-weight: 700;
-  padding: 5px 14px; border-radius: 999px; margin-bottom: 20px;
-  letter-spacing: 0.5px; text-transform: uppercase;
-}
-
-.hero h2 {
-  font-size: clamp(28px, 6vw, 48px);
-  font-weight: 800; letter-spacing: -1px;
-  line-height: 1.15; margin-bottom: 14px;
-  color: var(--accent);
-}
-
-.hero h2 span {
-  background: linear-gradient(135deg, var(--primary), var(--primary2));
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.hero p { color: var(--text2); margin-bottom: 28px; font-size: 15px; font-weight: 500; }
-
-.hero-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
-
-/* ===== FEATURES ===== */
-.features {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 14px; padding: 8px 20px 28px;
-}
-
-.card {
-  background: var(--glass);
-  border: 1.5px solid var(--border);
-  border-radius: 18px; padding: 20px;
-  backdrop-filter: blur(8px);
-  box-shadow: var(--shadow2);
-  transition: all 0.2s ease;
-}
-.card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 28px rgba(90,191,42,0.14);
-  border-color: var(--primary);
-}
-
-.card-icon {
-  width: 46px; height: 46px; border-radius: 13px;
-  background: linear-gradient(135deg, rgba(90,191,42,0.15), rgba(90,191,42,0.05));
-  border: 1.5px solid rgba(90,191,42,0.2);
-  display: flex; align-items: center; justify-content: center;
-  margin-bottom: 13px;
-}
-
-.card h3 { font-size: 16px; font-weight: 700; margin-bottom: 6px; color: var(--accent); }
-.card p { color: var(--text2); font-size: 13px; line-height: 1.5; }
-
-/* ===== CANVAS SECTION ===== */
-.canvas-section { padding: 4px 20px 32px; }
-
-.canvas-label {
-  font-size: 11px; font-weight: 700; text-transform: uppercase;
-  letter-spacing: 1px; color: var(--text2); margin-bottom: 10px;
-  padding-left: 4px;
-}
-
-.canvas-toolbar {
-  background: var(--glass2);
-  border: 1.5px solid var(--border);
-  border-radius: 16px; padding: 10px 12px; margin-bottom: 12px;
-  display: flex; gap: 6px; flex-wrap: wrap; align-items: center;
-  box-shadow: var(--shadow2);
-}
-
-.canvas {
-  background: var(--bg2);
-  border: 1.5px solid var(--border);
-  border-radius: 18px; min-height: 380px; padding: 20px;
-  background-image:
-    radial-gradient(circle, rgba(90,191,42,0.15) 1px, transparent 1px);
-  background-size: 22px 22px;
-  box-shadow: var(--shadow);
-}
-
-/* ===== TABLES ===== */
-.table { width: 100%; border-collapse: collapse; margin-top: 14px; font-size: 14px; }
-.table th, .table td {
-  padding: 10px 12px; text-align: left;
-  border-bottom: 1px solid var(--border);
-}
-.table th {
-  background: var(--bg3); font-weight: 700; font-size: 12px;
-  text-transform: uppercase; letter-spacing: 0.5px; color: var(--accent);
-}
-.table tr:hover td { background: rgba(90,191,42,0.04); }
-
-/* ===== MODALS ===== */
-.modal {
-  display: none; position: fixed; inset: 0; z-index: 200;
-  background: rgba(20,40,20,0.45); backdrop-filter: blur(6px);
-  align-items: center; justify-content: center; padding: 16px;
-}
-.modal.active { display: flex; }
-
-.modal-content {
-  background: var(--bg2);
-  border: 1.5px solid var(--border);
-  border-radius: 22px; max-width: 600px; width: 100%;
-  max-height: 90vh; overflow-y: auto;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.15);
-}
-
-.modal-header {
-  padding: 18px 20px; border-bottom: 1.5px solid var(--border);
-  display: flex; justify-content: space-between; align-items: center;
-}
-.modal-header h3 { font-size: 16px; font-weight: 700; color: var(--accent); }
-
-.modal-body { padding: 20px; }
-
-.form-group { margin-bottom: 14px; }
-.form-group label { display: block; margin-bottom: 5px; font-size: 13px; font-weight: 600; color: var(--text2); }
-.form-group input, .form-group select {
-  width: 100%; min-height: 42px; padding: 10px 14px;
-  background: var(--bg3); border: 1.5px solid var(--border2);
-  border-radius: 10px; color: var(--text); font-size: 14px;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-}
-.form-group input:focus, .form-group select:focus {
-  outline: none; border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(90,191,42,0.12);
-}
-
-/* ===== PLANTILLAS GRID ===== */
-.templates-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 12px;
-}
-
-.template-card {
-  background: var(--bg3); border: 1.5px solid var(--border);
-  border-radius: 14px; padding: 16px; cursor: pointer;
-  transition: all 0.18s;
-}
-.template-card:hover {
-  border-color: var(--primary); background: rgba(90,191,42,0.1);
-  transform: translateY(-2px); box-shadow: var(--shadow);
-}
-.template-card h4 { font-size: 15px; font-weight: 700; margin-bottom: 5px; color: var(--accent); }
-.template-card p { font-size: 12px; color: var(--text2); }
-
-/* ===== SIBÖ CHAT ===== */
-.sibo-chat {
-  position: fixed; bottom: 20px; right: 20px; z-index: 150;
-  width: 360px; max-width: calc(100vw - 32px);
-  background: var(--bg2);
-  border: 1.5px solid var(--border);
-  border-radius: 22px;
-  box-shadow: 0 16px 48px rgba(0,0,0,0.14);
-  display: none; flex-direction: column; max-height: 500px;
-  overflow: hidden;
-}
-.sibo-chat.active { display: flex; }
-
-.sibo-header {
-  padding: 14px 16px; border-bottom: 1.5px solid var(--border);
-  display: flex; justify-content: space-between; align-items: center;
-  background: linear-gradient(135deg, rgba(90,191,42,0.08), rgba(90,191,42,0.02));
-}
-.sibo-header strong { font-size: 15px; color: var(--accent); }
-
-.sibo-messages { flex: 1; padding: 14px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
-
-.sibo-msg {
-  padding: 10px 14px; border-radius: 14px;
-  max-width: 85%; font-size: 13px; line-height: 1.5;
-  animation: msgIn 0.2s ease;
-}
-@keyframes msgIn { from { opacity:0; transform: translateY(6px); } to { opacity:1; transform: translateY(0); } }
-
-.sibo-msg.user {
-  background: linear-gradient(135deg, var(--primary), var(--primary2));
-  color: white; margin-left: auto; border-bottom-right-radius: 4px;
-  font-weight: 500;
-}
-.sibo-msg.bot {
-  background: var(--bg3); border: 1.5px solid var(--border);
-  color: var(--text); border-bottom-left-radius: 4px;
-}
-
-.sibo-input {
-  padding: 12px; border-top: 1.5px solid var(--border);
-  display: flex; gap: 8px;
-  background: var(--bg3);
-}
-.sibo-input input {
-  flex: 1; min-height: 40px; padding: 9px 14px;
-  background: var(--bg2); border: 1.5px solid var(--border2);
-  border-radius: 10px; color: var(--text);
-  font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px;
-}
-.sibo-input input:focus { outline: none; border-color: var(--primary); }
-
-/* ===== FACTURA ===== */
-.factura-box {
-  border: 2px solid var(--border2); border-radius: 14px;
-  padding: 22px; background: var(--bg3);
-}
-.factura-title { font-size: 22px; font-weight: 800; color: var(--accent); margin-bottom: 4px; }
-.factura-num { font-size: 13px; color: var(--text2); font-family: 'JetBrains Mono', monospace; }
-.factura-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
-.factura-section h4 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text2); margin-bottom: 6px; }
-.factura-section p { font-size: 13px; color: var(--text); }
-.factura-totals { margin-top: 16px; text-align: right; }
-.factura-totals p { font-size: 14px; color: var(--text2); margin-bottom: 3px; }
-.factura-totals .total { font-size: 20px; font-weight: 800; color: var(--accent); margin-top: 6px; }
-.factura-actions { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
-
-/* ===== CREDIT ===== */
-.credit {
-  position: fixed; bottom: 8px; left: 12px;
-  font-size: 10px; color: var(--text2); opacity: 0.6;
-  font-weight: 500;
-}
-
-/* ===== SCROLLBAR ===== */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 999px; }
-::-webkit-scrollbar-thumb:hover { background: var(--primary); }
-
-/* ===== RESPONSIVE ===== */
-@media (max-width: 640px) {
-  .hero h2 { font-size: 26px; }
-  .logo h1 { font-size: 15px; }
-  .sibo-chat { width: calc(100vw - 24px); right: 12px; bottom: 12px; }
-  .factura-grid { grid-template-columns: 1fr; }
-}
+/* ── CREDIT ──────────────────────────────────────────────── */
+.credit{font-size:11px;color:rgba(255,255,255,.75);}
 </style>
 </head>
 <body>
 
-<!-- ===== HEADER ===== -->
-<div class="header">
-  <div class="logo">
-    <div class="logo-icon">
-      <svg width="22" height="22" fill="white" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h7" stroke="white" stroke-width="2.5" stroke-linecap="round" fill="none"/></svg>
+<!-- ═══════════════════════════════════════════════════════
+     HERO HEADER
+════════════════════════════════════════════════════════ -->
+<header class="hero-header">
+  <div class="hero-top">
+    <div class="hero-logo">
+      <div class="hero-logo-icon">🌿</div>
+      <div class="hero-title-block">
+        <h1 data-i18n="logo.name">Matriz Contable CR</h1>
+        <p>ULTIMATE PRO · v12 · COSTA RICA</p>
+      </div>
     </div>
-    <h1>Matriz Contable CR</h1>
+    <div class="hero-actions">
+      <select class="lang-select" id="langSelect">
+        <option value="es">🇨🇷 Español</option>
+        <option value="en">🇺🇸 English</option>
+        <option value="bri">🌿 Bribri</option>
+        <option value="cab">🌱 Cabécar</option>
+        <option value="ngb">🌾 Ngäbere</option>
+        <option value="mek">🍃 Mekatelyu</option>
+        <option value="bor">🌺 Boruca</option>
+        <option value="ter">🌻 Teribe</option>
+        <option value="mal">🌼 Maléku</option>
+        <option value="cho">🌸 Chorotega</option>
+      </select>
+      <button class="btn-hero btn-hero-ghost" id="btnShare">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>
+        Compartir
+      </button>
+      <span class="credit" id="credit">Keny Chinchilla Navarro</span>
+    </div>
   </div>
-  <div class="header-actions">
-    <button class="btn btn-icon" id="btnSibo" title="Sibö ✦">
-      <svg width="17" height="17" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-      Sibö ✦
-    </button>
-    <button class="btn btn-icon" id="btnShare" title="Compartir">
-      <svg width="17" height="17" fill="currentColor" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>
-    </button>
-    <select id="langSelect">
-      <option value="es">Español CR</option>
-      <option value="en">English US</option>
-      <option value="bribri">Bribri</option>
-      <option value="cabecar">Cabécar</option>
-      <option value="ngabe">Ngäbe/Guaymí</option>
-      <option value="boruca">Boruca</option>
-      <option value="terraba">Térraba</option>
-      <option value="maleku">Maleku</option>
-      <option value="guaymi">Guaymí</option>
-      <option value="brunca">Brunca</option>
-    </select>
-  </div>
-</div>
 
-<!-- ===== HERO ===== -->
-<div class="hero">
-  <div class="hero-badge">
-    <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-    Versión 12 — Offline First
-  </div>
-  <h2 data-i18n="hero.title"><span>Matriz Contable</span> CR v12</h2>
-  <p data-i18n="hero.desc">300+ Funciones | Factura Electrónica 4.3 | Canvas Libre | Sibö ✦ Asistente</p>
-  <div class="hero-actions">
-    <button class="btn btn-primary" id="btnEmpezar" data-i18n="hero.start">Empezar</button>
-    <button class="btn" id="btnPlantillas" data-i18n="hero.templates">Plantillas</button>
-  </div>
-</div>
-
-<!-- ===== FEATURES ===== -->
-<div class="features">
-  <div class="card">
-    <div class="card-icon">
-      <svg width="22" height="22" fill="#3a9e10" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z"/></svg>
-    </div>
-    <h3 data-i18n="feat1.title">Factura Electrónica 4.3</h3>
-    <p data-i18n="feat1.desc">Genera facturas XML + PDF con QR para Hacienda CR. IVA 13%, 4%, 2%, 1%, Exento.</p>
-  </div>
-  <div class="card">
-    <div class="card-icon">
-      <svg width="22" height="22" fill="#3a9e10" viewBox="0 0 24 24"><path d="M3 3h18v18H3V3zm2 2v14h14V5H5zm2 2h10v2H7V7zm0 4h10v2H7v-2zm0 4h6v2H7v-2z"/></svg>
-    </div>
-    <h3 data-i18n="feat2.title">Canvas Libre</h3>
-    <p data-i18n="feat2.desc">Libro Diario, Mayor, Balance. Tablas dinámicas con fórmulas =SUMA, =IVA.</p>
-  </div>
-  <div class="card">
-    <div class="card-icon">
-      <svg width="22" height="22" fill="#3a9e10" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-    </div>
-    <h3 data-i18n="feat3.title">Sibö ✦ Asistente</h3>
-    <p data-i18n="feat3.desc">Asistente en 10 lenguas. Te ayuda con asientos, cálculos y reportes.</p>
-  </div>
-  <div class="card">
-    <div class="card-icon">
-      <svg width="22" height="22" fill="#3a9e10" viewBox="0 0 24 24"><path d="M16 11c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 3-1.34 3-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
-    </div>
-    <h3 data-i18n="feat4.title">10 Lenguas CR</h3>
-    <p data-i18n="feat4.desc">Español, English, Bribri, Cabécar, Ngäbe, Boruca, Térraba, Maleku, Guaymí, Brunca.</p>
-  </div>
-  <div class="card">
-    <div class="card-icon">
-      <svg width="22" height="22" fill="#3a9e10" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
-    </div>
-    <h3 data-i18n="feat5.title">6 Plantillas</h3>
-    <p data-i18n="feat5.desc">Diario, Mayor, Balance, Conciliación, Factura CR, Compras/Ventas.</p>
-  </div>
-  <div class="card">
-    <div class="card-icon">
-      <svg width="22" height="22" fill="#3a9e10" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
-    </div>
-    <h3 data-i18n="feat6.title">Exportar</h3>
-    <p data-i18n="feat6.desc">PDF, Excel, XML 4.3. Funciona 100% offline sin internet.</p>
-  </div>
-</div>
-
-<!-- ===== CANVAS SECTION ===== -->
-<div class="canvas-section">
-  <p class="canvas-label">Área de trabajo</p>
-  <div class="canvas-toolbar">
-    <button class="btn" id="btnTabla">
-      <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M3 3h18v18H3V3zm2 2v14h14V5H5z"/></svg>
-      Tabla
+  <!-- RIBBON TABS -->
+  <nav class="ribbon" id="ribbonTabs">
+    <button class="ribbon-tab active" data-tab="inicio">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Inicio
     </button>
-    <button class="btn" id="btnNota">
-      <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z"/></svg>
-      Nota
+    <button class="ribbon-tab" data-tab="archivo">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      Archivo
     </button>
-    <button class="btn" id="btnGrafico">
-      <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M5 9.2h3V19H5V9.2zm6-4.2h3v15.2h-3V5zm6 8h3v7.2h-3V13z"/></svg>
-      Gráfico
+    <button class="ribbon-tab" data-tab="insertar">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+      Insertar
     </button>
-    <button class="btn" id="btnPlantillas2">
-      <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg>
+    <button class="ribbon-tab" data-tab="plantillas">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
       Plantillas
     </button>
-    <button class="btn" id="btnFactura">
-      <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/></svg>
-      Factura
+    <button class="ribbon-tab" data-tab="factura">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 14H3V3h18v11h-6"/><polyline points="9 14 12 17 15 14"/><line x1="12" y1="17" x2="12" y2="3"/></svg>
+      Factura E.
     </button>
-    <button class="btn" id="btnExportar">
-      <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
-      Exportar
+    <button class="ribbon-tab" data-tab="funciones">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M4 7c0-1.1.9-2 2-2h12a2 2 0 012 2v1H4V7z"/><path d="M4 8h16v13H4z"/><path d="M8 13h8M8 17h5"/></svg>
+      Funciones
     </button>
-    <button class="btn" id="btnFunciones">
-      <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M7 2v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2V2h-2v2H9V2H7zm0 8h2v2H7v-2zm4 0h2v2h-2v-2zm4 0h2v2h-2v-2zM7 14h2v2H7v-2zm4 0h2v2h-2v-2zm4 0h2v2h-2v-2z"/></svg>
-      fx Funciones
+    <button class="ribbon-tab" data-tab="apps">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="6" height="6" rx="1"/><rect x="9" y="3" width="6" height="6" rx="1"/><rect x="16" y="3" width="6" height="6" rx="1"/><rect x="2" y="10" width="6" height="6" rx="1"/><rect x="9" y="10" width="6" height="6" rx="1"/><rect x="16" y="10" width="6" height="6" rx="1"/><rect x="2" y="17" width="6" height="6" rx="1"/><rect x="9" y="17" width="6" height="6" rx="1"/></svg>
+      Apps CR
     </button>
-    <button class="btn btn-primary" id="btnGuardar">
-      <svg width="16" height="16" fill="white" viewBox="0 0 24 24"><path d="M17 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg>
-      Guardar
-    </button>
+    <button class="ribbon-ia" id="btnSibo">✦ Sibö IA</button>
+  </nav>
+</header>
+
+<!-- ═══════════════════════════════════════════════════════
+     RIBBON PANELS (content under tabs)
+════════════════════════════════════════════════════════ -->
+<div class="ribbon-panels">
+
+  <!-- INICIO -->
+  <div class="ribbon-panel active" id="panel-inicio">
+    <div class="rpanel-group">
+      <button class="rb primary" id="btnNuevo">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/></svg>
+        Nuevo
+      </button>
+      <button class="rb" id="btnGuardar">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        Guardar
+      </button>
+      <span class="rpanel-group-label">Archivo</span>
+    </div>
+    <div class="rpanel-group">
+      <button class="rb" id="btnDeshacer">↩ Deshacer</button>
+      <button class="rb" id="btnRehacer">↪ Rehacer</button>
+      <span class="rpanel-group-label">Editar</span>
+    </div>
+    <div class="rpanel-group">
+      <button class="rb" id="btnBtnTabla">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="14" height="14"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg>
+        Tabla
+      </button>
+      <button class="rb" id="btnBtnNota">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        Nota
+      </button>
+      <button class="rb" id="btnBtnGrafico">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        Gráfico
+      </button>
+      <span class="rpanel-group-label">Insertar</span>
+    </div>
+    <div class="rpanel-group">
+      <button class="rb" id="btnExportarXML">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        XML
+      </button>
+      <button class="rb" id="btnExportarPDF">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        PDF
+      </button>
+      <span class="rpanel-group-label">Exportar</span>
+    </div>
   </div>
-  <div class="canvas" id="canvas"></div>
+
+  <!-- PLANTILLAS -->
+  <div class="ribbon-panel" id="panel-plantillas">
+    <button class="rb primary" onclick="loadTemplate('diario')">📘 Libro Diario</button>
+    <button class="rb" onclick="loadTemplate('mayor')">📗 Libro Mayor</button>
+    <button class="rb" onclick="loadTemplate('balance')">📊 Balance Comprobación</button>
+    <button class="rb" onclick="loadTemplate('conciliacion')">🏦 Conciliación Bancaria</button>
+    <button class="rb" onclick="loadTemplate('compras')">🛒 D-151 Compras/Ventas</button>
+    <button class="rb" onclick="openModal('modalFactura')">🧾 Factura Electrónica</button>
+  </div>
+
+  <!-- INSERTAR -->
+  <div class="ribbon-panel" id="panel-insertar">
+    <button class="rb primary" id="btnTabla2">📋 Tabla contable</button>
+    <button class="rb" id="btnNota2">📝 Nota de texto</button>
+    <button class="rb" id="btnGrafico2">📊 Gráfico de barras</button>
+    <div class="rb-sep"></div>
+    <button class="rb" id="btnLimpiar">🗑 Limpiar área</button>
+    <button class="rb" id="btnRestaurar">♻ Restaurar guardado</button>
+  </div>
+
+  <!-- FACTURA -->
+  <div class="ribbon-panel" id="panel-factura">
+    <button class="rb primary" onclick="openModal('modalFactura')">🧾 Abrir Factura Electrónica</button>
+    <button class="rb" onclick="agregarLineaFactura()">+ Línea</button>
+    <button class="rb" onclick="recalcularFactura()">∑ Calcular</button>
+    <button class="rb" onclick="exportarXML()">↓ XML</button>
+    <button class="rb" onclick="exportarPDF()">↓ PDF</button>
+    <button class="rb" onclick="limpiarFactura()">🗑 Limpiar</button>
+  </div>
+
+  <!-- FUNCIONES -->
+  <div class="ribbon-panel" id="panel-funciones">
+    <button class="rb primary" id="btnAbrirFunciones">fx Biblioteca de Funciones</button>
+    <button class="rb" id="btnInsertarFn">↓ Insertar función</button>
+    <span style="font-size:12px;color:var(--text3);padding:0 8px;" id="fnCountBadge">923 funciones disponibles</span>
+  </div>
+
+  <!-- APPS -->
+  <div class="ribbon-panel" id="panel-apps">
+    <button class="rb primary" onclick="openModal('modalApps');renderApps();filtrarApps('todos')">📱 Ver todas las Apps</button>
+    <button class="rb" onclick="openModal('modalApps');renderApps();filtrarApps('cr')">🇨🇷 Apps para CR</button>
+    <button class="rb" onclick="openModal('modalApps');renderApps();filtrarApps('gratis')">🆓 Apps gratis</button>
+    <button class="rb" onclick="openModal('modalApps');renderApps();filtrarApps('erp')">🏢 ERP</button>
+    <button class="rb" onclick="openModal('modalApps');renderApps();filtrarApps('nube')">☁️ Nube</button>
+  </div>
+
+</div>
+<!-- end ribbon panels -->
+
+<!-- ═══════════════════════════════════════════════════════
+     WORKSPACE
+════════════════════════════════════════════════════════ -->
+<main class="workspace">
+  <div id="canvas">
+    <div id="canvas-placeholder">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"/></svg>
+      <p>Área de trabajo contable</p>
+      <small>Usá las pestañas arriba para insertar tablas, plantillas o funciones</small>
+    </div>
+  </div>
+</main>
+
+<!-- ═══════════════════════════════════════════════════════
+     STATUS BAR
+════════════════════════════════════════════════════════ -->
+<div class="statusbar">
+  <span id="statusLeft">Matriz Contable CR v12 · Listo</span>
+  <span>Keny Chinchilla Navarro · Costa Rica 🇨🇷</span>
+  <span id="statusRight">923 funciones</span>
 </div>
 
-<!-- ===== MODAL FUNCIONES ===== -->
+<!-- ═══════════════════════════════════════════════════════
+     SIBÖ PANEL
+════════════════════════════════════════════════════════ -->
+<div class="sibo-panel" id="siboPanel">
+  <div class="sibo-head">
+    <div class="sibo-head-left">
+      <span style="font-size:18px;">✦</span>
+      <strong>Sibö</strong>
+      <span class="sibo-badge">IA</span>
+    </div>
+    <button class="sibo-close" onclick="toggleSibo()">×</button>
+  </div>
+  <div class="sibo-shortcuts">
+    <button class="sibo-chip" onclick="siboPregunta('IVA en Costa Rica')">IVA CR</button>
+    <button class="sibo-chip" onclick="siboPregunta('Libro Diario')">Diario</button>
+    <button class="sibo-chip" onclick="siboPregunta('Factura Electrónica 4.4')">Factura</button>
+    <button class="sibo-chip" onclick="siboPregunta('Apps de contabilidad CR')">Apps</button>
+    <button class="sibo-chip" onclick="siboPregunta('Conciliación bancaria')">Conciliación</button>
+    <button class="sibo-chip" onclick="clearSibo()">🗑</button>
+  </div>
+  <div class="sibo-msgs" id="siboMessages">
+    <div class="msg-bot">¡Pura vida! Soy Sibö ✦, tu asistente contable tico con IA. Preguntame lo que necesités sobre contabilidad, Hacienda CR, IVA, facturas y más. 🇨🇷</div>
+  </div>
+  <div class="sibo-typing" id="siboTyping">Sibö está escribiendo...</div>
+  <div class="sibo-input-row">
+    <input type="text" id="siboInput" placeholder="Preguntame sobre contabilidad CR...">
+    <button class="sibo-send" id="btnSiboSend" onclick="sendSibo()">
+      <svg fill="white" viewBox="0 0 24 24" width="16" height="16"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+    </button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     MODAL: FUNCIONES
+════════════════════════════════════════════════════════ -->
 <div class="modal" id="modalFunciones">
-  <div class="modal-content" style="max-width:860px;">
-    <div class="modal-header">
-      <div style="display:flex;align-items:center;gap:10px;">
-        <h3 id="funciones-modal-title" style="font-size:16px;">📐 Biblioteca de Funciones — 300+</h3>
-      </div>
-      <button class="btn btn-icon" onclick="closeModal('modalFunciones')">
-        <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+  <div class="modal-box" style="max-width:900px;">
+    <div class="modal-head">
+      <h3>fx Biblioteca de Funciones</h3>
+      <button class="modal-close" onclick="closeModal('modalFunciones')">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </div>
-    <div class="modal-body" style="padding:16px;">
-      <input type="text" id="fnSearch" placeholder="🔍 Buscar función... ej: BUSCARV, SUMA, HOY, NPV"
-        style="width:100%;min-height:40px;padding:9px 14px;background:var(--bg3);border:1.5px solid var(--border2);border-radius:10px;color:var(--text);font-family:inherit;font-size:13px;margin-bottom:12px;">
-      <div id="fnTabs" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;"></div>
-      <div id="fnList" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:7px;max-height:380px;overflow-y:auto;padding-right:4px;"></div>
-      <div id="fnDetail" style="display:none;margin-top:12px;background:var(--bg3);border:1.5px solid var(--border2);border-radius:12px;padding:14px;">
-        <p id="fnDetailName" style="font-weight:800;font-size:16px;color:var(--accent);margin-bottom:3px;"></p>
-        <p id="fnDetailSyntax" style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--primary2);margin-bottom:7px;"></p>
-        <p id="fnDetailDesc" style="font-size:13px;color:var(--text);line-height:1.6;margin-bottom:8px;"></p>
-        <div style="background:var(--bg2);padding:9px 12px;border-radius:8px;margin-bottom:10px;">
-          <p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text2);margin-bottom:4px;">Ejemplo</p>
-          <p id="fnDetailEx" style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent);"></p>
+    <div class="fn-layout">
+      <div class="fn-sidebar" id="fnSidebar"></div>
+      <div class="fn-main">
+        <div class="fn-search-box">
+          <input class="inp" id="fnSearch" placeholder="Buscar función... (ej: BUSCARV, SUMA, IF)">
         </div>
-        <button class="btn btn-primary" style="font-size:12px;" onclick="insertarFuncion()">
-          ↳ Insertar en Canvas
-        </button>
+        <div class="fn-list" id="fnList"></div>
+        <div class="fn-detail" id="fnDetail">
+          <div class="fn-detail-name" id="fnDetailName"></div>
+          <div class="fn-detail-syntax" id="fnDetailSyntax"></div>
+          <div class="fn-detail-desc" id="fnDetailDesc"></div>
+          <div class="fn-detail-ex" id="fnDetailEx"></div>
+          <div style="margin-top:10px;">
+            <button onclick="insertarFuncion()" class="rb primary" style="font-size:12px;">↓ Insertar en área</button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ===== MODAL FACTURA ===== -->
+<!-- ═══════════════════════════════════════════════════════
+     MODAL: FACTURA ELECTRÓNICA
+════════════════════════════════════════════════════════ -->
 <div class="modal" id="modalFactura">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h3>Factura Electrónica — Ministerio de Hacienda CR</h3>
-      <button class="btn btn-icon" onclick="closeModal('modalFactura')">
-        <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3>🧾 Factura Electrónica 4.3 — Costa Rica</h3>
+      <button class="modal-close" onclick="closeModal('modalFactura')">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </div>
     <div class="modal-body">
-      <div class="factura-box">
-        <!-- Cabecera -->
-        <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom:16px; gap:12px;">
-          <div style="flex:1;">
-            <p class="factura-title" contenteditable="true" id="fe-tipo" title="Editar tipo de comprobante">FACTURA ELECTRÓNICA</p>
-            <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:6px;">
-              <input id="fe-num" value="001-00001-00000001" style="font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--text2); background:var(--bg3); border:1px solid var(--border); border-radius:6px; padding:3px 8px; width:180px;" title="Número consecutivo">
-              <input id="fe-fecha" type="date" style="font-size:12px; color:var(--text2); background:var(--bg3); border:1px solid var(--border); border-radius:6px; padding:3px 8px;" title="Fecha de emisión">
-            </div>
-            <div style="margin-top:6px; display:flex; gap:8px; align-items:center;">
-              <label style="font-size:11px; color:var(--text2); font-weight:600;">IVA:</label>
-              <select id="fe-iva-rate" style="font-size:12px; background:var(--bg3); border:1px solid var(--border); border-radius:6px; padding:3px 8px; color:var(--text);">
-                <option value="0.13">13% — General</option>
-                <option value="0.04">4% — Canasta básica</option>
-                <option value="0.02">2% — Medicinas</option>
-                <option value="0.01">1% — Equipo médico</option>
-                <option value="0">0% — Exento</option>
-              </select>
-            </div>
-          </div>
-          <div id="qrCode" style="width:76px; height:76px; background:white; border-radius:8px; border:1.5px solid var(--border2); flex-shrink:0;"></div>
-        </div>
-
-        <!-- Emisor / Receptor -->
-        <div class="factura-grid" style="margin-bottom:14px;">
-          <div class="factura-section" style="background:var(--bg2); border-radius:10px; padding:12px; border:1px solid var(--border);">
-            <h4 id="factura-emisor-lbl" style="margin-bottom:8px;">Emisor</h4>
-            <input id="fe-emisor-nombre" value="Matriz Contable CR S.A." placeholder="Nombre emisor" style="width:100%; font-weight:700; font-size:13px; background:transparent; border:none; border-bottom:1px solid var(--border); margin-bottom:4px; color:var(--text); padding:2px 0;">
-            <input id="fe-emisor-cedula" value="3-101-000000" placeholder="Cédula Jurídica" style="width:100%; font-size:12px; color:var(--text2); background:transparent; border:none; border-bottom:1px solid var(--border); margin-bottom:4px; padding:2px 0;">
-            <input id="fe-emisor-telefono" value="" placeholder="Teléfono" style="width:100%; font-size:12px; color:var(--text2); background:transparent; border:none; border-bottom:1px solid var(--border); margin-bottom:4px; padding:2px 0;">
-            <input id="fe-emisor-email" value="" placeholder="Correo electrónico" style="width:100%; font-size:12px; color:var(--text2); background:transparent; border:none; padding:2px 0;">
-          </div>
-          <div class="factura-section" style="background:var(--bg2); border-radius:10px; padding:12px; border:1px solid var(--border);">
-            <h4 id="factura-receptor-lbl" style="margin-bottom:8px;">Receptor</h4>
-            <input id="fe-receptor-nombre" value="Cliente General" placeholder="Nombre receptor" style="width:100%; font-weight:700; font-size:13px; background:transparent; border:none; border-bottom:1px solid var(--border); margin-bottom:4px; color:var(--text); padding:2px 0;">
-            <input id="fe-receptor-cedula" value="1-0000-0000" placeholder="Cédula / ID" style="width:100%; font-size:12px; color:var(--text2); background:transparent; border:none; border-bottom:1px solid var(--border); margin-bottom:4px; padding:2px 0;">
-            <input id="fe-receptor-telefono" value="" placeholder="Teléfono" style="width:100%; font-size:12px; color:var(--text2); background:transparent; border:none; border-bottom:1px solid var(--border); margin-bottom:4px; padding:2px 0;">
-            <input id="fe-receptor-email" value="" placeholder="Correo electrónico" style="width:100%; font-size:12px; color:var(--text2); background:transparent; border:none; padding:2px 0;">
+      <div class="factura-section">
+        <div>
+          <div class="field"><label class="lbl">N° Consecutivo</label><input class="inp" id="fe-num" value="001-001-00000001"></div>
+          <div class="field"><label class="lbl">Fecha</label><input class="inp" type="date" id="fe-fecha"></div>
+          <div class="field"><label class="lbl">Condición venta</label>
+            <select class="inp" id="fe-condicion">
+              <option>Contado</option><option>Crédito</option><option>Consignación</option><option>Apartado</option>
+            </select>
           </div>
         </div>
-
-        <!-- Líneas de detalle -->
+        <div>
+          <div class="field"><label class="lbl">IVA</label>
+            <select class="inp" id="fe-iva-rate" onchange="recalcularFactura()">
+              <option value="0.13">13% — General</option>
+              <option value="0.04">4% — Canasta básica</option>
+              <option value="0.02">2% — Medicamentos</option>
+              <option value="0.01">1% — Equipo médico</option>
+              <option value="0">0% — Exento</option>
+            </select>
+          </div>
+          <div class="field"><label class="lbl">Moneda</label>
+            <select class="inp" id="fe-moneda"><option>CRC — Colón</option><option>USD — Dólar</option></select>
+          </div>
+        </div>
+      </div>
+      <div style="padding:0 24px 12px;display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div style="background:var(--off);border:1.5px solid var(--border);border-radius:12px;padding:12px;">
+          <p style="font-size:11px;font-weight:700;color:var(--g3);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px;">Emisor</p>
+          <div class="field"><label class="lbl">Nombre / Razón Social</label><input class="inp" id="fe-emisor-nombre" placeholder="Mi Empresa S.A."></div>
+          <div class="field"><label class="lbl">Cédula Jurídica</label><input class="inp" id="fe-emisor-cedula" placeholder="3-101-000000"></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+            <div class="field"><label class="lbl">Teléfono</label><input class="inp" id="fe-emisor-telefono" placeholder="2200-0000"></div>
+            <div class="field"><label class="lbl">Email</label><input class="inp" id="fe-emisor-email" placeholder="correo@empresa.cr"></div>
+          </div>
+        </div>
+        <div style="background:var(--off);border:1.5px solid var(--border);border-radius:12px;padding:12px;">
+          <p style="font-size:11px;font-weight:700;color:var(--g3);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px;">Receptor</p>
+          <div class="field"><label class="lbl">Nombre</label><input class="inp" id="fe-receptor-nombre" placeholder="Cliente S.A."></div>
+          <div class="field"><label class="lbl">Cédula</label><input class="inp" id="fe-receptor-cedula" placeholder="1-000-000000"></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+            <div class="field"><label class="lbl">Teléfono</label><input class="inp" id="fe-receptor-telefono" placeholder="8000-0000"></div>
+            <div class="field"><label class="lbl">Email</label><input class="inp" id="fe-receptor-email" placeholder="cliente@correo.cr"></div>
+          </div>
+        </div>
+      </div>
+      <div style="padding:0 24px 12px;">
+        <div style="display:flex;gap:8px;margin-bottom:8px;align-items:center;">
+          <p style="font-size:12px;font-weight:700;color:var(--g3);">Líneas de detalle</p>
+          <button onclick="agregarLineaFactura()" class="rb" style="font-size:11px;padding:4px 10px;">+ Línea</button>
+        </div>
         <div style="overflow-x:auto;">
-          <table class="table" id="fe-lineas">
-            <thead>
-              <tr>
-                <th id="factura-th-cant" style="width:60px;">Cant.</th>
-                <th id="factura-th-desc">Descripción</th>
-                <th id="factura-th-unit" style="width:110px;">Precio Unit.</th>
-                <th id="factura-th-total" style="width:110px;">Total</th>
-                <th style="width:36px;"></th>
-              </tr>
-            </thead>
-            <tbody id="fe-lineas-body">
-              <tr>
-                <td><input type="number" value="1" min="0" step="0.01" class="fe-qty" style="width:54px; background:var(--bg3); border:1px solid var(--border); border-radius:6px; padding:3px 6px; font-size:13px; color:var(--text);" oninput="recalcularFactura()"></td>
-                <td><input type="text" value="Servicio Contable Profesional" class="fe-desc" style="width:100%; background:var(--bg3); border:1px solid var(--border); border-radius:6px; padding:3px 8px; font-size:13px; color:var(--text);"></td>
-                <td><input type="number" value="50000" min="0" step="0.01" class="fe-price" style="width:100px; background:var(--bg3); border:1px solid var(--border); border-radius:6px; padding:3px 6px; font-size:13px; color:var(--text);" oninput="recalcularFactura()"></td>
-                <td class="fe-line-total" style="font-weight:600; font-size:13px;">₡50,000.00</td>
-                <td><button onclick="eliminarLineaFactura(this)" style="background:none; border:none; cursor:pointer; color:var(--danger); font-size:16px; padding:2px 6px;">×</button></td>
-              </tr>
-            </tbody>
+          <table class="fe-table">
+            <thead><tr><th>Cant.</th><th>Descripción</th><th>Precio Unit.</th><th>Total</th><th></th></tr></thead>
+            <tbody id="fe-lineas-body"></tbody>
           </table>
         </div>
-
-        <!-- Botón agregar línea -->
-        <button onclick="agregarLineaFactura()" style="margin-top:8px; background:var(--bg3); border:1.5px dashed var(--border2); border-radius:8px; padding:6px 14px; font-size:12px; font-weight:600; color:var(--primary2); cursor:pointer; width:100%;">
-          + Agregar línea
-        </button>
-
-        <!-- Totales calculados -->
-        <div class="factura-totals" style="margin-top:14px;">
-          <p><span id="factura-subtotal-lbl">Subtotal:</span> <strong id="fe-subtotal">₡50,000.00</strong></p>
-          <p><span id="factura-iva-lbl">IVA:</span> <strong id="fe-iva-amount">₡6,500.00</strong></p>
-          <p class="total"><span id="factura-total-lbl">Total:</span> <span id="fe-total">₡56,500.00</span></p>
+        <div style="display:flex;justify-content:flex-end;margin-top:12px;">
+          <div style="background:var(--bg3);border-radius:12px;padding:12px 20px;font-size:13px;min-width:200px;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="color:var(--text2);">Subtotal:</span><span style="font-weight:600;" id="fe-subtotal">₡0.00</span></div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="color:var(--text2);" id="factura-iva-lbl">IVA 13%:</span><span style="font-weight:600;" id="fe-iva-amount">₡0.00</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:15px;font-weight:800;color:var(--g3);border-top:1.5px solid var(--border2);padding-top:6px;margin-top:6px;"><span>TOTAL:</span><span id="fe-total">₡0.00</span></div>
+          </div>
         </div>
-
-        <!-- Observaciones -->
-        <div style="margin-top:12px;">
-          <textarea id="fe-observaciones" rows="2" placeholder="Observaciones / condiciones de pago..." style="width:100%; background:var(--bg3); border:1.5px solid var(--border); border-radius:8px; padding:8px 12px; font-size:12px; color:var(--text); font-family:inherit; resize:vertical;"></textarea>
-        </div>
-
-        <div class="factura-actions">
-          <button class="btn btn-primary" id="btnEnviarHacienda" onclick="enviarHacienda()">Enviar a Hacienda</button>
-          <button class="btn" id="btnExportarPDF" onclick="exportarPDF()">PDF</button>
-          <button class="btn" id="btnExportarXML" onclick="exportarXML()">XML</button>
-          <button class="btn" onclick="limpiarFactura()" style="color:var(--danger);">Limpiar</button>
-        </div>
+        <div class="field" style="margin-top:8px;"><label class="lbl">Observaciones</label><input class="inp" id="fe-observaciones" placeholder="Notas adicionales..."></div>
       </div>
+    </div>
+    <div class="modal-footer">
+      <button onclick="limpiarFactura()" class="rb">🗑 Limpiar</button>
+      <button onclick="exportarXML()" class="rb">↓ XML</button>
+      <button onclick="exportarPDF()" class="rb">↓ PDF</button>
+      <button onclick="closeModal('modalFactura')" class="rb primary">✓ Cerrar</button>
     </div>
   </div>
 </div>
 
-<!-- ===== MODAL PLANTILLAS ===== -->
-<div class="modal" id="modalPlantillas">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h3 data-i18n="templates.title">Plantillas Contables CR</h3>
-      <button class="btn btn-icon" onclick="closeModal('modalPlantillas')">
-        <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+<!-- ═══════════════════════════════════════════════════════
+     MODAL: APPS
+════════════════════════════════════════════════════════ -->
+<div class="modal" id="modalApps">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3>📱 Apps de Contabilidad — Costa Rica 2026</h3>
+      <button class="modal-close" onclick="closeModal('modalApps')">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </div>
     <div class="modal-body">
-      <div class="templates-grid">
-        <div class="template-card" id="tpl-diario" onclick="loadTemplate('diario')">
-          <h4>📘 Libro Diario</h4>
-          <p>Asientos contables con Debe/Haber</p>
-        </div>
-        <div class="template-card" id="tpl-mayor" onclick="loadTemplate('mayor')">
-          <h4>📗 Libro Mayor</h4>
-          <p>Cuentas T y saldos</p>
-        </div>
-        <div class="template-card" id="tpl-balance" onclick="loadTemplate('balance')">
-          <h4>📊 Balance Comprobación</h4>
-          <p>Sumas iguales y saldos</p>
-        </div>
-        <div class="template-card" id="tpl-conciliacion" onclick="loadTemplate('conciliacion')">
-          <h4>🏦 Conciliación Bancaria</h4>
-          <p>Banco vs Libros</p>
-        </div>
-        <div class="template-card" id="tpl-factura" onclick="loadTemplate('factura')">
-          <h4>📄 Factura Electrónica CR</h4>
-          <p>XML 4.3 + QR Hacienda</p>
-        </div>
-        <div class="template-card" id="tpl-compras" onclick="loadTemplate('compras')">
-          <h4>🛒 Reporte Compras/Ventas</h4>
-          <p>D-151 compatible</p>
-        </div>
+      <div class="apps-filters">
+        <button class="af on" id="appFilter-todos" onclick="filtrarApps('todos')">Todas</button>
+        <button class="af" id="appFilter-cr" onclick="filtrarApps('cr')">🇨🇷 Para CR</button>
+        <button class="af" id="appFilter-erp" onclick="filtrarApps('erp')">ERP</button>
+        <button class="af" id="appFilter-pyme" onclick="filtrarApps('pyme')">PyME</button>
+        <button class="af" id="appFilter-gratis" onclick="filtrarApps('gratis')">🆓 Gratis</button>
+        <button class="af" id="appFilter-nube" onclick="filtrarApps('nube')">☁️ Nube</button>
       </div>
+      <div class="apps-grid" id="appsGrid"></div>
     </div>
   </div>
 </div>
-
-<!-- ===== SIBÖ CHAT ===== -->
-<div class="sibo-chat" id="siboChat">
-  <div class="sibo-header">
-    <div style="display:flex; align-items:center; gap:8px;">
-      <svg width="18" height="18" fill="#3a9e10" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-      <strong>Sibö ✦</strong>
-    </div>
-    <button class="btn btn-icon" onclick="toggleSibo()">
-      <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
-    </button>
-  </div>
-  <div class="sibo-messages" id="siboMessages">
-    <div class="sibo-msg bot">¡Pura vida! Soy Sibö ✦, tu asistente contable tico. ¿En qué te ayudo?</div>
-  </div>
-  <div class="sibo-input">
-    <input type="text" id="siboInput" placeholder="Escribe aquí...">
-    <button class="btn btn-primary btn-icon" onclick="sendSibo()">
-      <svg width="16" height="16" fill="white" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
-    </button>
-  </div>
-</div>
-
-<div class="credit" id="credit">Diseño y programación: Keny Chinchilla Navarro</div>
-
-<!-- ===== JAVASCRIPT ===== -->
 <script>
-// ===== i18n - 10 Idiomas CR — Cobertura TOTAL =====
+// ============================================================
+// MATRIZ CONTABLE CR v12 — JS LIMPIO (sin template literals)
+// ============================================================
+
 const translations = {
   es: {
     // Header
@@ -1491,345 +1419,304 @@ const i18nMap = {
   'credit':                { id: 'credit',              prop: 'textContent' }
 };
 
-let currentLang = localStorage.getItem('lang') || 'es';
+
+
+
+var currentLang = (function(){ try{ return localStorage.getItem('lang')||'es'; }catch(e){ return 'es'; } })();
 
 function t(key) {
-  const lang = translations[currentLang] || translations['es'];
-  return lang[key] || translations['es'][key] || key;
+  var lang = translations[currentLang] || translations['es'];
+  return (lang && lang[key]) || (translations['es'] && translations['es'][key]) || key;
 }
 
 function setLang(lang) {
   currentLang = lang;
-  localStorage.setItem('lang', lang);
-  document.getElementById('langSelect').value = lang;
-
-  const trs = translations[lang] || translations['es'];
-
-  // Aplicar todas las claves del mapa
-  Object.entries(i18nMap).forEach(([key, cfg]) => {
-    const val = trs[key] || translations['es'][key];
-    if (!val) return;
-    const el = cfg.id ? document.getElementById(cfg.id)
-                      : document.querySelector(cfg.sel);
-    if (!el) return;
-
-    if (cfg.prop === 'btnText') {
-      // Preserva el SVG del botón y solo reemplaza el texto
-      const svg = el.querySelector('svg');
-      el.textContent = val;
-      if (svg) el.insertBefore(svg, el.firstChild);
-    } else if (cfg.prop === 'placeholder') {
-      el.placeholder = val;
-    } else {
-      el[cfg.prop] = val;
-    }
+  try { localStorage.setItem('lang', lang); } catch(e) {}
+  var sel = document.getElementById('langSelect');
+  if (sel) sel.value = lang;
+  document.querySelectorAll('[data-i18n]').forEach(function(el) {
+    var v = t(el.getAttribute('data-i18n'));
+    if (v) el.textContent = v;
   });
-
-  // data-i18n legacy (hero.title span y feat* cards ya cubiertos arriba)
-  document.querySelectorAll('[data-i18n]').forEach(el => {
-    const key = el.getAttribute('data-i18n');
-    const val = trs[key] || translations['es'][key];
-    if (val) el.textContent = val;
-  });
-
-  // Sibö: actualizar saludo inicial solo si no hay mensajes de usuario aún
-  const msgs = document.getElementById('siboMessages');
-  if (msgs && msgs.querySelectorAll('.sibo-msg.user').length === 0) {
-    msgs.innerHTML = `<div class="sibo-msg bot">${trs['sibo.welcome'] || translations['es']['sibo.welcome']}</div>`;
-  }
 }
 
-document.getElementById('langSelect').addEventListener('change', e => setLang(e.target.value));
-setLang(currentLang);
+// ── MODALS ────────────────────────────────────────────────
+function openModal(id) {
+  var el = document.getElementById(id);
+  if (el) el.classList.add('active');
+}
+function closeModal(id) {
+  var el = document.getElementById(id);
+  if (el) el.classList.remove('active');
+}
 
-// ===== Compartir =====
-document.getElementById('btnShare').addEventListener('click', async () => {
-  const url = window.location.href;
-  if (navigator.share) {
-    try { await navigator.share({ title: 'Matriz Contable CR v12', text: 'App contable offline para Costa Rica', url }); }
-    catch(e) {}
-  } else {
-    navigator.clipboard.writeText(url);
-    alert(t('alert.copiado'));
-  }
-});
+// ── RIBBON TABS ───────────────────────────────────────────
+function switchTab(tab) {
+  document.querySelectorAll('.ribbon-tab').forEach(function(b){ b.classList.remove('active'); });
+  document.querySelectorAll('.ribbon-panel').forEach(function(p){ p.classList.remove('active'); });
+  var btn = document.querySelector('[data-tab="'+tab+'"]');
+  var pnl = document.getElementById('panel-'+tab);
+  if (btn) btn.classList.add('active');
+  if (pnl) pnl.classList.add('active');
+}
 
-// ===== Modales =====
-function openModal(id) { document.getElementById(id).classList.add('active'); }
-function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+// ── SIBÖ ──────────────────────────────────────────────────
+function toggleSibo() {
+  var p = document.getElementById('siboPanel');
+  if (p) p.classList.toggle('open');
+}
+function clearSibo() {
+  siboHistory = [];
+  var msgs = document.getElementById('siboMessages');
+  if (msgs) msgs.innerHTML = '<div class="msg-bot">Chat limpio. Preguntame lo que necesités 🇨🇷</div>';
+}
+function siboPregunta(txt) {
+  var inp = document.getElementById('siboInput');
+  if (inp) { inp.value = txt; sendSibo(); }
+}
+const SIBO_SYSTEM = `Eres Sibö ✦, el asistente contable inteligente de Matriz Contable CR v12. 
+Eres experto en:
+- Contabilidad costarricense: NIIF, PCGA, Código de Comercio de CR
+- Hacienda CR: Factura Electrónica 4.3 y 4.4, D-151, D-152, declaraciones de renta
+- IVA en Costa Rica: 13% general, 4% canasta básica, 2% medicinas, 1% equipo médico, 0% exento
+- Libros contables: Diario, Mayor, Balance de Comprobación, Estado de Resultados, Balance General
+- Conciliación bancaria, cuentas por cobrar/pagar, activos fijos, depreciación
+- Apps de contabilidad para CR: Alegra, QuickBooks, Softland, Zoho Books, e-Cont, Sage Intacct, Mekano, World Office, FinanzaPro, Elconix
+- Funciones de Excel/Numbers/Hojas de cálculo para contabilidad
+- Normas SUGEF, CONASSIF para el sector financiero
+- Planillas CCSS, INS, renta del trabajo en CR
 
-document.querySelectorAll('.modal').forEach(m => {
-  m.addEventListener('click', e => { if (e.target === m) m.classList.remove('active'); });
-});
+Responde siempre en el idioma del usuario (español CR, inglés, o lengua indígena si aplica).
+Sé conciso pero completo. Usa emojis con moderación. Si hay cálculos, muéstralos paso a paso.
+Si preguntan por apps, recomienda según el tamaño de empresa y necesidades específicas de CR.`;
 
-document.getElementById('btnFactura').addEventListener('click', () => openModal('modalFactura'));
-document.getElementById('btnPlantillas').addEventListener('click', () => openModal('modalPlantillas'));
-document.getElementById('btnPlantillas2').addEventListener('click', () => openModal('modalPlantillas'));
-document.getElementById('btnEmpezar').addEventListener('click', () => {
-  document.querySelector('.canvas-section').scrollIntoView({ behavior: 'smooth' });
-});
+var siboHistory = [];
 
-// ===== Sibö Chat =====
-function toggleSibo() { document.getElementById('siboChat').classList.toggle('active'); }
-document.getElementById('btnSibo').addEventListener('click', toggleSibo);
+function localFallback(msg) {
+  var m = msg.toLowerCase();
+  if (m.indexOf('iva') >= 0) return 'El IVA general en CR es 13%. Hay tasas reducidas: 4% canasta básica, 2% medicamentos, 1% equipo médico, 0% exentos. Se declara mensualmente ante Hacienda.';
+  if (m.indexOf('factura') >= 0) return 'La Factura Electrónica en CR es obligatoria desde 2018. La versión vigente es 4.3/4.4. Se envía al ATV de Hacienda en XML. Incluye clave única de 50 dígitos.';
+  if (m.indexOf('diario') >= 0 || m.indexOf('asiento') >= 0) return 'El Libro Diario registra cada transacción por fecha con partida doble: Débito = Crédito. Es obligatorio por el Código de Comercio CR.';
+  if (m.indexOf('balance') >= 0) return 'El Balance de Comprobación verifica que la suma de débitos = suma de créditos en todos los libros. Es paso previo a los estados financieros.';
+  if (m.indexOf('conciliacion') >= 0 || m.indexOf('banco') >= 0) return 'La conciliación bancaria reconcilia el saldo del extracto bancario con el saldo en libros. Identifica cheques en tránsito, depósitos no acreditados y errores.';
+  if (m.indexOf('app') >= 0 || m.indexOf('software') >= 0) return 'Apps recomendadas para CR: Alegra (PyME, cloud), e-Cont (multi-empresa), Softland (ERP grande), QuickBooks (internacional), Wave (gratis). Andá a la pestaña Apps CR para ver todas.';
+  return 'Soy Sibö, tu asistente contable tico. Preguntame sobre contabilidad, Hacienda CR, IVA, facturas electrónicas, libros contables o apps de contabilidad.';
+}
 
-function sendSibo() {
-  const input = document.getElementById('siboInput');
-  const msg = input.value.trim();
+async function sendSibo() {
+  var input = document.getElementById('siboInput');
+  var msg   = input ? input.value.trim() : '';
   if (!msg) return;
-  const messages = document.getElementById('siboMessages');
-  messages.innerHTML += `<div class="sibo-msg user">${msg}</div>`;
-  input.value = '';
-
-  let r = '';
-  const m = msg.toLowerCase();
-  if (m.includes('quien eres') || m.includes('quién eres') || m.includes('who are you'))
-    r = t('sibo.r.quien');
-  else if (m.includes('factura') || m.includes('invoice'))
-    r = t('sibo.r.factura');
-  else if (m.includes('iva') || m.includes('calcular') || m.includes('vat') || m.includes('tax'))
-    r = t('sibo.r.iva');
-  else if (m.includes('asiento') || m.includes('diario') || m.includes('journal'))
-    r = t('sibo.r.diario');
-  else if (m.includes('idioma') || m.includes('lengua') || m.includes('language'))
-    r = t('sibo.r.idioma');
-  else if (m.includes('balance'))
-    r = t('sibo.r.balance');
-  else if (m.includes('conciliacion') || m.includes('banco') || m.includes('bank'))
-    r = t('sibo.r.banco');
-  else
-    r = t('sibo.r.default');
-
-  setTimeout(() => {
-    messages.innerHTML += `<div class="sibo-msg bot">${r}</div>`;
-    messages.scrollTop = messages.scrollHeight;
-  }, 420);
-  messages.scrollTop = messages.scrollHeight;
+  var msgs  = document.getElementById('siboMessages');
+  var type  = document.getElementById('siboTyping');
+  var sBtn  = document.getElementById('btnSiboSend');
+  if (!msgs) return;
+  msgs.innerHTML += '<div class="msg-user">' + msg.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</div>';
+  if (input) input.value = '';
+  msgs.scrollTop = msgs.scrollHeight;
+  if (type) type.style.display = 'block';
+  if (sBtn) { sBtn.disabled = true; sBtn.style.opacity = '0.5'; }
+  siboHistory.push({role:'user', content:msg});
+  try {
+    var resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:SIBO_SYSTEM,messages:siboHistory})
+    });
+    var data = await resp.json();
+    var reply = (data.content && data.content[0] && data.content[0].text) || localFallback(msg);
+    siboHistory.push({role:'assistant',content:reply});
+    if (siboHistory.length > 20) siboHistory = siboHistory.slice(-20);
+    var rendered = reply.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/\n/g,'<br>');
+    msgs.innerHTML += '<div class="msg-bot">' + rendered + '</div>';
+  } catch(e) {
+    msgs.innerHTML += '<div class="msg-bot">' + localFallback(msg) + '</div>';
+  }
+  if (type) type.style.display = 'none';
+  if (sBtn) { sBtn.disabled = false; sBtn.style.opacity = '1'; }
+  msgs.scrollTop = msgs.scrollHeight;
 }
 
-document.getElementById('siboInput').addEventListener('keypress', e => { if (e.key === 'Enter') sendSibo(); });
+// ── FACTURA ───────────────────────────────────────────────
+function fmt(n) { return '\u20a1' + Number(n).toLocaleString('es-CR',{minimumFractionDigits:2,maximumFractionDigits:2}); }
 
-// ===== Canvas =====
-const canvas = document.getElementById('canvas');
+function recalcularFactura() {
+  var rows = document.querySelectorAll('#fe-lineas-body tr');
+  var sub = 0;
+  rows.forEach(function(row) {
+    var q = parseFloat((row.querySelector('.fe-qty') || {}).value) || 0;
+    var p = parseFloat((row.querySelector('.fe-price') || {}).value) || 0;
+    var tot = q * p; sub += tot;
+    var td = row.querySelector('.fe-line-total');
+    if (td) td.textContent = fmt(tot);
+  });
+  var rateEl = document.getElementById('fe-iva-rate');
+  var rate   = rateEl ? parseFloat(rateEl.value) : 0.13;
+  var iva    = sub * rate; var total = sub + iva;
+  var pct    = Math.round(rate * 100);
+  var e = function(id){ return document.getElementById(id); };
+  if (e('fe-subtotal'))   e('fe-subtotal').textContent = fmt(sub);
+  if (e('fe-iva-amount')) e('fe-iva-amount').textContent = fmt(iva);
+  if (e('fe-total'))      e('fe-total').textContent = fmt(total);
+  if (e('factura-iva-lbl')) e('factura-iva-lbl').textContent = 'IVA ' + pct + '%:';
+}
+
+function agregarLineaFactura() {
+  var tbody = document.getElementById('fe-lineas-body');
+  if (!tbody) return;
+  var tr = document.createElement('tr');
+  var X  = '\u00d7';
+  tr.innerHTML =
+    '<td><input type="number" value="1" min="0" step="0.01" class="fe-inp fe-qty" style="width:55px;" oninput="recalcularFactura()"></td>' +
+    '<td><input type="text" value="Servicio" class="fe-inp fe-desc" style="width:100%;"></td>' +
+    '<td><input type="number" value="0" min="0" step="0.01" class="fe-inp fe-price" style="width:90px;" oninput="recalcularFactura()"></td>' +
+    '<td class="fe-line-total" style="font-weight:600;font-size:13px;white-space:nowrap;">' + fmt(0) + '</td>' +
+    '<td><button onclick="eliminarLineaFactura(this)" style="background:none;border:none;cursor:pointer;color:var(--danger);font-size:16px;">' + X + '</button></td>';
+  tbody.appendChild(tr);
+  recalcularFactura();
+}
+
+function eliminarLineaFactura(btn) {
+  var row = btn.closest('tr');
+  if (document.querySelectorAll('#fe-lineas-body tr').length > 1) { row.remove(); recalcularFactura(); }
+}
+
+function limpiarFactura() {
+  ['fe-emisor-nombre','fe-emisor-cedula','fe-emisor-telefono','fe-emisor-email',
+   'fe-receptor-nombre','fe-receptor-cedula','fe-receptor-telefono','fe-receptor-email','fe-observaciones'
+  ].forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; });
+  var tbody = document.getElementById('fe-lineas-body');
+  if (tbody) { tbody.innerHTML = ''; agregarLineaFactura(); }
+}
+
+function exportarPDF() { alert('Para PDF: usá Ctrl+P / imprimir como PDF en el navegador.'); }
+
+function exportarXML() {
+  var g = function(id){ var el=document.getElementById(id); return el?(el.value||el.textContent||''):''; };
+  var fecha    = g('fe-fecha') || new Date().toISOString().split('T')[0];
+  var subtotal = (g('fe-subtotal')||'0').replace(/[^\d.]/g,'');
+  var iva      = (g('fe-iva-amount')||'0').replace(/[^\d.]/g,'');
+  var total    = (g('fe-total')||'0').replace(/[^\d.]/g,'');
+  var lineas   = '';
+  document.querySelectorAll('#fe-lineas-body tr').forEach(function(row,i){
+    var qty   = (row.querySelector('.fe-qty')   ||{}).value||'1';
+    var desc  = (row.querySelector('.fe-desc')  ||{}).value||'';
+    var price = (row.querySelector('.fe-price') ||{}).value||'0';
+    var lt    = ((row.querySelector('.fe-line-total')||{}).textContent||'0').replace(/[^\d.]/g,'');
+    lineas += '  <LineaDetalle><NumeroLinea>'+(i+1)+'</NumeroLinea><Cantidad>'+qty+'</Cantidad><Descripcion>'+desc+'</Descripcion><PrecioUnitario>'+price+'</PrecioUnitario><MontoTotal>'+lt+'</MontoTotal></LineaDetalle>\n';
+  });
+  var xml = '<?xml version="1.0" encoding="UTF-8"?>\n<FacturaElectronica xmlns="https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.3/facturaElectronica">\n' +
+    '  <Clave>50603062600310100000000100001010000000001</Clave>\n' +
+    '  <FechaEmision>'+fecha+'T09:00:00-06:00</FechaEmision>\n' +
+    '  <Emisor><Nombre>'+g('fe-emisor-nombre')+'</Nombre><Identificacion><Numero>'+g('fe-emisor-cedula')+'</Numero></Identificacion></Emisor>\n' +
+    '  <Receptor><Nombre>'+g('fe-receptor-nombre')+'</Nombre><Identificacion><Numero>'+g('fe-receptor-cedula')+'</Numero></Identificacion></Receptor>\n' +
+    lineas +
+    '  <ResumenFactura><TotalVenta>'+subtotal+'</TotalVenta><TotalImpuesto>'+iva+'</TotalImpuesto><TotalComprobante>'+total+'</TotalComprobante></ResumenFactura>\n' +
+    '</FacturaElectronica>';
+  var blob = new Blob([xml],{type:'application/xml'});
+  var a = document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download='factura-'+fecha+'.xml'; a.click(); URL.revokeObjectURL(a.href);
+}
+
+// ── PLANTILLAS ────────────────────────────────────────────
+function plantillaBar(tipo) {
+  return '<div class="pl-bar">' +
+    '<button onclick="agregarFilaPlantilla()" class="pl-btn" style="background:var(--bg2);border:1.5px dashed var(--border2);color:var(--g2);">+ Fila</button>' +
+    '<button onclick="eliminarFilaPlantilla()" class="pl-btn" style="background:var(--bg2);border:1.5px solid var(--border);color:var(--danger);">− Fila</button>' +
+    '<button onclick="calcularTotales()" class="pl-btn" style="background:var(--bg2);border:1.5px solid var(--border);color:var(--g3);">∑ Calcular</button>' +
+    '<button onclick="exportarPlantilla(\''+tipo+'\')" class="pl-btn" style="background:var(--g2);border:none;color:#fff;">↓ CSV</button>' +
+    '</div>';
+}
+function agregarFilaPlantilla() {
+  var tbody = document.querySelector('#canvas tbody'); if(!tbody) return;
+  var cols = tbody.closest('table').querySelector('thead tr').cells.length;
+  var tr = document.createElement('tr');
+  for (var i=0;i<cols;i++) {
+    var td=document.createElement('td'); td.contentEditable='true'; td.style.minWidth='70px';
+    td.textContent = i===0 ? new Date().toISOString().split('T')[0] : '';
+    tr.appendChild(td);
+  }
+  tbody.appendChild(tr);
+}
+function eliminarFilaPlantilla() {
+  var tbody=document.querySelector('#canvas tbody');
+  if (tbody&&tbody.lastElementChild) tbody.lastElementChild.remove();
+}
+function calcularTotales() {
+  document.querySelectorAll('#canvas table').forEach(function(table){
+    var rows=table.querySelectorAll('tbody tr:not(.total-row)'); var sums={};
+    rows.forEach(function(row){ Array.from(row.cells).forEach(function(cell,i){ var v=parseFloat(cell.textContent.replace(/[^0-9.-]/g,'')); if(!isNaN(v)) sums[i]=(sums[i]||0)+v; }); });
+    var tr=table.querySelector('tr.total-row');
+    if (!tr) { tr=table.tBodies[0].insertRow(); tr.className='total-row'; }
+    var cols=table.querySelector('thead tr').cells.length;
+    while (tr.cells.length<cols) tr.insertCell();
+    Array.from(tr.cells).forEach(function(cell,i){ cell.textContent = i===0?'TOTAL':(sums[i]?fmt(sums[i]):''); });
+  });
+}
+function exportarPlantilla(tipo) {
+  var table=document.querySelector('#canvas table'); if(!table) return;
+  var csv='';
+  table.querySelectorAll('tr').forEach(function(row){ csv+=Array.from(row.cells).map(function(c){ return '"'+c.textContent.replace(/"/g,'""')+'"'; }).join(',')+'\\n'; });
+  var blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  var a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download=(tipo||'plantilla')+'-'+new Date().toISOString().split('T')[0]+'.csv'; a.click();
+}
 
 function loadTemplate(tipo) {
-  closeModal('modalPlantillas');
-  canvas.innerHTML = '';
-  if (tipo === 'diario') {
-    canvas.innerHTML = `
-      <h3 style="margin-bottom:12px; color:var(--accent);">📘 Libro Diario</h3>
-      <table class="table">
-        <thead><tr><th>Fecha</th><th>Cuenta</th><th>Debe (₡)</th><th>Haber (₡)</th></tr></thead>
-        <tbody>
-          <tr><td>2026-06-03</td><td>Caja</td><td>56,500</td><td></td></tr>
-          <tr><td>2026-06-03</td><td>Ventas</td><td></td><td>50,000</td></tr>
-          <tr><td>2026-06-03</td><td>IVA por Pagar</td><td></td><td>6,500</td></tr>
-        </tbody>
-      </table>`;
-  } else if (tipo === 'mayor') {
-    canvas.innerHTML = `
-      <h3 style="margin-bottom:12px; color:var(--accent);">📗 Libro Mayor — Caja</h3>
-      <table class="table">
-        <thead><tr><th>Fecha</th><th>Concepto</th><th>Debe (₡)</th><th>Haber (₡)</th><th>Saldo (₡)</th></tr></thead>
-        <tbody>
-          <tr><td>2026-06-03</td><td>Venta Factura 001</td><td>56,500</td><td></td><td>56,500</td></tr>
-        </tbody>
-      </table>`;
-  } else if (tipo === 'balance') {
-    canvas.innerHTML = `
-      <h3 style="margin-bottom:12px; color:var(--accent);">📊 Balance de Comprobación</h3>
-      <table class="table">
-        <thead><tr><th>Cuenta</th><th>Debe (₡)</th><th>Haber (₡)</th></tr></thead>
-        <tbody>
-          <tr><td>Caja</td><td>56,500</td><td></td></tr>
-          <tr><td>Ventas</td><td></td><td>50,000</td></tr>
-          <tr><td>IVA por Pagar</td><td></td><td>6,500</td></tr>
-          <tr><td><strong>TOTAL</strong></td><td><strong>56,500</strong></td><td><strong>56,500</strong></td></tr>
-        </tbody>
-      </table>`;
-  } else if (tipo === 'conciliacion') {
-    canvas.innerHTML = `
-      <h3 style="margin-bottom:12px; color:var(--accent);">🏦 Conciliación Bancaria</h3>
-      <table class="table">
-        <thead><tr><th>Concepto</th><th>Banco (₡)</th><th>Libros (₡)</th></tr></thead>
-        <tbody>
-          <tr><td>Saldo inicial</td><td>100,000</td><td>100,000</td></tr>
-          <tr><td>Depósito en tránsito</td><td></td><td>20,000</td></tr>
-          <tr><td>Cheque pendiente</td><td>-5,000</td><td></td></tr>
-          <tr><td><strong>Saldo ajustado</strong></td><td><strong>95,000</strong></td><td><strong>120,000</strong></td></tr>
-        </tbody>
-      </table>`;
-  } else if (tipo === 'compras') {
-    canvas.innerHTML = `
-      <h3 style="margin-bottom:12px; color:var(--accent);">🛒 Reporte Compras/Ventas — D-151</h3>
-      <table class="table">
-        <thead><tr><th>Fecha</th><th>Tipo</th><th>Proveedor/Cliente</th><th>Monto (₡)</th><th>IVA (₡)</th></tr></thead>
-        <tbody>
-          <tr><td>2026-06-03</td><td>Venta</td><td>Cliente A</td><td>50,000</td><td>6,500</td></tr>
-          <tr><td>2026-06-03</td><td>Compra</td><td>Proveedor B</td><td>30,000</td><td>3,900</td></tr>
-        </tbody>
-      </table>`;
-  } else if (tipo === 'factura') {
+  var canvas = document.getElementById('canvas'); if(!canvas) return;
+  var hoy = new Date().toISOString().split('T')[0];
+  var ce  = ' contenteditable="true" style="min-width:80px;"';
+  var bar = plantillaBar(tipo);
+  switchTab('plantillas');
+  if (tipo==='diario') {
+    canvas.innerHTML = bar+'<h3 style="margin-bottom:10px;color:var(--g3);">Libro Diario</h3>'+
+      '<div style="overflow-x:auto;"><table class="tbl"><thead><tr><th>Fecha</th><th>N Asiento</th><th>Cod.</th><th>Cuenta</th><th>Debe (CRC)</th><th>Haber (CRC)</th><th>Ref.</th></tr></thead><tbody>'+
+      '<tr><td'+ce+'>'+hoy+'</td><td'+ce+'>001</td><td'+ce+'>1.1.01</td><td'+ce+'>Caja y Bancos</td><td'+ce+'>56500</td><td'+ce+'></td><td'+ce+'>F-001</td></tr>'+
+      '<tr><td'+ce+'>'+hoy+'</td><td'+ce+'>001</td><td'+ce+'>4.1.01</td><td'+ce+'>Ventas</td><td'+ce+'></td><td'+ce+'>50000</td><td'+ce+'>F-001</td></tr>'+
+      '<tr><td'+ce+'>'+hoy+'</td><td'+ce+'>001</td><td'+ce+'>2.1.05</td><td'+ce+'>IVA por Pagar</td><td'+ce+'></td><td'+ce+'>6500</td><td'+ce+'>13%</td></tr>'+
+      '</tbody></table></div>';
+  } else if (tipo==='mayor') {
+    canvas.innerHTML = bar+'<h3 style="margin-bottom:10px;color:var(--g3);">Libro Mayor</h3>'+
+      '<div style="overflow-x:auto;"><table class="tbl"><thead><tr><th>Fecha</th><th>Descripcion</th><th>Ref.</th><th>Debe</th><th>Haber</th><th>Saldo</th></tr></thead><tbody>'+
+      '<tr><td'+ce+'>'+hoy+'</td><td'+ce+'>Saldo inicial</td><td'+ce+'></td><td'+ce+'></td><td'+ce+'></td><td'+ce+'>0</td></tr>'+
+      '<tr><td'+ce+'>'+hoy+'</td><td'+ce+'>Venta F-001</td><td'+ce+'>F-001</td><td'+ce+'>56500</td><td'+ce+'></td><td'+ce+'>56500</td></tr>'+
+      '</tbody></table></div>';
+  } else if (tipo==='balance') {
+    canvas.innerHTML = bar+'<h3 style="margin-bottom:10px;color:var(--g3);">Balance de Comprobacion</h3>'+
+      '<div style="overflow-x:auto;"><table class="tbl"><thead><tr><th>Codigo</th><th>Cuenta</th><th>Nat.</th><th>Debitos</th><th>Creditos</th><th>Saldo D</th><th>Saldo A</th></tr></thead><tbody>'+
+      '<tr><td'+ce+'>1.1.01</td><td'+ce+'>Caja y Bancos</td><td'+ce+'>D</td><td'+ce+'>56500</td><td'+ce+'></td><td'+ce+'>56500</td><td'+ce+'></td></tr>'+
+      '<tr><td'+ce+'>4.1.01</td><td'+ce+'>Ventas</td><td'+ce+'>A</td><td'+ce+'></td><td'+ce+'>50000</td><td'+ce+'></td><td'+ce+'>50000</td></tr>'+
+      '<tr><td'+ce+'>2.1.05</td><td'+ce+'>IVA por Pagar</td><td'+ce+'>A</td><td'+ce+'></td><td'+ce+'>6500</td><td'+ce+'></td><td'+ce+'>6500</td></tr>'+
+      '</tbody></table></div>';
+  } else if (tipo==='conciliacion') {
+    canvas.innerHTML = bar+'<h3 style="margin-bottom:10px;color:var(--g3);">Conciliacion Bancaria</h3>'+
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">'+
+      '<div style="background:var(--off);border:1.5px solid var(--border);border-radius:12px;padding:12px;">'+
+      '<p style="font-weight:700;font-size:12px;color:var(--g3);margin-bottom:8px;">Segun Banco</p>'+
+      '<table class="tbl"><thead><tr><th>Concepto</th><th>Monto (CRC)</th></tr></thead><tbody>'+
+      '<tr><td'+ce+'>Saldo estado de cuenta</td><td'+ce+'>95000</td></tr>'+
+      '<tr><td'+ce+'>(+) Depositos en transito</td><td'+ce+'>20000</td></tr>'+
+      '<tr><td'+ce+'>(-) Cheques pendientes</td><td'+ce+'>-5000</td></tr>'+
+      '</tbody></table></div>'+
+      '<div style="background:var(--off);border:1.5px solid var(--border);border-radius:12px;padding:12px;">'+
+      '<p style="font-weight:700;font-size:12px;color:var(--g3);margin-bottom:8px;">Segun Libros</p>'+
+      '<table class="tbl"><thead><tr><th>Concepto</th><th>Monto (CRC)</th></tr></thead><tbody>'+
+      '<tr><td'+ce+'>Saldo segun libros</td><td'+ce+'>108000</td></tr>'+
+      '<tr><td'+ce+'>(+) Notas de credito</td><td'+ce+'>5000</td></tr>'+
+      '<tr><td'+ce+'>(-) Notas de debito</td><td'+ce+'>-3000</td></tr>'+
+      '</tbody></table></div></div>';
+  } else if (tipo==='compras') {
+    canvas.innerHTML = bar+'<h3 style="margin-bottom:10px;color:var(--g3);">Reporte D-151 Compras/Ventas</h3>'+
+      '<div style="overflow-x:auto;"><table class="tbl"><thead><tr><th>Fecha</th><th>Tipo</th><th>N Doc.</th><th>Cedula</th><th>Nombre</th><th>Condicion</th><th>Subtotal</th><th>IVA</th><th>Total</th></tr></thead><tbody>'+
+      '<tr><td'+ce+'>'+hoy+'</td><td'+ce+'>FE</td><td'+ce+'>001-001-000001</td><td'+ce+'>3-101-000000</td><td'+ce+'>Cliente A</td><td'+ce+'>Contado</td><td'+ce+'>50000</td><td'+ce+'>6500</td><td'+ce+'>56500</td></tr>'+
+      '<tr><td'+ce+'>'+hoy+'</td><td'+ce+'>FC</td><td'+ce+'>001-001-000002</td><td'+ce+'>3-101-111111</td><td'+ce+'>Proveedor B</td><td'+ce+'>Credito 30d</td><td'+ce+'>30000</td><td'+ce+'>3900</td><td'+ce+'>33900</td></tr>'+
+      '</tbody></table></div>';
+  } else if (tipo==='factura') {
     openModal('modalFactura');
   }
 }
 
-document.getElementById('btnTabla').addEventListener('click', () => {
-  canvas.innerHTML += `
-    <table class="table" style="margin-bottom:12px;">
-      <thead><tr><th>Fecha</th><th>Cuenta</th><th>Debe (₡)</th><th>Haber (₡)</th></tr></thead>
-      <tbody>
-        <tr>
-          <td contenteditable="true">2026-06-03</td>
-          <td contenteditable="true">Nueva Cuenta</td>
-          <td contenteditable="true">0</td>
-          <td contenteditable="true">0</td>
-        </tr>
-      </tbody>
-    </table>`;
-});
-
-document.getElementById('btnNota').addEventListener('click', () => {
-  canvas.innerHTML += `
-    <div style="background:var(--bg3); border:1.5px solid var(--border2); border-radius:12px; padding:14px; margin:8px 0; font-size:14px;" contenteditable="true">
-      📝 Nota nueva — edita aquí...
-    </div>`;
-});
-
-document.getElementById('btnGrafico').addEventListener('click', () => {
-  const id = 'chart_' + Date.now();
-  canvas.innerHTML += `
-    <div style="background:var(--bg3); border:1.5px solid var(--border); border-radius:14px; padding:16px; margin:8px 0;">
-      <p style="font-size:13px; color:var(--text2); margin-bottom:10px; font-weight:600;">📊 Gráfico de Barras — Debe vs Haber</p>
-      <canvas id="${id}" height="80"></canvas>
-    </div>`;
-  const ctx = document.getElementById(id).getContext('2d');
-  const w = ctx.canvas.width;
-  const bars = [
-    { label: 'Caja', debe: 56500, haber: 0 },
-    { label: 'Ventas', debe: 0, haber: 50000 },
-    { label: 'IVA', debe: 0, haber: 6500 }
-  ];
-  const max = 60000; const bw = 30; const gap = 80;
-  bars.forEach((b, i) => {
-    const x = 40 + i * gap;
-    const dh = (b.debe / max) * 70;
-    const hh = (b.haber / max) * 70;
-    ctx.fillStyle = '#5abf2a';
-    ctx.fillRect(x, 75 - dh, bw, dh);
-    ctx.fillStyle = '#3a9e10';
-    ctx.fillRect(x + bw + 4, 75 - hh, bw, hh);
-    ctx.fillStyle = '#5a7a5a';
-    ctx.font = '10px Plus Jakarta Sans';
-    ctx.fillText(b.label, x, 80);
-  });
-});
-
-document.getElementById('btnExportar').addEventListener('click', () => {
-  exportarXML();
-});
-
-document.getElementById('btnGuardar').addEventListener('click', () => {
-  localStorage.setItem('canvasData_v12', canvas.innerHTML);
-  const btn = document.getElementById('btnGuardar');
-  const orig = btn.innerHTML;
-  btn.innerHTML = t('alert.guardado');
-  setTimeout(() => { btn.innerHTML = orig; setLang(currentLang); }, 1800);
-});
-
-// Restaurar canvas guardado
-const saved = localStorage.getItem('canvasData_v12');
-if (saved) canvas.innerHTML = saved;
-
-// ===== Factura: acciones =====
-function enviarHacienda() {
-  alert(t('alert.hacienda'));
-}
-
-function exportarPDF() {
-  alert(t('alert.pdf'));
-}
-
-function exportarXML() {
-  const emisor   = document.getElementById('fe-emisor-nombre')?.value  || 'Emisor';
-  const cedEmisor= document.getElementById('fe-emisor-cedula')?.value  || '0';
-  const receptor = document.getElementById('fe-receptor-nombre')?.value || 'Receptor';
-  const cedRec   = document.getElementById('fe-receptor-cedula')?.value || '0';
-  const numConsec= document.getElementById('fe-num')?.value            || '001-00001-00000001';
-  const fecha    = document.getElementById('fe-fecha')?.value          || new Date().toISOString().split('T')[0];
-  const subtotal = document.getElementById('fe-subtotal')?.textContent.replace(/[₡,]/g,'') || '0';
-  const ivaAmt   = document.getElementById('fe-iva-amount')?.textContent.replace(/[₡,]/g,'') || '0';
-  const total    = document.getElementById('fe-total')?.textContent.replace(/[₡,]/g,'') || '0';
-  const obs      = document.getElementById('fe-observaciones')?.value || '';
-
-  // Build line items
-  let lineas = '';
-  document.querySelectorAll('#fe-lineas-body tr').forEach((row, i) => {
-    const qty   = row.querySelector('.fe-qty')?.value   || '1';
-    const desc  = row.querySelector('.fe-desc')?.value  || '';
-    const price = row.querySelector('.fe-price')?.value || '0';
-    const lt    = row.querySelector('.fe-line-total')?.textContent.replace(/[₡,]/g,'') || '0';
-    lineas += `  <LineaDetalle>
-    <NumeroLinea>${i+1}</NumeroLinea>
-    <Cantidad>${qty}</Cantidad>
-    <Descripcion>${desc}</Descripcion>
-    <PrecioUnitario>${price}</PrecioUnitario>
-    <MontoTotal>${lt}</MontoTotal>
-  </LineaDetalle>\n`;
-  });
-
-  const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<FacturaElectronica xmlns="https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.3/facturaElectronica">
-  <Clave>50603062600310100000000100001010000000001</Clave>
-  <NumeroConsecutivo>${numConsec.replace(/-/g,'')}</NumeroConsecutivo>
-  <FechaEmision>${fecha}T09:00:00-06:00</FechaEmision>
-  <Emisor>
-    <Nombre>${emisor}</Nombre>
-    <Identificacion><Numero>${cedEmisor}</Numero></Identificacion>
-  </Emisor>
-  <Receptor>
-    <Nombre>${receptor}</Nombre>
-    <Identificacion><Numero>${cedRec}</Numero></Identificacion>
-  </Receptor>
-${lineas}  <Observaciones>${obs}</Observaciones>
-  <ResumenFactura>
-    <TotalVenta>${subtotal}</TotalVenta>
-    <TotalImpuesto>${ivaAmt}</TotalImpuesto>
-    <TotalComprobante>${total}</TotalComprobante>
-  </ResumenFactura>
-</FacturaElectronica>`;
-  const blob = new Blob([xml], { type: 'application/xml' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = 'factura-001.xml'; a.click();
-  URL.revokeObjectURL(url);
-}
-
-// ===== QR Code simple =====
-const qrDiv = document.getElementById('qrCode');
-if (qrDiv) {
-  const c = document.createElement('canvas');
-  c.width = 76; c.height = 76;
-  const ctx = c.getContext('2d');
-  ctx.fillStyle = '#fff';
-  ctx.fillRect(0, 0, 76, 76);
-  const pattern = [
-    [1,1,1,1,1,1,1,0],[1,0,0,0,0,0,1,0],[1,0,1,1,1,0,1,0],
-    [1,0,1,1,1,0,1,0],[1,0,1,1,1,0,1,0],[1,0,0,0,0,0,1,0],[1,1,1,1,1,1,1,0]
-  ];
-  ctx.fillStyle = '#000';
-  pattern.forEach((row, r) => row.forEach((v, c2) => {
-    if (v) ctx.fillRect(c2 * 9 + 4, r * 9 + 4, 8, 8);
-  }));
-  // data dots
-  for (let i = 0; i < 5; i++) for (let j = 0; j < 5; j++) {
-    if ((i + j) % 2 === 0) ctx.fillRect(40 + i * 7, 4 + j * 7, 6, 6);
-  }
-  qrDiv.appendChild(c);
-}
-
-
-// ===== BIBLIOTECA DE FUNCIONES =====
+// ── FUNCIONES LIBRARY ─────────────────────────────────────
 const fnData = {
   'Búsqueda y Referencia': [
     {n:'AGRUPARPOR',e:'GROUPBY',d:'Agrupa, agrega, ordena y filtra datos según los campos especificados.',s:'AGRUPARPOR(campo_filas; campo_valores; función)',x:'=AGRUPARPOR(A2:A10,B2:B10,SUMA)'},
@@ -2165,190 +2052,290 @@ const fnData = {
     {n:'URLCODIF',e:'ENCODEURL',d:'Devuelve una cadena codificada en URL.',s:'URLCODIF(texto)',x:'=URLCODIF("Costa Rica 2026") → "Costa%20Rica%202026"'},
     {n:'XMLFILTRO',e:'FILTERXML',d:'Extrae datos XML usando XPath.',s:'XMLFILTRO(xml; xpath)',x:'=XMLFILTRO(SERVICIOWEB("https://api.ejemplo.cr/datos"),"//precio")'},
   ],
-};
-
-// Colores por categoría
+}
 const fnColors = {
   'Búsqueda y Referencia':'#3a9e10','Texto':'#0e7490','Lógicas':'#7c3aed',
   'Fecha y Hora':'#d97706','Base de Datos':'#dc2626','Matemáticas':'#059669',
   'Financieras':'#1d4ed8','Estadísticas':'#9333ea','Información':'#64748b',
-  'Ingeniería':'#0f766e','Cubo':'#b45309','Web':'#0369a1'
-};
+  'Ingeniería':'#0f766e','Cubo':'#b45309','Web':'#0369a1',
+  'Duración':'#0891b2','Trigonométricas':'#be185d','Google Sheets':'#34a853'};
 
-let fnCurrentCat = 'Búsqueda y Referencia';
-let fnSelected = null;
 
-function renderFnTabs() {
-  const tabs = document.getElementById('fnTabs');
-  tabs.innerHTML = Object.keys(fnData).map(cat => `
-    <button onclick="selectFnCat('${cat}')" style="
-      padding:6px 12px; border-radius:20px; border:1.5px solid ${fnColors[cat]};
-      background:${fnCurrentCat===cat ? fnColors[cat] : 'var(--bg2)'};
-      color:${fnCurrentCat===cat ? '#fff' : fnColors[cat]};
-      font-size:12px; font-weight:700; cursor:pointer; font-family:inherit;
-      transition:all 0.15s;"
-    >${cat} <span style="opacity:0.7;font-weight:400;">(${fnData[cat].length})</span>
-    </button>`).join('');
+// Google Sheets category
+if (!fnColors['Google Sheets']) fnColors['Google Sheets'] = '#34a853';
+if (!fnData['Google Sheets']) fnData['Google Sheets'] = [
+  {n:'ARRAYFORMULA',e:'ARRAYFORMULA',d:'Fórmula de arreglo en múltiples filas/columnas.',s:'ARRAYFORMULA(formula_matriz)',x:'=ARRAYFORMULA(A2:A10*B2:B10)'},
+  {n:'GOOGLEFINANCE',e:'GOOGLEFINANCE',d:'Datos financieros de Google Finance.',s:'GOOGLEFINANCE(cotizacion;[atributo])',x:'=GOOGLEFINANCE("GOOG","price")'},
+  {n:'GOOGLETRANSLATE',e:'GOOGLETRANSLATE',d:'Traduce texto con Google Translate.',s:'GOOGLETRANSLATE(texto;origen;destino)',x:'=GOOGLETRANSLATE("Hola","es","en")'},
+  {n:'QUERY',e:'QUERY',d:'Consultas SQL-like sobre los datos.',s:'QUERY(datos;consulta;[encabezados])',x:'=QUERY(A1:C100,"SELECT A,B WHERE C>100",1)'},
+  {n:'IMPORTRANGE',e:'IMPORTRANGE',d:'Importa rango desde otra hoja de Google.',s:'IMPORTRANGE(url;rango)',x:'=IMPORTRANGE("URL","Hoja1!A1:C10")'},
+  {n:'IMPORTDATA',e:'IMPORTDATA',d:'Importa datos desde URL en CSV o TSV.',s:'IMPORTDATA(url)',x:'=IMPORTDATA("https://datos.ejemplo.com/csv")'},
+  {n:'IMPORTHTML',e:'IMPORTHTML',d:'Importa tabla o lista de página HTML.',s:'IMPORTHTML(url;consulta;indice)',x:'=IMPORTHTML("https://es.wikipedia.org/wiki/CR","table",1)'},
+  {n:'IMPORTXML',e:'IMPORTXML',d:'Importa datos XML/HTML via XPath.',s:'IMPORTXML(url;xpath)',x:'=IMPORTXML("https://feeds.ejemplo.com","//item/title")'},
+  {n:'FILTER',e:'FILTER',d:'Filtra rango según condiciones.',s:'FILTER(rango;condicion1;[condicion2])',x:'=FILTER(A2:C10,B2:B10>100)'},
+  {n:'SORT',e:'SORT',d:'Ordena filas de un rango.',s:'SORT(rango;columna;ascendente)',x:'=SORT(A2:C10,2,VERDADERO)'},
+  {n:'SPARKLINE',e:'SPARKLINE',d:'Gráfico en miniatura dentro de una celda.',s:'SPARKLINE(datos;[opciones])',x:'=SPARKLINE(A1:A10,{"charttype","bar"})'},
+  {n:'EPOCHTODATE',e:'EPOCHTODATE',d:'Convierte marca de tiempo Unix a fecha UTC.',s:'EPOCHTODATE(marca_tiempo;[unidad])',x:'=EPOCHTODATE(1717401600)'},
+];
+
+var fnCurrentCat = Object.keys(fnData)[0];
+var fnSelected   = null;
+
+function renderFnSidebar() {
+  var sb = document.getElementById('fnSidebar');
+  if (!sb) return;
+  var html = '';
+  Object.keys(fnData).forEach(function(cat) {
+    var on  = cat === fnCurrentCat ? ' on' : '';
+    var col = fnColors[cat] || '#3a9e10';
+    var cnt = fnData[cat] ? fnData[cat].length : 0;
+    var safe = cat.replace(/'/g,'&#39;');
+    html += '<div class="fn-cat'+on+'" onclick="selectFnCat(\''+safe+'\')" style="border-left:3px solid '+col+';">'+cat+'<span>('+cnt+')</span></div>';
+  });
+  sb.innerHTML = html;
 }
-
 function selectFnCat(cat) {
-  fnCurrentCat = cat;
-  fnSelected = null;
-  document.getElementById('fnDetail').style.display = 'none';
-  renderFnTabs();
-  renderFnList(fnData[cat]);
+  fnCurrentCat = cat; fnSelected = null;
+  var det = document.getElementById('fnDetail');
+  if (det) det.style.display = 'none';
+  renderFnSidebar();
+  renderFnList(fnData[cat] || []);
 }
-
 function renderFnList(list) {
-  const color = fnColors[fnCurrentCat];
-  document.getElementById('fnList').innerHTML = list.map(fn => `
-    <div onclick="selectFn('${fn.n.replace(/'/g,"\\'")}','${fnCurrentCat}')" style="
-      background:var(--bg3); border:1.5px solid var(--border);
-      border-radius:10px; padding:10px 12px; cursor:pointer;
-      transition:all 0.15s; border-left:3px solid ${color};"
-      onmouseover="this.style.borderColor='${color}';this.style.background='rgba(90,191,42,0.08)'"
-      onmouseout="this.style.borderColor='var(--border)';this.style.borderLeftColor='${color}';this.style.background='var(--bg3)'">
-      <div style="font-weight:700;font-size:13px;color:var(--accent);">${fn.n}</div>
-      <div style="font-size:11px;color:${color};font-family:'JetBrains Mono',monospace;">${fn.e}</div>
-      <div style="font-size:11px;color:var(--text2);margin-top:2px;line-height:1.4;">${fn.d.substring(0,70)}${fn.d.length>70?'…':''}</div>
-    </div>`).join('');
+  var el = document.getElementById('fnList'); if(!el) return;
+  var col = fnColors[fnCurrentCat] || '#3a9e10';
+  var html = '';
+  (list||[]).forEach(function(fn) {
+    var safeN = (fn.n||'').replace(/'/g,'&#39;');
+    var safeC = fnCurrentCat.replace(/'/g,'&#39;');
+    var desc  = (fn.d||'').length>70 ? (fn.d||'').substring(0,70)+'...' : (fn.d||'');
+    html += '<div class="fn-card" onclick="selectFn(\''+safeN+'\',\''+safeC+'\')">'+
+      '<div class="fn-card-name" style="color:'+col+';">'+(fn.n||'')+'</div>'+
+      '<div class="fn-card-en">'+(fn.e||'')+'</div>'+
+      '<div class="fn-card-desc">'+desc+'</div></div>';
+  });
+  el.innerHTML = html || '<p style="color:var(--text3);font-size:13px;padding:12px;">Sin resultados.</p>';
 }
-
 function selectFn(name, cat) {
-  const fn = fnData[cat].find(f => f.n === name);
-  if (!fn) return;
-  fnSelected = fn;
-  document.getElementById('fnDetailName').textContent = fn.n + '  ·  ' + fn.e;
-  document.getElementById('fnDetailSyntax').textContent = '=' + fn.s;
-  document.getElementById('fnDetailDesc').textContent = fn.d;
-  document.getElementById('fnDetailEx').textContent = fn.x;
-  document.getElementById('fnDetail').style.display = 'block';
-  document.getElementById('fnDetail').scrollIntoView({behavior:'smooth',block:'nearest'});
+  var arr = fnData[cat] || []; var fn = null;
+  arr.forEach(function(f){ if(f.n===name) fn=f; });
+  if (!fn) return; fnSelected = fn;
+  var e = function(id){ return document.getElementById(id); };
+  if (e('fnDetailName')) e('fnDetailName').textContent = fn.n + '  ·  ' + fn.e;
+  if (e('fnDetailSyntax')) e('fnDetailSyntax').textContent = '=' + (fn.s||'');
+  if (e('fnDetailDesc')) e('fnDetailDesc').textContent = fn.d||'';
+  if (e('fnDetailEx')) e('fnDetailEx').textContent = fn.x||'';
+  var det = e('fnDetail');
+  if (det) { det.style.display='block'; det.scrollIntoView({behavior:'smooth',block:'nearest'}); }
 }
-
 function insertarFuncion() {
   if (!fnSelected) return;
-  const canvas = document.getElementById('canvas');
-  canvas.innerHTML += `<div style="background:var(--bg3);border:1.5px solid var(--border2);border-radius:10px;padding:12px 14px;margin:6px 0;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--accent);">${fnSelected.x}</div>`;
+  var canvas = document.getElementById('canvas');
+  if (canvas) canvas.innerHTML += '<div style="background:var(--bg3);border:1.5px solid var(--border2);border-radius:10px;padding:10px 14px;margin:6px 0;font-family:monospace;font-size:13px;color:var(--g3);">'+(fnSelected.x||'')+'</div>';
   closeModal('modalFunciones');
 }
 
-// Búsqueda global de funciones
-document.getElementById('fnSearch').addEventListener('input', function() {
-  const q = this.value.toLowerCase().trim();
-  if (!q) { renderFnList(fnData[fnCurrentCat]); return; }
-  const results = [];
-  Object.values(fnData).forEach(cat => cat.forEach(fn => {
-    if (fn.n.toLowerCase().includes(q) || fn.e.toLowerCase().includes(q) || fn.d.toLowerCase().includes(q))
-      results.push(fn);
-  }));
-  renderFnList(results);
-  if (results.length > 0) {
-    // ajustar color genérico para resultados mixtos
-    fnCurrentCat = Object.keys(fnData).find(c => fnData[c].includes(results[0])) || fnCurrentCat;
-  }
-});
+// ── APPS ──────────────────────────────────────────────────
+const appsData = [
+  // CR Específicas
+  { nombre:'Alegra', cat:['cr','pyme','nube'], icon:'🟢', desc:'Factura Electrónica 4.4, contabilidad y nómina en la nube. Estándar para PyME costarricense.', precio:'Desde $8/mes', url:'https://alegra.com', badge:'⭐ Top CR' },
+  { nombre:'e-Cont', cat:['cr','pyme'], icon:'🔵', desc:'Sistema contable multiempresas desarrollado en CR. Ideal para contadores con múltiples clientes.', precio:'Licencia única', url:'#', badge:'🇨🇷 CR' },
+  { nombre:'GTI Contabilidad', cat:['cr','pyme'], icon:'🟠', desc:'Solución de facturación electrónica y contabilidad enfocada en cumplimiento Hacienda CR 4.4.', precio:'Consultar', url:'#', badge:'🇨🇷 CR' },
+  { nombre:'FinanzaPro', cat:['cr','pyme','nube'], icon:'🟡', desc:'Facturación offline con sincronización. Ideal para comercios de alto tráfico en CR.', precio:'Desde $15/mes', url:'#', badge:'🇨🇷 CR' },
+  // Internacionales disponibles en CR
+  { nombre:'QuickBooks Online', cat:['pyme','nube','erp'], icon:'💚', desc:'Más de 7M usuarios. Contabilidad completa, facturación, nómina y reportes. Disponible en CR.', precio:'Desde $15/mes', url:'https://quickbooks.intuit.com', badge:'🌐 Internacional' },
+  { nombre:'Zoho Books', cat:['pyme','nube'], icon:'🔴', desc:'Contabilidad en la nube para PyME. Multimoneda, 180 países. Integración con Zoho CRM.', precio:'Gratis / Desde $15/mes', url:'https://zoho.com/books', badge:'🌐 180 países' },
+  { nombre:'Sage Intacct', cat:['erp','nube'], icon:'🟣', desc:'Suite ERP avanzada. Contabilidad multidimensional, cuentas por pagar/cobrar, reportes en tiempo real.', precio:'Empresarial', url:'https://sage.com', badge:'🏢 Corporativo' },
+  { nombre:'Softland ERP', cat:['erp','cr'], icon:'⚫', desc:'ERP para grandes empresas. Módulos: contabilidad, nómina, inventario, CRM. Soporte local en CR.', precio:'ERP / Consultar', url:'#', badge:'🏢 ERP CR' },
+  { nombre:'Mekano Contable', cat:['pyme','nube'], icon:'🟤', desc:'Software administrativo en la nube. Contabilidad, nómina, gestión administrativa para PyMEs.', precio:'Desde $20/mes', url:'#', badge:'☁️ Cloud' },
+  { nombre:'World Office', cat:['pyme','nube'], icon:'🔵', desc:'Automatiza facturación, inventarios y nómina. Cumplimiento fiscal, acceso desde cualquier dispositivo.', precio:'Consultar', url:'#', badge:'☁️ Cloud' },
+  { nombre:'Elconix', cat:['erp','nube'], icon:'🟢', desc:'Plataforma integral: operaciones, finanzas, inventarios, RRHH y CRM para empresas medianas/grandes.', precio:'Empresarial', url:'#', badge:'🔗 Integral' },
+  // Gratuitas / Open Source
+  { nombre:'Wave Accounting', cat:['gratis','nube','pyme'], icon:'🌊', desc:'100% gratis. Contabilidad, facturación y recibos. Ideal para freelancers y microempresas.', precio:'Gratis', url:'https://waveapps.com', badge:'🆓 Gratis' },
+  { nombre:'GnuCash', cat:['gratis'], icon:'🐧', desc:'Open source. Doble partida, libros, estados financieros. Para usuarios técnicos.', precio:'Gratis', url:'https://gnucash.org', badge:'🆓 Open Source' },
+  { nombre:'Manager.io', cat:['gratis','pyme'], icon:'📊', desc:'Desktop y cloud. Contabilidad completa gratis para uso básico. Multimoneda.', precio:'Gratis / $39/año nube', url:'https://manager.io', badge:'🆓 Freemium' },
+  // Especializadas
+  { nombre:'Xero', cat:['pyme','nube'], icon:'💙', desc:'Contabilidad cloud líder mundial. Integraciones con 1000+ apps. Reportes en tiempo real.', precio:'Desde $15/mes', url:'https://xero.com', badge:'🌐 Global' },
+  { nombre:'FreshBooks', cat:['pyme','nube','gratis'], icon:'🍃', desc:'Facturación y tiempo para freelancers. Seguimiento de gastos, proyectos y clientes.', precio:'Desde $6/mes', url:'https://freshbooks.com', badge:'👤 Freelance' },
+  { nombre:'Odoo Contabilidad', cat:['erp','nube','gratis'], icon:'🟣', desc:'ERP open source con módulo contable completo. Versión community gratuita disponible.', precio:'Gratis / Desde $20/mes', url:'https://odoo.com', badge:'🆓 Open Source' },
+  { nombre:'SAP Business One', cat:['erp'], icon:'🔷', desc:'ERP de SAP para medianas empresas. Módulos financieros, logística, CRM. Soporte CR disponible.', precio:'Licencia / Consultar', url:'https://sap.com', badge:'🏢 SAP' },
+  { nombre:'Oracle NetSuite', cat:['erp','nube'], icon:'🔴', desc:'ERP cloud para empresas en crecimiento. Finanzas, CRM, e-commerce en una sola plataforma.', precio:'Empresarial', url:'https://netsuite.com', badge:'☁️ Enterprise' },
+  { nombre:'Holded', cat:['pyme','nube'], icon:'🟡', desc:'Contabilidad, facturación y CRM todo en uno. Popular en Latinoamérica. Multimoneda.', precio:'Desde $14/mes', url:'https://holded.com', badge:'🌍 LATAM' },
+  { nombre:'Contpaqi Contabilidad', cat:['pyme','cr'], icon:'🟠', desc:'Popular en Centroamérica. Contabilidad electrónica, estados financieros, declaraciones.', precio:'Licencia anual', url:'#', badge:'🌎 CA' },
+  { nombre:'Bind ERP', cat:['erp','nube','pyme'], icon:'🔵', desc:'ERP en la nube para PyME. Automatiza movimientos contables. Módulos de ventas e inventario.', precio:'Desde $50/mes', url:'https://bind.com.mx', badge:'☁️ Cloud' },];
 
-document.getElementById('btnFunciones').addEventListener('click', () => {
-  openModal('modalFunciones');
-  renderFnTabs();
-  renderFnList(fnData[fnCurrentCat]);
-});
-
-
-
-// ===== FACTURA EDITABLE =====
-function fmt(n) {
-  return '₡' + Number(n).toLocaleString('es-CR', {minimumFractionDigits:2, maximumFractionDigits:2});
+var appsFilter = 'todos';
+function filtrarApps(cat) {
+  appsFilter = cat;
+  document.querySelectorAll('[id^="appFilter-"]').forEach(function(b){ b.classList.remove('on'); });
+  var a = document.getElementById('appFilter-'+cat);
+  if (a) a.classList.add('on');
+  renderApps();
 }
-
-function recalcularFactura() {
-  const rows = document.querySelectorAll('#fe-lineas-body tr');
-  let subtotal = 0;
-  rows.forEach(row => {
-    const qty   = parseFloat(row.querySelector('.fe-qty')?.value)   || 0;
-    const price = parseFloat(row.querySelector('.fe-price')?.value) || 0;
-    const total = qty * price;
-    const td = row.querySelector('.fe-line-total');
-    if (td) td.textContent = fmt(total);
-    subtotal += total;
+function renderApps() {
+  var grid = document.getElementById('appsGrid'); if(!grid) return;
+  var list = appsFilter==='todos' ? appsData : appsData.filter(function(a){ return a.cat.indexOf(appsFilter)>=0; });
+  var html = '';
+  list.forEach(function(app) {
+    var link = app.url && app.url!=='#'
+      ? '<a href="'+app.url+'" target="_blank" style="font-size:11px;color:var(--g2);font-weight:700;">Visitar</a>'
+      : '<span style="font-size:11px;color:var(--text3);">En línea</span>';
+    html += '<div class="app-card">'+
+      '<div class="app-icon">'+app.icon+'</div>'+
+      '<div class="app-name">'+app.nombre+'</div>'+
+      '<div class="app-desc">'+app.desc+'</div>'+
+      '<div class="app-bottom"><span class="app-price">'+app.precio+'</span>'+
+      '<span class="app-badge">'+app.badge+'</span>'+link+'</div></div>';
   });
-  const rate = parseFloat(document.getElementById('fe-iva-rate')?.value) || 0;
-  const iva  = subtotal * rate;
-  const total = subtotal + iva;
-  const pct = Math.round(rate * 100);
-  document.getElementById('fe-subtotal').textContent   = fmt(subtotal);
-  document.getElementById('fe-iva-amount').textContent = fmt(iva);
-  document.getElementById('fe-total').textContent      = fmt(total);
-  const lbl = document.getElementById('factura-iva-lbl');
-  if (lbl) lbl.textContent = 'IVA ' + pct + '%:';
+  grid.innerHTML = html;
 }
 
-function agregarLineaFactura() {
-  const tbody = document.getElementById('fe-lineas-body');
-  const tr = document.createElement('tr');
-  tr.innerHTML = `
-    <td><input type="number" value="1" min="0" step="0.01" class="fe-qty"
-      style="width:54px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:3px 6px;font-size:13px;color:var(--text);"
-      oninput="recalcularFactura()"></td>
-    <td><input type="text" value="Nuevo servicio" class="fe-desc"
-      style="width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:3px 8px;font-size:13px;color:var(--text);"></td>
-    <td><input type="number" value="0" min="0" step="0.01" class="fe-price"
-      style="width:100px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:3px 6px;font-size:13px;color:var(--text);"
-      oninput="recalcularFactura()"></td>
-    <td class="fe-line-total" style="font-weight:600;font-size:13px;">₡0.00</td>
-    <td><button onclick="eliminarLineaFactura(this)"
-      style="background:none;border:none;cursor:pointer;color:var(--danger);font-size:16px;padding:2px 6px;">×</button></td>`;
-  tbody.appendChild(tr);
-  recalcularFactura();
+// ── CANVAS HELPERS ────────────────────────────────────────
+function insertarTabla() {
+  var canvas = document.getElementById('canvas'); if(!canvas) return;
+  var ph = document.getElementById('canvas-placeholder');
+  if (ph) ph.remove();
+  var hoy = new Date().toISOString().split('T')[0];
+  canvas.innerHTML += '<table class="tbl" style="margin-bottom:12px;"><thead><tr><th>Fecha</th><th>Cuenta</th><th>Debe (CRC)</th><th>Haber (CRC)</th></tr></thead><tbody>'+
+    '<tr><td contenteditable="true">'+hoy+'</td><td contenteditable="true">Nueva Cuenta</td><td contenteditable="true">0</td><td contenteditable="true">0</td></tr></tbody></table>';
+}
+function insertarNota() {
+  var canvas = document.getElementById('canvas'); if(!canvas) return;
+  var ph = document.getElementById('canvas-placeholder'); if(ph) ph.remove();
+  canvas.innerHTML += '<div style="background:var(--bg2);border:1.5px solid var(--border2);border-radius:12px;padding:14px;margin:8px 0;font-size:14px;color:var(--text);" contenteditable="true">Nota nueva...</div>';
+}
+function insertarGrafico() {
+  var canvas = document.getElementById('canvas'); if(!canvas) return;
+  var ph = document.getElementById('canvas-placeholder'); if(ph) ph.remove();
+  var id = 'chart_'+Date.now();
+  canvas.innerHTML += '<div style="background:var(--off);border:1.5px solid var(--border);border-radius:14px;padding:16px;margin:8px 0;"><p style="font-size:12px;color:var(--text3);margin-bottom:10px;font-weight:600;">Grafico de Barras</p><canvas id="'+id+'" height="80"></canvas></div>';
+  var ctx = document.getElementById(id).getContext('2d');
+  var bars=[['Debe','#5abf2a',56500],['Haber','#3a9e10',56500]];
+  bars.forEach(function(b,i){ ctx.fillStyle=b[1]; var h=(b[2]/60000)*70; ctx.fillRect(40+i*70,75-h,40,h); ctx.fillStyle='#4a6b2a'; ctx.font='11px sans-serif'; ctx.fillText(b[0],40+i*70,80); });
 }
 
-function eliminarLineaFactura(btn) {
-  const row = btn.closest('tr');
-  if (document.querySelectorAll('#fe-lineas-body tr').length > 1) {
-    row.remove();
-    recalcularFactura();
-  }
-}
+// ── DOMContentLoaded ──────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function() {
 
-function limpiarFactura() {
-  document.getElementById('fe-emisor-nombre').value  = '';
-  document.getElementById('fe-emisor-cedula').value  = '';
-  document.getElementById('fe-emisor-telefono').value = '';
-  document.getElementById('fe-emisor-email').value   = '';
-  document.getElementById('fe-receptor-nombre').value = '';
-  document.getElementById('fe-receptor-cedula').value = '';
-  document.getElementById('fe-receptor-telefono').value = '';
-  document.getElementById('fe-receptor-email').value  = '';
-  document.getElementById('fe-observaciones').value   = '';
-  const tbody = document.getElementById('fe-lineas-body');
-  tbody.innerHTML = `<tr>
-    <td><input type="number" value="1" min="0" step="0.01" class="fe-qty"
-      style="width:54px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:3px 6px;font-size:13px;color:var(--text);"
-      oninput="recalcularFactura()"></td>
-    <td><input type="text" value="" class="fe-desc"
-      style="width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:3px 8px;font-size:13px;color:var(--text);" placeholder="Descripción"></td>
-    <td><input type="number" value="0" min="0" step="0.01" class="fe-price"
-      style="width:100px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:3px 6px;font-size:13px;color:var(--text);"
-      oninput="recalcularFactura()"></td>
-    <td class="fe-line-total" style="font-weight:600;font-size:13px;">₡0.00</td>
-    <td><button onclick="eliminarLineaFactura(this)"
-      style="background:none;border:none;cursor:pointer;color:var(--danger);font-size:16px;padding:2px 6px;">×</button></td></tr>`;
-  recalcularFactura();
-}
+  // Language
+  var langSel = document.getElementById('langSelect');
+  if (langSel) langSel.addEventListener('change', function(e){ setLang(e.target.value); });
+  setLang(currentLang);
 
-// Recalcular cuando cambie la tasa IVA
-document.addEventListener('DOMContentLoaded', () => {
-  const ivaSelect = document.getElementById('fe-iva-rate');
+  // Ribbon tabs
+  document.querySelectorAll('.ribbon-tab').forEach(function(tab) {
+    tab.addEventListener('click', function() {
+      var t = this.getAttribute('data-tab');
+      if (t) switchTab(t);
+    });
+  });
+
+  // Sibö toggle
+  document.getElementById('btnSibo').addEventListener('click', toggleSibo);
+
+  // Close modals on backdrop
+  document.querySelectorAll('.modal').forEach(function(m) {
+    m.addEventListener('click', function(e){ if(e.target===m) m.classList.remove('active'); });
+  });
+
+  // Share
+  var btnShare = document.getElementById('btnShare');
+  if (btnShare) btnShare.addEventListener('click', async function() {
+    var url = window.location.href;
+    if (navigator.share) { try{ await navigator.share({title:'Matriz Contable CR v12',url:url}); }catch(e){} }
+    else { try{ await navigator.clipboard.writeText(url); }catch(e){} alert('URL copiada'); }
+  });
+
+  // Inicio panel buttons
+  document.getElementById('btnNuevo').addEventListener('click', function(){
+    var canvas = document.getElementById('canvas');
+    if (!confirm('Crear área nueva? Se borrará el contenido actual.')) return;
+    canvas.innerHTML = '<div id="canvas-placeholder" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:280px;gap:12px;color:var(--text3);"><p style="font-size:14px;font-weight:600;">Área de trabajo contable</p></div>';
+    try { localStorage.removeItem('canvasData_v12'); } catch(e){}
+  });
+  document.getElementById('btnGuardar').addEventListener('click', function() {
+    var canvas = document.getElementById('canvas');
+    try { localStorage.setItem('canvasData_v12', canvas.innerHTML); } catch(e){}
+    var btn = this; var orig = btn.textContent;
+    btn.textContent = '✓ Guardado';
+    btn.style.background='var(--bg3)';
+    setTimeout(function(){ btn.textContent=orig; btn.style.background=''; }, 1600);
+    document.getElementById('statusLeft').textContent = 'Guardado: ' + new Date().toLocaleTimeString('es-CR');
+  });
+  document.getElementById('btnDeshacer').addEventListener('click', function(){ document.execCommand('undo'); });
+  document.getElementById('btnRehacer').addEventListener('click', function(){ document.execCommand('redo'); });
+  document.getElementById('btnBtnTabla').addEventListener('click', insertarTabla);
+  document.getElementById('btnBtnNota').addEventListener('click', insertarNota);
+  document.getElementById('btnBtnGrafico').addEventListener('click', insertarGrafico);
+  document.getElementById('btnExportarXML').addEventListener('click', exportarXML);
+  document.getElementById('btnExportarPDF').addEventListener('click', exportarPDF);
+
+  // Insertar panel buttons
+  document.getElementById('btnTabla2').addEventListener('click', insertarTabla);
+  document.getElementById('btnNota2').addEventListener('click', insertarNota);
+  document.getElementById('btnGrafico2').addEventListener('click', insertarGrafico);
+  document.getElementById('btnLimpiar').addEventListener('click', function(){
+    if (confirm('Limpiar el área de trabajo?')) {
+      document.getElementById('canvas').innerHTML = '<div id="canvas-placeholder" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:280px;gap:12px;color:var(--text3);"><p style="font-size:14px;font-weight:600;">Área de trabajo contable</p></div>';
+    }
+  });
+  document.getElementById('btnRestaurar').addEventListener('click', function(){
+    try {
+      var saved = localStorage.getItem('canvasData_v12');
+      if (saved) { document.getElementById('canvas').innerHTML = saved; document.getElementById('statusLeft').textContent = 'Restaurado OK'; }
+      else alert('No hay datos guardados.');
+    } catch(e){}
+  });
+
+  // Funciones panel
+  document.getElementById('btnAbrirFunciones').addEventListener('click', function(){
+    openModal('modalFunciones');
+    renderFnSidebar();
+    renderFnList(fnData[fnCurrentCat] || []);
+  });
+  document.getElementById('btnInsertarFn').addEventListener('click', insertarFuncion);
+
+  // Fn search
+  var fnSearch = document.getElementById('fnSearch');
+  if (fnSearch) fnSearch.addEventListener('input', function(){
+    var q = this.value.toLowerCase().trim();
+    if (!q) { renderFnList(fnData[fnCurrentCat]||[]); return; }
+    var res = [];
+    Object.values(fnData).forEach(function(arr){ (arr||[]).forEach(function(fn){ if((fn.n||'').toLowerCase().indexOf(q)>=0||(fn.e||'').toLowerCase().indexOf(q)>=0||(fn.d||'').toLowerCase().indexOf(q)>=0) res.push(fn); }); });
+    renderFnList(res);
+  });
+
+  // Sibö input enter
+  var sinp = document.getElementById('siboInput');
+  if (sinp) sinp.addEventListener('keypress', function(e){ if(e.key==='Enter') sendSibo(); });
+
+  // Factura init
+  var ivaSelect = document.getElementById('fe-iva-rate');
   if (ivaSelect) ivaSelect.addEventListener('change', recalcularFactura);
-  // Set today's date on invoice
-  const fechaInput = document.getElementById('fe-fecha');
+  var fechaInput = document.getElementById('fe-fecha');
   if (fechaInput) fechaInput.value = new Date().toISOString().split('T')[0];
-  recalcularFactura();
+  agregarLineaFactura();
+
+  // Restore canvas
+  try {
+    var saved = localStorage.getItem('canvasData_v12');
+    if (saved) {
+      var canvas = document.getElementById('canvas');
+      canvas.innerHTML = saved;
+      document.getElementById('statusLeft').textContent = 'Trabajo restaurado';
+    }
+  } catch(e){}
+
+  // Update fn count in status
+  var total = 0;
+  Object.values(fnData).forEach(function(arr){ total += arr?arr.length:0; });
+  var badge = document.getElementById('fnCountBadge');
+  if (badge) badge.textContent = total + ' funciones disponibles';
+  var statusR = document.getElementById('statusRight');
+  if (statusR) statusR.textContent = total + ' funciones';
+
+  console.log('Matriz Contable CR v12 OK');
 });
-
-
-console.log('Matriz Contable CR v12 ✓ — verde lima edition');
 </script>
 </body>
 </html>
