@@ -168,6 +168,11 @@ button{cursor:pointer;}
 .cb-btn.prim{background:var(--g2);color:#fff;margin-left:auto;}
 #canvas{
   padding:16px;min-height:360px;
+  outline:none;
+  cursor:text;
+  font-size:13px;
+  line-height:1.6;
+  color:var(--text);
   background-image:
     linear-gradient(rgba(90,191,42,.08) 1px, transparent 1px),
     linear-gradient(90deg, rgba(90,191,42,.08) 1px, transparent 1px),
@@ -175,6 +180,18 @@ button{cursor:pointer;}
     linear-gradient(90deg, rgba(90,191,42,.04) 1px, transparent 1px);
   background-size: 80px 80px, 80px 80px, 20px 20px, 20px 20px;
   background-position: -1px -1px, -1px -1px, -1px -1px, -1px -1px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+#canvas:empty::before{
+  content:attr(data-empty, "Escribí aquí o usá el menú para insertar plantillas, tablas y fórmulas...");
+  color:var(--text3);
+  font-size:13px;
+  pointer-events:none;
+}
+#canvas:focus{
+  box-shadow: inset 0 0 0 2px rgba(90,191,42,.15);
+  border-radius:0 0 var(--r3) var(--r3);
 }
 #canvas:empty::before{content:"Usá el menú para insertar plantillas, tablas o fórmulas";display:block;text-align:center;padding:60px 20px;color:var(--text3);font-size:13px;}
 
@@ -325,6 +342,251 @@ button{cursor:pointer;}
   .mb-tab{padding:5px 7px;font-size:11px;}
   .tb-name{font-size:13px;}
 }
+
+/* ═══ SPREADSHEET / EXCEL-LIKE ══════════════════════ */
+.canvas-card { display: flex; flex-direction: column; height: calc(100vh - 96px - 24px - 80px); min-height: 400px; }
+.formula-bar {
+  display: flex; align-items: center; gap: 0;
+  border-bottom: 1.5px solid var(--border);
+  background: var(--off); flex-shrink: 0;
+  border-radius: var(--r3) var(--r3) 0 0;
+}
+.cell-ref-box {
+  width: 70px; flex-shrink: 0;
+  padding: 6px 10px; border-right: 1.5px solid var(--border);
+  font-size: 12px; font-weight: 700; color: var(--g3);
+  text-align: center; font-family: monospace;
+  background: var(--bg2);
+}
+.fx-label {
+  width: 32px; flex-shrink: 0;
+  padding: 6px 8px; border-right: 1px solid var(--border);
+  font-size: 12px; font-weight: 700; color: var(--g2);
+  text-align: center; font-style: italic;
+  background: #fff;
+}
+.formula-input {
+  flex: 1; border: none; outline: none; padding: 6px 10px;
+  font-size: 13px; font-family: "JetBrains Mono", "Consolas", monospace;
+  color: var(--text); background: #fff;
+}
+.formula-input:focus { background: #fff; }
+.fbar-btns {
+  display: flex; align-items: center; gap: 2px;
+  padding: 3px 8px; border-left: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.fbar-btns .cb-btn { padding: 3px 8px; font-size: 13px; }
+
+/* Sheet outer scroll */
+.sheet-outer {
+  flex: 1; overflow: auto; position: relative;
+  border-radius: 0 0 var(--r3) var(--r3);
+}
+.sheet-outer::-webkit-scrollbar { width: 10px; height: 10px; }
+.sheet-outer::-webkit-scrollbar-track { background: var(--off); }
+.sheet-outer::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 5px; border: 2px solid var(--off); }
+
+/* Sheet table */
+.sheet-table { border-collapse: collapse; table-layout: fixed; }
+
+/* Corner cell (top-left) */
+.sh-corner {
+  width: 46px; min-width: 46px;
+  background: var(--bg3); border-right: 1.5px solid var(--border2);
+  border-bottom: 1.5px solid var(--border2);
+  position: sticky; top: 0; left: 0; z-index: 30;
+}
+
+/* Column headers (A, B, C...) */
+.sh-col-header {
+  background: var(--bg2); border-right: 1px solid var(--border);
+  border-bottom: 1.5px solid var(--border2);
+  font-size: 11.5px; font-weight: 700; color: var(--text2);
+  text-align: center; padding: 4px 2px; min-width: 90px; width: 90px;
+  position: sticky; top: 0; z-index: 20; user-select: none;
+  cursor: pointer; transition: background .1s;
+  white-space: nowrap; overflow: hidden;
+}
+.sh-col-header:hover { background: var(--bg3); color: var(--g2); }
+.sh-col-header.selected { background: var(--g1); color: #fff; }
+
+/* Row headers (1, 2, 3...) */
+.sh-row-header {
+  background: var(--bg2); border-right: 1.5px solid var(--border2);
+  border-bottom: 1px solid var(--border);
+  font-size: 11px; font-weight: 700; color: var(--text2);
+  text-align: center; padding: 0 6px; width: 46px; min-width: 46px;
+  position: sticky; left: 0; z-index: 10; user-select: none;
+  cursor: pointer; transition: background .1s;
+  white-space: nowrap;
+}
+.sh-row-header:hover { background: var(--bg3); color: var(--g2); }
+.sh-row-header.selected { background: var(--g1); color: #fff; }
+
+/* Data cells */
+.sh-cell {
+  border-right: 1px solid #d4edbc;
+  border-bottom: 1px solid #d4edbc;
+  padding: 0; margin: 0;
+  height: 26px; min-width: 90px; width: 90px;
+  max-width: 90px;
+  position: relative; outline: none;
+  font-size: 13px; color: var(--text);
+  overflow: hidden; white-space: nowrap;
+  cursor: cell;
+  background: #fff;
+}
+.sh-cell-inner {
+  display: block; width: 100%; height: 100%;
+  padding: 3px 6px; outline: none;
+  white-space: nowrap; overflow: hidden;
+  font-size: 13px; line-height: 20px;
+  cursor: cell;
+}
+/* Cell states */
+.sh-cell.active {
+  outline: 2px solid var(--g2);
+  outline-offset: -1px;
+  z-index: 5;
+  overflow: visible;
+}
+.sh-cell.active .sh-cell-inner {
+  background: #fff;
+  min-width: 100%;
+  white-space: pre;
+}
+.sh-cell.editing {
+  outline: 2px solid #1a73e8;
+  outline-offset: -1px;
+  z-index: 6; overflow: visible;
+}
+.sh-cell.editing .sh-cell-inner {
+  white-space: pre; min-width: 100%;
+}
+.sh-cell.in-selection {
+  background: rgba(90,191,42,.1) !important;
+}
+.sh-cell.col-selected { background: rgba(90,191,42,.06); }
+.sh-cell.row-selected { background: rgba(90,191,42,.06); }
+
+/* Row alternating */
+.sh-row:nth-child(even) .sh-cell { background: #fafdf8; }
+.sh-row:nth-child(even) .sh-cell.active,
+.sh-row:nth-child(even) .sh-cell.editing { background: #fff; }
+
+/* Cell with data */
+.sh-cell.has-data .sh-cell-inner { font-weight: 400; }
+.sh-cell.is-number .sh-cell-inner { text-align: right; color: #1a2e09; }
+.sh-cell.is-formula .sh-cell-inner { color: #1d4ed8; }
+
+/* Active row/col header highlight */
+.sh-row-header.active-row { background: var(--g2); color: #fff; }
+.sh-col-header.active-col { background: var(--g2); color: #fff; }
+
+/* Selection handle (bottom-right corner drag) */
+.sh-cell.active::after {
+  content: '';
+  position: absolute; bottom: -3px; right: -3px;
+  width: 7px; height: 7px;
+  background: var(--g2); border: 1.5px solid #fff;
+  border-radius: 1px; z-index: 7; cursor: crosshair;
+}
+
+/* Mobile adjustments */
+@media(max-width:768px){
+  .sh-cell { min-width: 70px; width: 70px; }
+  .sh-col-header { min-width: 70px; width: 70px; }
+  .cell-ref-box { width: 55px; }
+}
+
+
+/* ── Column resize handle ─────────────────────── */
+.sh-col-header{position:relative;}
+.col-resizer{position:absolute;right:-3px;top:0;bottom:0;width:6px;cursor:col-resize;z-index:25;background:transparent;}
+.col-resizer:hover,.col-resizer.dragging{background:var(--g1);opacity:.5;}
+
+/* ── Row resize handle ────────────────────────── */
+.sh-row-header{position:relative;}
+.row-resizer{position:absolute;bottom:-3px;left:0;right:0;height:6px;cursor:row-resize;z-index:25;background:transparent;}
+.row-resizer:hover{background:var(--g1);opacity:.4;}
+
+/* ── Selection range ──────────────────────────── */
+.sh-cell.in-selection{background:rgba(90,191,42,.13)!important;outline:1px solid rgba(90,191,42,.4);}
+
+/* ── Format toolbar ───────────────────────────── */
+.fmt-bar{
+  display:flex;align-items:center;gap:2px;
+  padding:3px 8px;border-bottom:1px solid var(--border);
+  background:var(--off);flex-shrink:0;flex-wrap:wrap;
+}
+.fmt-btn{padding:3px 8px;border-radius:5px;border:none;background:transparent;color:var(--text2);font-size:12px;font-weight:700;cursor:pointer;transition:all .1s;}
+.fmt-btn:hover{background:var(--bg2);color:var(--g2);}
+.fmt-btn.on{background:var(--bg3);color:var(--g3);box-shadow:inset 0 1px 3px rgba(0,0,0,.1);}
+.fmt-sep{width:1px;height:20px;background:var(--border);margin:0 4px;}
+.fmt-sel{padding:3px 6px;border:1px solid var(--border);border-radius:5px;font-size:12px;background:var(--bg2);color:var(--text2);cursor:pointer;}
+.fmt-color-btn{width:24px;height:22px;border-radius:4px;border:2px solid var(--border);cursor:pointer;padding:0;position:relative;}
+
+/* ── Sheet tabs ───────────────────────────────── */
+.sheet-tabs{
+  display:flex;align-items:center;gap:0;
+  padding:0 8px;border-top:1px solid var(--border);
+  background:var(--off);flex-shrink:0;overflow-x:auto;
+}
+.sheet-tabs::-webkit-scrollbar{height:0;}
+.sh-tab{
+  padding:5px 14px;border-radius:var(--r1) var(--r1) 0 0;border:none;
+  background:transparent;color:var(--text3);font-size:12px;font-weight:600;
+  cursor:pointer;white-space:nowrap;border:1px solid transparent;border-bottom:none;
+  transition:all .12s;
+}
+.sh-tab:hover{color:var(--g2);background:var(--bg2);}
+.sh-tab.active{background:#fff;color:var(--g3);border-color:var(--border);margin-bottom:-1px;font-weight:700;}
+.sh-tab-add{padding:4px 10px;background:none;border:none;color:var(--text3);font-size:16px;cursor:pointer;}
+.sh-tab-add:hover{color:var(--g2);}
+
+/* ── Autocomplete dropdown ────────────────────── */
+.fn-autocomplete{
+  position:absolute;z-index:500;background:#fff;
+  border:1.5px solid var(--g1);border-radius:var(--r2);
+  box-shadow:var(--sh2);max-height:200px;overflow-y:auto;
+  min-width:280px;display:none;
+}
+.fn-autocomplete.open{display:block;}
+.fn-ac-item{padding:6px 12px;font-size:12.5px;cursor:pointer;display:flex;align-items:center;gap:8px;}
+.fn-ac-item:hover,.fn-ac-item.highlighted{background:var(--bg2);color:var(--g2);}
+.fn-ac-name{font-weight:700;color:var(--g3);font-family:monospace;}
+.fn-ac-desc{font-size:11px;color:var(--text3);}
+
+/* ── Find/Replace bar ─────────────────────────── */
+.find-bar{
+  display:none;position:absolute;top:8px;right:12px;z-index:50;
+  background:#fff;border:1.5px solid var(--g1);border-radius:var(--r2);
+  box-shadow:var(--sh2);padding:10px 14px;min-width:320px;
+}
+.find-bar.open{display:block;}
+.find-bar-row{display:flex;gap:6px;align-items:center;margin-bottom:6px;}
+.find-bar-row:last-child{margin-bottom:0;}
+.find-bar input{flex:1;padding:5px 9px;border:1.5px solid var(--border2);border-radius:6px;font-size:12.5px;outline:none;}
+.find-bar input:focus{border-color:var(--g1);}
+.find-bar-btn{padding:5px 10px;border-radius:6px;border:none;background:var(--bg2);color:var(--text2);font-size:12px;font-weight:600;cursor:pointer;}
+.find-bar-btn:hover{background:var(--bg3);color:var(--g3);}
+.find-bar-close{position:absolute;top:6px;right:8px;background:none;border:none;font-size:16px;color:var(--text3);cursor:pointer;}
+
+/* ── Conditional format highlight ────────────── */
+.sh-cell.cf-green  .sh-cell-inner{background:rgba(90,191,42,.18);}
+.sh-cell.cf-red    .sh-cell-inner{background:rgba(220,38,38,.12);}
+.sh-cell.cf-yellow .sh-cell-inner{background:rgba(217,119,6,.12);}
+
+/* ── Zoom ─────────────────────────────────────── */
+#sheetOuter{transform-origin:top left;}
+
+/* ── Cell comment indicator ───────────────────── */
+.sh-cell.has-comment::after{
+  content:'';position:absolute;top:0;right:0;
+  border:5px solid transparent;border-top-color:var(--g1);border-right-color:var(--g1);
+}
+
 </style>
 </head>
 <body>
@@ -392,7 +654,6 @@ button{cursor:pointer;}
     <button class="mb-tab" onclick="toggleMenu('m-plantillas')" data-i18n="menu.plantillas">📋 Plantillas</button>
     <button class="mb-tab" onclick="toggleMenu('m-formulas')" data-i18n="menu.formulas">fx Fórmulas</button>
     <button class="mb-tab" onclick="toggleMenu('m-factura')" data-i18n="menu.factura">🧾 Factura</button>
-    <button class="mb-tab" onclick="toggleMenu('m-apps')" data-i18n="menu.apps">📱 Apps CR</button>
     <button class="mb-tab" onclick="toggleMenu('m-lenguajes')" data-i18n="menu.lenguajes">🌐 Lenguajes</button>
     <button class="mb-tab" onclick="toggleMenu('m-ia')" data-i18n="menu.ia">🦙 IA</button>
   </nav>
@@ -409,7 +670,7 @@ button{cursor:pointer;}
   <div class="dd-item" onclick="closeMenu();canvasRestaurar()"><span class="di">♻️</span>Restaurar guardado</div>
   <div class="dd-item" data-i18n="dd.limpiar" onclick="closeMenu();canvasLimpiar()"><span class="di">🗑</span>Limpiar área</div>
   <div class="dd-sep"></div>
-  <div class="dd-section-title">Exportar</div>
+  <div class="dd-section-title" data-i18n="sec.exportar">Exportar</div>
   <div class="dd-item" onclick="closeMenu();exportarCSV()"><span class="di">📊</span>Exportar CSV</div>
   <div class="dd-item" onclick="closeMenu();exportarXML()"><span class="di">📑</span>Exportar XML (Hacienda)</div>
   <div class="dd-item" onclick="closeMenu();exportarPDF()"><span class="di">📕</span>Imprimir / PDF</div>
@@ -418,45 +679,45 @@ button{cursor:pointer;}
 </div>
 
 <div class="dd-menu" id="m-inicio">
-  <div class="dd-section-title">Portapapeles</div>
+  <div class="dd-section-title" data-i18n="sec.portapapeles">Portapapeles</div>
   <div class="dd-item" onclick="closeMenu();canvasGuardar()"><span class="di">💾</span>Guardar</div>
   <div class="dd-item" onclick="closeMenu();canvasNuevo()"><span class="di">📄</span>Nuevo</div>
   <div class="dd-sep"></div>
-  <div class="dd-section-title">Edición</div>
+  <div class="dd-section-title" data-i18n="sec.edicion">Edición</div>
   <div class="dd-item" onclick="closeMenu();document.execCommand('bold')"><span class="di">𝐁</span>Negrita<span class="dk">Ctrl+B</span></div>
   <div class="dd-item" onclick="closeMenu();document.execCommand('italic')"><span class="di">𝐼</span>Cursiva<span class="dk">Ctrl+I</span></div>
   <div class="dd-item" onclick="closeMenu();document.execCommand('underline')"><span class="di">U̲</span>Subrayado<span class="dk">Ctrl+U</span></div>
   <div class="dd-sep"></div>
-  <div class="dd-section-title">Celdas</div>
+  <div class="dd-section-title" data-i18n="sec.celdas">Celdas</div>
   <div class="dd-item" data-i18n="dd.agregar.fila" onclick="closeMenu();agregarFilaPlantilla()"><span class="di">➕</span>Agregar fila</div>
   <div class="dd-item" data-i18n="dd.quitar.fila" onclick="closeMenu();eliminarFilaPlantilla()"><span class="di">➖</span>Eliminar fila</div>
   <div class="dd-item" data-i18n="dd.autosuma" onclick="closeMenu();calcularTotales()"><span class="di">∑</span>Autosuma / Calcular</div>
 </div>
 
 <div class="dd-menu" id="m-insertar">
-  <div class="dd-section-title">Elementos</div>
+  <div class="dd-section-title" data-i18n="sec.elementos">Elementos</div>
   <div class="dd-item" data-i18n="dd.tabla" onclick="closeMenu();insertarTabla()"><span class="di">📋</span>Tabla contable</div>
   <div class="dd-item" data-i18n="dd.nota" onclick="closeMenu();insertarNota()"><span class="di">📝</span>Nota de texto</div>
   <div class="dd-item" data-i18n="dd.grafico" onclick="closeMenu();insertarGrafico()"><span class="di">📊</span>Gráfico de barras</div>
   <div class="dd-sep"></div>
-  <div class="dd-section-title">Plantillas rápidas</div>
+  <div class="dd-section-title" data-i18n="sec.plantillas.rapidas">Plantillas rápidas</div>
   <div class="dd-item" data-i18n="dd.diario" onclick="closeMenu();loadTemplate('diario')"><span class="di">📘</span>Libro Diario</div>
   <div class="dd-item" onclick="closeMenu();loadTemplate('balance')"><span class="di">📊</span>Balance Comprobación</div>
   <div class="dd-item" onclick="closeMenu();openModal('modalFactura')"><span class="di">🧾</span>Factura Electrónica</div>
 </div>
 
 <div class="dd-menu" id="m-plantillas">
-  <div class="dd-section-title">Libros contables</div>
+  <div class="dd-section-title" data-i18n="sec.libros">Libros contables</div>
   <div class="dd-item" onclick="closeMenu();loadTemplate('diario')"><span class="di">📘</span>Libro Diario</div>
   <div class="dd-item" data-i18n="dd.mayor" onclick="closeMenu();loadTemplate('mayor')"><span class="di">📗</span>Libro Mayor</div>
   <div class="dd-item" data-i18n="dd.balance" onclick="closeMenu();loadTemplate('balance')"><span class="di">📊</span>Balance de Comprobación</div>
   <div class="dd-sep"></div>
-  <div class="dd-section-title">Reportes CR</div>
+  <div class="dd-section-title" data-i18n="sec.reportes">Reportes CR</div>
   <div class="dd-item" data-i18n="dd.conciliacion" onclick="closeMenu();loadTemplate('conciliacion')"><span class="di">🏦</span>Conciliación Bancaria</div>
   <div class="dd-item" onclick="closeMenu();loadTemplate('compras')"><span class="di">🛒</span>D-151 Compras/Ventas</div>
   <div class="dd-item" onclick="closeMenu();openModal('modalFactura')"><span class="di">🧾</span>Factura Electrónica</div>
   <div class="dd-sep"></div>
-  <div class="dd-section-title">Herramientas de plantilla</div>
+  <div class="dd-section-title" data-i18n="sec.herramientas">Herramientas de plantilla</div>
   <div class="dd-item" onclick="closeMenu();agregarFilaPlantilla()"><span class="di">➕</span>Agregar fila</div>
   <div class="dd-item" onclick="closeMenu();eliminarFilaPlantilla()"><span class="di">➖</span>Eliminar fila</div>
   <div class="dd-item" onclick="closeMenu();calcularTotales()"><span class="di">∑</span>Calcular totales</div>
@@ -464,11 +725,11 @@ button{cursor:pointer;}
 </div>
 
 <div class="dd-menu" id="m-formulas" style="min-width:260px;">
-  <div class="dd-section-title">Función</div>
+  <div class="dd-section-title" data-i18n="sec.funcion">Función</div>
   <div class="dd-item" data-i18n="dd.insertar.fn" onclick="closeMenu();abrirFunciones()"><span class="di">fx</span>Insertar función...</div>
   <div class="dd-item" onclick="closeMenu();calcularTotales()"><span class="di">∑</span>Autosuma</div>
   <div class="dd-sep"></div>
-  <div class="dd-section-title">Categorías recientes</div>
+  <div class="dd-section-title" data-i18n="sec.categorias">Categorías recientes</div>
   <div class="dd-item" onclick="closeMenu();abrirFuncionesCat('Financieras')"><span class="di">💰</span>Financieras</div>
   <div class="dd-item" onclick="closeMenu();abrirFuncionesCat('Lógicas')"><span class="di">⚡</span>Lógicas</div>
   <div class="dd-item" onclick="closeMenu();abrirFuncionesCat('Texto')"><span class="di">A</span>Texto</div>
@@ -478,7 +739,7 @@ button{cursor:pointer;}
   <div class="dd-item" onclick="closeMenu();abrirFuncionesCat('Matemáticas')"><span class="di">🔢</span>Matemáticas</div>
   <div class="dd-item" onclick="closeMenu();abrirFuncionesCat('Ingeniería')"><span class="di">⚙️</span>Ingeniería</div>
   <div class="dd-sep"></div>
-  <div class="dd-section-title">Especiales</div>
+  <div class="dd-section-title" data-i18n="sec.especiales">Especiales</div>
   <div class="dd-item" onclick="closeMenu();abrirFuncionesCat('Google Sheets')"><span class="di">🟢</span>Google Sheets</div>
   <div class="dd-item" onclick="closeMenu();abrirFuncionesCat('Duración')"><span class="di">⏱</span>Duración (Apple)</div>
   <div class="dd-item" onclick="closeMenu();abrirFuncionesCat('Trigonométricas')"><span class="di">📐</span>Trigonométricas</div>
@@ -486,7 +747,7 @@ button{cursor:pointer;}
 </div>
 
 <div class="dd-menu" id="m-factura">
-  <div class="dd-section-title">Factura Electrónica 4.3 CR</div>
+  <div class="dd-section-title" data-i18n="sec.factura.cr">Factura Electrónica 4.3 CR</div>
   <div class="dd-item" onclick="closeMenu();openModal('modalFactura')"><span class="di">🧾</span>Abrir Factura</div>
   <div class="dd-item" onclick="closeMenu();agregarLineaFactura()"><span class="di">➕</span>Agregar línea</div>
   <div class="dd-item" onclick="closeMenu();recalcularFactura()"><span class="di">∑</span>Recalcular</div>
@@ -497,22 +758,13 @@ button{cursor:pointer;}
   <div class="dd-item" onclick="closeMenu();exportarPDF()"><span class="di">📕</span>Imprimir / PDF</div>
 </div>
 
-<div class="dd-menu" id="m-apps">
-  <div class="dd-section-title">Apps de Contabilidad CR 2026</div>
-  <div class="dd-item" data-i18n="dd.apps.todas" onclick="closeMenu();openModal('modalApps');renderApps();filtrarApps('todos')"><span class="di">📱</span>Ver todas las apps</div>
-  <div class="dd-item" onclick="closeMenu();openModal('modalApps');renderApps();filtrarApps('cr')"><span class="di">🇨🇷</span>Apps para Costa Rica</div>
-  <div class="dd-item" onclick="closeMenu();openModal('modalApps');renderApps();filtrarApps('gratis')"><span class="di">🆓</span>Apps gratuitas</div>
-  <div class="dd-item" onclick="closeMenu();openModal('modalApps');renderApps();filtrarApps('erp')"><span class="di">🏢</span>ERP empresarial</div>
-  <div class="dd-item" onclick="closeMenu();openModal('modalApps');renderApps();filtrarApps('pyme')"><span class="di">🏪</span>PyME</div>
-  <div class="dd-item" onclick="closeMenu();openModal('modalApps');renderApps();filtrarApps('nube')"><span class="di">☁️</span>Apps en la nube</div>
-</div>
 
 <div class="dd-menu" id="m-lenguajes">
-  <div class="dd-section-title">Lenguas de Costa Rica</div>
+  <div class="dd-section-title" data-i18n="sec.lenguas">Lenguas de Costa Rica</div>
   <div class="dd-item" onclick="closeMenu();setLang('es')"><span class="di">🇨🇷</span>Español (Costa Rica)</div>
   <div class="dd-item" onclick="closeMenu();setLang('en')"><span class="di">🇺🇸</span>English</div>
   <div class="dd-sep"></div>
-  <div class="dd-section-title">Lenguas indígenas CR</div>
+  <div class="dd-section-title" data-i18n="sec.indigenas">Lenguas indígenas CR</div>
   <div class="dd-item" onclick="closeMenu();setLang('bri')"><span class="di">🌿</span>Bribri</div>
   <div class="dd-item" onclick="closeMenu();setLang('cab')"><span class="di">🌱</span>Cabécar</div>
   <div class="dd-item" onclick="closeMenu();setLang('ngb')"><span class="di">🌾</span>Ngäbere</div>
@@ -524,11 +776,11 @@ button{cursor:pointer;}
 </div>
 
 <div class="dd-menu" id="m-ia">
-  <div class="dd-section-title">Sibö ✦ Asistente IA</div>
+  <div class="dd-section-title" data-i18n="sec.sibo">Sibö ✦ Asistente IA</div>
   <div class="dd-item" onclick="closeMenu();openSiboMobile()"><span class="di">✦</span>Abrir Sibö IA</div>
   <div class="dd-item" onclick="closeMenu();clearSibo()"><span class="di">🗑</span>Limpiar chat</div>
   <div class="dd-sep"></div>
-  <div class="dd-section-title">Capacidades IA</div>
+  <div class="dd-section-title" data-i18n="sec.capacidades">Capacidades IA</div>
   <div class="dd-item" onclick="closeMenu();siboPregunta('Generar fórmula para calcular IVA en CR')"><span class="di">fx</span>Generar fórmulas</div>
   <div class="dd-item" onclick="closeMenu();siboPregunta('Analizá los datos contables y dame un resumen')"><span class="di">📈</span>Análisis de datos</div>
   <div class="dd-item" onclick="closeMenu();siboPregunta('Explicame el resultado contable actual')"><span class="di">💡</span>Explicar resultados</div>
@@ -536,7 +788,7 @@ button{cursor:pointer;}
   <div class="dd-item" onclick="closeMenu();siboPregunta('¿Cómo automatizar estas tareas contables?')"><span class="di">⚙️</span>Automatización</div>
   <div class="dd-item" onclick="closeMenu();siboPregunta('Predicciones contables basadas en datos actuales')"><span class="di">🔮</span>Predicciones contables</div>
   <div class="dd-sep"></div>
-  <div class="dd-section-title">Atajos frecuentes</div>
+  <div class="dd-section-title" data-i18n="sec.atajos">Atajos frecuentes</div>
   <div class="dd-item" onclick="closeMenu();siboPregunta('IVA Costa Rica 2026')"><span class="di">💰</span>IVA CR</div>
   <div class="dd-item" onclick="closeMenu();siboPregunta('Factura Electrónica 4.4 Costa Rica')"><span class="di">🧾</span>Factura Electrónica 4.4</div>
   <div class="dd-item" onclick="closeMenu();siboPregunta('NIIF y PCGA en Costa Rica')"><span class="di">📚</span>NIIF / PCGA</div>
@@ -553,26 +805,21 @@ button{cursor:pointer;}
   <aside class="sidebar sidebar-drawer" id="sidebar">
     <div class="sb-sec">
       <div class="sb-title" data-i18n="sidebar.plantillas">Plantillas</div>
-      <button class="sb-btn" onclick="loadTemplate('diario');closeSidebar()"><span class="si">📘</span>Libro Diario</button>
-      <button class="sb-btn" onclick="loadTemplate('mayor');closeSidebar()"><span class="si">📗</span>Libro Mayor</button>
-      <button class="sb-btn" onclick="loadTemplate('balance');closeSidebar()"><span class="si">📊</span>Balance Comprobación</button>
-      <button class="sb-btn" onclick="loadTemplate('conciliacion');closeSidebar()"><span class="si">🏦</span>Conciliación Bancaria</button>
-      <button class="sb-btn" onclick="loadTemplate('compras');closeSidebar()"><span class="si">🛒</span>D-151 Compras/Ventas</button>
-      <button class="sb-btn" onclick="openModal('modalFactura');closeSidebar()"><span class="si">🧾</span>Factura Electrónica</button>
+      <button class="sb-btn" onclick="loadTemplate('diario');closeSidebar()"><span class="si">📘</span><span data-i18n="sb.libro.diario">Libro Diario</span></button>
+      <button class="sb-btn" onclick="loadTemplate('mayor');closeSidebar()"><span class="si">📗</span><span data-i18n="sb.libro.mayor">Libro Mayor</span></button>
+      <button class="sb-btn" onclick="loadTemplate('balance');closeSidebar()"><span class="si">📊</span><span data-i18n="sb.balance">Balance Comprobación</span></button>
+      <button class="sb-btn" onclick="loadTemplate('conciliacion');closeSidebar()"><span class="si">🏦</span><span data-i18n="sb.conciliacion">Conciliación Bancaria</span></button>
+      <button class="sb-btn" onclick="loadTemplate('compras');closeSidebar()"><span class="si">🛒</span><span data-i18n="sb.d151">D-151 Compras/Ventas</span></button>
+      <button class="sb-btn" onclick="openModal('modalFactura');closeSidebar()"><span class="si">🧾</span><span data-i18n="sb.factura">Factura Electrónica</span></button>
     </div>
     <div class="sb-div"></div>
     <div class="sb-sec">
       <div class="sb-title" data-i18n="sidebar.formulas">Fórmulas</div>
-      <button class="sb-btn" onclick="abrirFunciones();closeSidebar()"><span class="si">fx</span>Biblioteca (452 fns)</button>
-      <button class="sb-btn" onclick="abrirFuncionesCat('Financieras');closeSidebar()"><span class="si">💰</span>Financieras</button>
-      <button class="sb-btn" onclick="abrirFuncionesCat('Estadísticas');closeSidebar()"><span class="si">📈</span>Estadísticas</button>
+      <button class="sb-btn" onclick="abrirFunciones();closeSidebar()"><span class="si">fx</span><span data-i18n="sb.biblioteca">Biblioteca (452 fns)</span></button>
+      <button class="sb-btn" onclick="abrirFuncionesCat('Financieras');closeSidebar()"><span class="si">💰</span><span data-i18n="sb.financieras">Financieras</span></button>
+      <button class="sb-btn" onclick="abrirFuncionesCat('Estadísticas');closeSidebar()"><span class="si">📈</span><span data-i18n="sb.estadisticas">Estadísticas</span></button>
     </div>
-    <div class="sb-div"></div>
-    <div class="sb-sec">
-      <div class="sb-title" data-i18n="sidebar.apps">Apps</div>
-      <button class="sb-btn" onclick="openModal('modalApps');renderApps();filtrarApps('todos');closeSidebar()"><span class="si">📱</span>Apps de Contabilidad CR</button>
-    </div>
-    <div class="sb-div"></div>
+    
 
     <!-- SIBÖ WIDGET -->
     <div class="sibo-widget">
@@ -598,27 +845,115 @@ button{cursor:pointer;}
     </div>
   </aside>
 
-  <!-- CANVAS -->
+  <!-- CANVAS / SPREADSHEET -->
   <div class="canvas-wrap">
     <div class="canvas-card">
-      <div class="canvas-bar">
-        <span data-i18n="canvas.label">ÁREA DE TRABAJO</span>
-        <button class="cb-btn" onclick="insertarTabla()">📋</button>
-        <button class="cb-btn" onclick="insertarNota()">📝</button>
-        <button class="cb-btn" onclick="insertarGrafico()">📊</button>
-        <button class="cb-btn" onclick="calcularTotales()">∑</button>
-        <button class="cb-btn prim" onclick="canvasGuardar()">💾</button>
+      <!-- Formula Bar -->
+      <div class="formula-bar">
+        <div class="cell-ref-box" id="cellRef">A1</div>
+        <div class="fx-label">fx</div>
+        <input type="text" class="formula-input" id="formulaInput" placeholder="Ingresá un valor o fórmula..." autocomplete="off" spellcheck="false">
+        <div class="fbar-btns">
+          <button class="cb-btn" onclick="sheetInsertTable()" title="Plantilla contable">📋</button>
+          <button class="cb-btn" onclick="sheetAutoSum()" title="Autosuma">∑</button>
+          <button class="cb-btn" onclick="sheetClear()" title="Limpiar hoja">🗑</button>
+          <button class="cb-btn prim" onclick="canvasGuardar()" title="Guardar">💾</button>
+        </div>
       </div>
-      <div id="canvas"></div>
+      <!-- Format toolbar -->
+      <div class="fmt-bar" id="fmtBar">
+        <select class="fmt-sel" id="fmtFont" onchange="applyFont(this.value)" title="Fuente">
+          <option value="inherit">Fuente</option>
+          <option value="Arial">Arial</option>
+          <option value="'Times New Roman'">Times New Roman</option>
+          <option value="'JetBrains Mono',monospace">JetBrains Mono</option>
+          <option value="Georgia">Georgia</option>
+        </select>
+        <select class="fmt-sel" id="fmtSize" onchange="applyFontSize(this.value)" title="Tamaño">
+          <option value="">Tam.</option>
+          <option value="10px">10</option>
+          <option value="11px">11</option>
+          <option value="12px" selected>12</option>
+          <option value="14px">14</option>
+          <option value="16px">16</option>
+          <option value="18px">18</option>
+          <option value="20px">20</option>
+        </select>
+        <div class="fmt-sep"></div>
+        <button class="fmt-btn" id="fmtBold" onclick="toggleFormat('bold')" title="Negrita (Ctrl+B)"><b>B</b></button>
+        <button class="fmt-btn" id="fmtItalic" onclick="toggleFormat('italic')" title="Cursiva (Ctrl+I)"><i>I</i></button>
+        <button class="fmt-btn" id="fmtUnder" onclick="toggleFormat('underline')" title="Subrayado (Ctrl+U)"><u>U</u></button>
+        <div class="fmt-sep"></div>
+        <button class="fmt-btn" onclick="applyAlign('left')" title="Izquierda">⬅</button>
+        <button class="fmt-btn" onclick="applyAlign('center')" title="Centro">☰</button>
+        <button class="fmt-btn" onclick="applyAlign('right')" title="Derecha">➡</button>
+        <div class="fmt-sep"></div>
+        <button class="fmt-btn" onclick="applyBgColor('#fff9c4')" title="Resaltar" style="background:#fff9c4;border:1px solid #e5c100;">A</button>
+        <button class="fmt-btn" onclick="applyBgColor('#c8f7c5')" title="Verde" style="background:#c8f7c5;border:1px solid #5abf2a;">A</button>
+        <button class="fmt-btn" onclick="applyBgColor('#ffd7d7')" title="Rojo" style="background:#ffd7d7;border:1px solid #dc2626;">A</button>
+        <button class="fmt-btn" onclick="applyBgColor('')" title="Quitar color">✕</button>
+        <div class="fmt-sep"></div>
+        <button class="fmt-btn" onclick="applyBorder()" title="Borde">▣</button>
+        <button class="fmt-btn" onclick="mergeCells()" title="Combinar celdas">⊞</button>
+        <div class="fmt-sep"></div>
+        <button class="fmt-btn" onclick="sortAsc()" title="Ordenar A→Z">↑A</button>
+        <button class="fmt-btn" onclick="sortDesc()" title="Ordenar Z→A">↓Z</button>
+        <button class="fmt-btn" onclick="toggleFilter()" title="Filtro">🔽</button>
+        <div class="fmt-sep"></div>
+        <button class="fmt-btn" onclick="openFindBar()" title="Buscar (Ctrl+F)">🔍</button>
+        <button class="fmt-btn" onclick="toggleFreeze()" title="Inmovilizar filas/cols" id="btnFreeze">❄</button>
+        <button class="fmt-btn" onclick="chartFromSelection()" title="Insertar gráfico">📊</button>
+        <div class="fmt-sep"></div>
+        <select class="fmt-sel" id="zoomSel" onchange="setZoom(this.value)" title="Zoom">
+          <option value="0.75">75%</option>
+          <option value="1" selected>100%</option>
+          <option value="1.25">125%</option>
+          <option value="1.5">150%</option>
+          <option value="2">200%</option>
+        </select>
+      </div>
+
+      <!-- Find/Replace bar -->
+      <div class="find-bar" id="findBar">
+        <button class="find-bar-close" onclick="closeFindBar()">×</button>
+        <div class="find-bar-row">
+          <input type="text" id="findInput" placeholder="Buscar...">
+          <button class="find-bar-btn" onclick="findNext()">Siguiente</button>
+          <button class="find-bar-btn" onclick="findPrev()">Anterior</button>
+        </div>
+        <div class="find-bar-row">
+          <input type="text" id="replaceInput" placeholder="Reemplazar con...">
+          <button class="find-bar-btn" onclick="replaceOne()">Reemplazar</button>
+          <button class="find-bar-btn" onclick="replaceAll()">Todo</button>
+        </div>
+        <div style="font-size:11px;color:var(--text3);" id="findStatus"></div>
+      </div>
+
+      <!-- Fn autocomplete -->
+      <div class="fn-autocomplete" id="fnAutoComplete"></div>
+
+      <!-- Spreadsheet container (relative for find bar positioning) -->
+      <div style="position:relative;flex:1;overflow:hidden;display:flex;flex-direction:column;">
+        <div class="sheet-outer" id="sheetOuter">
+          <table class="sheet-table" id="sheetTable" cellspacing="0" cellpadding="0"></table>
+        </div>
+      </div>
+
+      <!-- Sheet tabs -->
+      <div class="sheet-tabs" id="sheetTabs">
+        <button class="sh-tab active" id="tab-0" ondblclick="renameSheet(0)">Hoja 1</button>
+        <button class="sh-tab-add" onclick="addSheet()" title="Nueva hoja">＋</button>
+      </div>
     </div>
   </div>
+
 </div>
 
 <!-- STATUS BAR -->
-<div class="statusbar">
-  <div class="st-it"><span class="st-dot"></span><span id="statusLeft" data-i18n="status.listo">Listo</span></div>
-  <div class="st-it" style="display:none;" id="statusMid">Keny Chinchilla · CR 🇨🇷</div>
-  <div class="st-it" style="margin-left:auto;"><span id="statusRight">452 funciones</span></div>
+  <div class="statusbar">
+  <div class="st-it"><span class="st-dot"></span><span id="statusLeft">Listo</span></div>
+  <div class="st-it" style="margin-left:auto;">por <strong style="color:#fff;">Keny Chinchilla Navarro</strong></div>
+  <div class="st-it"><span id="statusRight">452 funciones</span></div>
 </div>
 
 <!-- MOBILE SIBÖ FAB -->
@@ -655,14 +990,14 @@ button{cursor:pointer;}
     <div class="fn-wrap">
       <div class="fn-sb" id="fnSidebar"></div>
       <div class="fn-main">
-        <div class="fn-srch"><input class="inp" id="fnSearch" placeholder="Buscar... ej: BUSCARV, SUMA, VAN, FILTER"></div>
+        <div class="fn-srch"><input class="inp" id="fnSearch" id="fnSearch" data-i18n-placeholder="modal.fn.buscar" placeholder="Buscar... ej: BUSCARV, SUMA, VAN, FILTER"></div>
         <div class="fn-grid" id="fnList"></div>
         <div class="fn-det" id="fnDetail">
           <div class="fn-det-nm" id="fnDetailName"></div>
           <div class="fn-det-syn" id="fnDetailSyntax"></div>
           <div class="fn-det-dc" id="fnDetailDesc"></div>
           <div class="fn-det-ex" id="fnDetailEx"></div>
-          <div style="margin-top:9px;"><button onclick="insertarFuncion()" class="mb-btn p" style="font-size:12px;padding:5px 12px;">↓ Insertar en área</button></div>
+          <div style="margin-top:9px;"><button onclick="insertarFuncion()" class="mb-btn p" style="font-size:12px;padding:5px 12px;" data-i18n="modal.fn.insertar">↓ Insertar en área</button></div>
         </div>
       </div>
     </div>
@@ -689,16 +1024,16 @@ button{cursor:pointer;}
       </div>
       <div class="fe-grid">
         <div class="fe-card">
-          <div class="fe-ct">Emisor</div>
-          <div class="field"><label class="lbl">Nombre/Razón Social</label><input class="inp" id="fe-emisor-nombre" placeholder="Mi Empresa S.A."></div>
-          <div class="field"><label class="lbl">Cédula Jurídica</label><input class="inp" id="fe-emisor-cedula" placeholder="3-101-000000"></div>
+          <div class="fe-ct" data-i18n="fe.emisor">Emisor</div>
+          <div class="field"><label class="lbl" data-i18n="fe.nombre">Nombre/Razón Social</label><input class="inp" id="fe-emisor-nombre" placeholder="Mi Empresa S.A."></div>
+          <div class="field"><label class="lbl" data-i18n="fe.cedula">Cédula Jurídica</label><input class="inp" id="fe-emisor-cedula" placeholder="3-101-000000"></div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;">
-            <div class="field"><label class="lbl">Teléfono</label><input class="inp" id="fe-emisor-telefono" placeholder="2200-0000"></div>
+            <div class="field"><label class="lbl" data-i18n="fe.telefono">Teléfono</label><input class="inp" id="fe-emisor-telefono" placeholder="2200-0000"></div>
             <div class="field"><label class="lbl">Email</label><input class="inp" id="fe-emisor-email" placeholder="correo@empresa.cr"></div>
           </div>
         </div>
         <div class="fe-card">
-          <div class="fe-ct">Receptor</div>
+          <div class="fe-ct" data-i18n="fe.receptor">Receptor</div>
           <div class="field"><label class="lbl">Nombre</label><input class="inp" id="fe-receptor-nombre" placeholder="Cliente S.A."></div>
           <div class="field"><label class="lbl">Cédula</label><input class="inp" id="fe-receptor-cedula" placeholder="1-000-000000"></div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;">
@@ -709,7 +1044,7 @@ button{cursor:pointer;}
       </div>
       <div style="padding:0 16px 11px;">
         <div style="display:flex;gap:7px;align-items:center;margin-bottom:7px;">
-          <span style="font-size:12px;font-weight:700;color:var(--g3);">Líneas de detalle</span>
+          <span style="font-size:12px;font-weight:700;color:var(--g3);" data-i18n="fe.lineas">Líneas de detalle</span>
           <button onclick="agregarLineaFactura()" class="mb-btn s" style="font-size:11px;padding:3px 9px;">+ Línea</button>
         </div>
         <div style="overflow-x:auto;">
@@ -718,12 +1053,12 @@ button{cursor:pointer;}
         </div>
         <div style="display:flex;justify-content:flex-end;margin-top:10px;">
           <div style="background:var(--bg3);border-radius:var(--r2);padding:11px 15px;font-size:13px;min-width:195px;">
-            <div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="color:var(--text2);">Subtotal:</span><span style="font-weight:600;" id="fe-subtotal">₡0.00</span></div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="color:var(--text2);" data-i18n="fe.subtotal">Subtotal:</span><span style="font-weight:600;" id="fe-subtotal">₡0.00</span></div>
             <div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="color:var(--text2);" id="factura-iva-lbl">IVA 13%:</span><span style="font-weight:600;" id="fe-iva-amount">₡0.00</span></div>
             <div style="display:flex;justify-content:space-between;font-size:15px;font-weight:800;color:var(--g3);border-top:1.5px solid var(--border2);padding-top:6px;margin-top:6px;"><span>TOTAL:</span><span id="fe-total">₡0.00</span></div>
           </div>
         </div>
-        <div class="field" style="margin-top:8px;"><label class="lbl">Observaciones</label><input class="inp" id="fe-observaciones" placeholder="Notas adicionales..."></div>
+        <div class="field" style="margin-top:8px;"><label class="lbl" data-i18n="fe.observaciones">Observaciones</label><input class="inp" id="fe-observaciones" placeholder="Notas adicionales..."></div>
       </div>
     </div>
     <div class="mfoot">
@@ -741,11 +1076,11 @@ button{cursor:pointer;}
     <div class="mhead"><h3><span data-i18n="modal.apps.title">📱 Apps de Contabilidad · CR 2026</span></h3><button class="mcls" onclick="closeModal('modalApps')">×</button></div>
     <div class="mbody">
       <div class="app-filters">
-        <button class="af on" id="appFilter-todos" onclick="filtrarApps('todos')">Todas</button>
+        <button class="af on" id="appFilter-todos" data-i18n="apps.todas" onclick="filtrarApps('todos')">Todas</button>
         <button class="af" id="appFilter-cr" onclick="filtrarApps('cr')">🇨🇷 CR</button>
         <button class="af" id="appFilter-erp" onclick="filtrarApps('erp')">ERP</button>
         <button class="af" id="appFilter-pyme" onclick="filtrarApps('pyme')">PyME</button>
-        <button class="af" id="appFilter-gratis" onclick="filtrarApps('gratis')">🆓 Gratis</button>
+        <button class="af" id="appFilter-gratis" data-i18n="apps.gratis" onclick="filtrarApps('gratis')">🆓 Gratis</button>
         <button class="af" id="appFilter-nube" onclick="filtrarApps('nube')">☁️ Nube</button>
       </div>
       <div class="app-grid" id="appsGrid"></div>
@@ -754,6 +1089,9 @@ button{cursor:pointer;}
 </div>
 
 <script>
+
+
+
 // ════════════════════════════════════════════════════
 // MATRIZ CONTABLE CR v13 — JS LIMPIO Y FUNCIONAL
 // ════════════════════════════════════════════════════
@@ -885,6 +1223,65 @@ var translations = {
     'dd.apps.todas': 'Ver todas las apps',
     'sibo.input.placeholder': 'Preguntame...',
     'canvas.toolbar': 'ÁREA DE TRABAJO',
+  
+    'sec.portapapeles': 'Portapapeles',
+    'sec.edicion': 'Edición',
+    'sec.celdas': 'Celdas',
+    'sec.elementos': 'Elementos',
+    'sec.plantillas.rapidas': 'Plantillas rápidas',
+    'sec.libros': 'Libros contables',
+    'sec.reportes': 'Reportes CR',
+    'sec.herramientas': 'Herramientas de plantilla',
+    'sec.funcion': 'Función',
+    'sec.categorias': 'Categorías recientes',
+    'sec.especiales': 'Especiales',
+    'sec.exportar': 'Exportar',
+    'sec.factura.cr': 'Factura Electrónica 4.3 CR',
+    'sec.apps.cr': 'Apps de Contabilidad CR 2026',
+    'sec.lenguas': 'Lenguas de Costa Rica',
+    'sec.indigenas': 'Lenguas indígenas CR',
+    'sec.sibo': 'Sibö ✦ Asistente IA',
+    'sec.capacidades': 'Capacidades IA',
+    'sec.atajos': 'Atajos frecuentes',
+    'sb.libro.diario': 'Libro Diario',
+    'sb.libro.mayor': 'Libro Mayor',
+    'sb.balance': 'Balance Comprobación',
+    'sb.conciliacion': 'Conciliación Bancaria',
+    'sb.d151': 'D-151 Compras/Ventas',
+    'sb.factura': 'Factura Electrónica',
+    'sb.biblioteca': 'Biblioteca (452 fns)',
+    'sb.financieras': 'Financieras',
+    'sb.estadisticas': 'Estadísticas',
+    'cv.tabla': '📋 Tabla',
+    'cv.nota': '📝 Nota',
+    'cv.grafico': '📊 Gráfico',
+    'cv.calcular': '∑ Calcular',
+    'cv.guardar': '💾 Guardar',
+    'fe.emisor': 'Emisor',
+    'fe.receptor': 'Receptor',
+    'fe.nombre': 'Nombre/Razón Social',
+    'fe.cedula': 'Cédula Jurídica',
+    'fe.telefono': 'Teléfono',
+    'fe.lineas': 'Líneas de detalle',
+    'fe.observaciones': 'Observaciones',
+    'fe.subtotal': 'Subtotal:',
+    'fe.btn.linea': '+ Línea',
+    'fe.btn.limpiar': '🗑 Limpiar',
+    'fe.btn.cerrar': '✓ Cerrar',
+    'canvas.empty': 'Escribí aquí o usá el menú para insertar plantillas, tablas y fórmulas...',
+    'status.funciones': 'funciones',
+    'modal.fn.buscar': 'Buscar función... ej: BUSCARV, SUMA, VAN, FILTER',
+    'modal.fn.insertar': '↓ Insertar en área',
+    'apps.todas': 'Todas',
+    'apps.gratis': '🆓 Gratis',
+  
+    'formula.placeholder': 'Ingresá un valor o fórmula...',
+    'chip.iva': 'IVA CR',
+    'chip.diario': 'Diario',
+    'chip.factura': 'Factura',
+    'chip.apps': 'Apps',
+    'chip.niif': 'NIIF',
+    'chip.bancaria': 'Bancaria',
   },
 
   en: {
@@ -1003,6 +1400,65 @@ var translations = {
     'dd.apps.todas': 'View all apps',
     'sibo.input.placeholder': 'Ask me anything...',
     'canvas.toolbar': 'WORK AREA',
+  
+    'sec.portapapeles': 'Clipboard',
+    'sec.edicion': 'Edit',
+    'sec.celdas': 'Cells',
+    'sec.elementos': 'Elements',
+    'sec.plantillas.rapidas': 'Quick Templates',
+    'sec.libros': 'Accounting Books',
+    'sec.reportes': 'CR Reports',
+    'sec.herramientas': 'Template Tools',
+    'sec.funcion': 'Function',
+    'sec.categorias': 'Recent Categories',
+    'sec.especiales': 'Special',
+    'sec.exportar': 'Export',
+    'sec.factura.cr': 'Electronic Invoice 4.3 CR',
+    'sec.apps.cr': 'Accounting Apps CR 2026',
+    'sec.lenguas': 'Languages of Costa Rica',
+    'sec.indigenas': 'Indigenous languages CR',
+    'sec.sibo': 'Sibö ✦ AI Assistant',
+    'sec.capacidades': 'AI Capabilities',
+    'sec.atajos': 'Quick shortcuts',
+    'sb.libro.diario': 'Journal',
+    'sb.libro.mayor': 'General Ledger',
+    'sb.balance': 'Trial Balance',
+    'sb.conciliacion': 'Bank Reconciliation',
+    'sb.d151': 'D-151 Purchases/Sales',
+    'sb.factura': 'Electronic Invoice',
+    'sb.biblioteca': 'Library (452 fns)',
+    'sb.financieras': 'Financial',
+    'sb.estadisticas': 'Statistics',
+    'cv.tabla': '📋 Table',
+    'cv.nota': '📝 Note',
+    'cv.grafico': '📊 Chart',
+    'cv.calcular': '∑ Calculate',
+    'cv.guardar': '💾 Save',
+    'fe.emisor': 'Issuer',
+    'fe.receptor': 'Recipient',
+    'fe.nombre': 'Name/Company',
+    'fe.cedula': 'Tax ID',
+    'fe.telefono': 'Phone',
+    'fe.lineas': 'Line items',
+    'fe.observaciones': 'Notes',
+    'fe.subtotal': 'Subtotal:',
+    'fe.btn.linea': '+ Line',
+    'fe.btn.limpiar': '🗑 Clear',
+    'fe.btn.cerrar': '✓ Close',
+    'canvas.empty': 'Type here or use the menu to insert templates, tables and formulas...',
+    'status.funciones': 'functions',
+    'modal.fn.buscar': 'Search function... e.g: VLOOKUP, SUM, NPV, FILTER',
+    'modal.fn.insertar': '↓ Insert in area',
+    'apps.todas': 'All',
+    'apps.gratis': '🆓 Free',
+  
+    'formula.placeholder': 'Enter a value or formula...',
+    'chip.iva': 'VAT CR',
+    'chip.diario': 'Journal',
+    'chip.factura': 'Invoice',
+    'chip.apps': 'Apps',
+    'chip.niif': 'IFRS',
+    'chip.bancaria': 'Banking',
   },
 
   bribri: {
@@ -1120,6 +1576,65 @@ var translations = {
     'dd.apps.todas': 'Apps CR',
     'sibo.input.placeholder': 'Tsuru...',
     'canvas.toolbar': 'Ù TÖK',
+  
+    'sec.portapapeles': 'Tsá',
+    'sec.edicion': 'Tsá ù',
+    'sec.celdas': 'Ù',
+    'sec.elementos': 'Ù',
+    'sec.plantillas.rapidas': 'Ù Tök',
+    'sec.libros': 'Ù Tök',
+    'sec.reportes': 'Tsá',
+    'sec.herramientas': 'Ù',
+    'sec.funcion': 'Ù',
+    'sec.categorias': 'Ù',
+    'sec.especiales': 'Ù',
+    'sec.exportar': 'Ù',
+    'sec.factura.cr': 'Factura CR',
+    'sec.apps.cr': 'Apps CR',
+    'sec.lenguas': 'Tsuru Bribri',
+    'sec.indigenas': 'Tsuru Indígena',
+    'sec.sibo': 'Sibö ✦',
+    'sec.capacidades': 'Sibö Ù',
+    'sec.atajos': 'Tsá',
+    'sb.libro.diario': 'Libro Diario',
+    'sb.libro.mayor': 'Libro Mayor',
+    'sb.balance': 'Balance',
+    'sb.conciliacion': 'Conciliación',
+    'sb.d151': 'D-151',
+    'sb.factura': 'Factura',
+    'sb.biblioteca': 'Biblioteca',
+    'sb.financieras': 'Financieras',
+    'sb.estadisticas': 'Estadísticas',
+    'cv.tabla': '📋 Ù',
+    'cv.nota': '📝 Tsá',
+    'cv.grafico': '📊 Ù',
+    'cv.calcular': '∑ Tsá',
+    'cv.guardar': '💾 Ù',
+    'fe.emisor': 'Emisor',
+    'fe.receptor': 'Receptor',
+    'fe.nombre': 'Tsá',
+    'fe.cedula': 'Cédula',
+    'fe.telefono': 'Tsuru',
+    'fe.lineas': 'Ù',
+    'fe.observaciones': 'Tsá',
+    'fe.subtotal': 'Tsá:',
+    'fe.btn.linea': '+ Ù',
+    'fe.btn.limpiar': '🗑 Ù',
+    'fe.btn.cerrar': '✓ Tsá',
+    'canvas.empty': 'Tsá ù...',
+    'status.funciones': 'ù',
+    'modal.fn.buscar': 'Ù...',
+    'modal.fn.insertar': '↓ Ù',
+    'apps.todas': 'Tsá',
+    'apps.gratis': '🆓 Tsá',
+  
+    'formula.placeholder': 'Ù tsá...',
+    'chip.iva': 'IVA',
+    'chip.diario': 'Diario',
+    'chip.factura': 'Factura',
+    'chip.apps': 'Apps',
+    'chip.niif': 'NIIF',
+    'chip.bancaria': 'Bancaria',
   },
 
   cabecar: {
@@ -1192,7 +1707,88 @@ var translations = {
     'alert.copiado': 'Jí tsá portapapeles.',
     'alert.hacienda': '✓ Factura Hacienda CR\nNo. 001-00001-00000001',
     'alert.pdf': 'Jí PDF...',
-    'credit': 'Yé ki ta: Keny Chinchilla Navarro'
+    'credit': 'Yé ki ta: Keny Chinchilla Navarro',
+  
+    'menu.archivo': '📁 Yawö',
+    'menu.inicio': '🏠 Yë',
+    'menu.insertar': '➕ Dawö',
+    'menu.plantillas': '📋 Yawö',
+    'menu.formulas': 'fx Dawö',
+    'menu.factura': '🧾 Yawö',
+    'menu.lenguajes': '🌐 Cabécar',
+    'menu.ia': '🦙 IA',
+    'sidebar.plantillas': 'Yawö',
+    'sidebar.formulas': 'Dawö',
+    'status.listo': 'Yë dawö',
+    'sibo.name': 'Sibö',
+    'tb.ver': 'v13',
+    'sibo.input.placeholder': 'Dawö yë...',
+    'canvas.label': 'ÁREA DE TRABAJO',
+    'canvas.toolbar': 'ÁREA DE TRABAJO',
+    'canvas.empty': 'Dawö yë ùl...',
+    'dd.nuevo': 'Yawö Yë',
+    'dd.guardar': 'Yawö',
+    'dd.restaurar': 'Yawö yë',
+    'dd.limpiar': 'Dawö',
+    'dd.exportar': 'Dawö yawö',
+    'dd.compartir': 'Yawö dawö',
+    'dd.tabla': 'Yawö ùl',
+    'dd.nota': 'Dawö yë',
+    'dd.grafico': 'Yawö ùl',
+    'dd.diario': 'Libro Diario',
+    'dd.mayor': 'Libro Mayor',
+    'dd.balance': 'Balance',
+    'dd.conciliacion': 'Conciliación',
+    'dd.d151': 'D-151',
+    'dd.factura': 'Factura',
+    'dd.insertar.fn': 'fx Dawö...',
+    'dd.autosuma': '∑ Dawö',
+    'dd.agregar.fila': '+ Dawö',
+    'dd.quitar.fila': '- Dawö',
+    'dd.calcular': '∑ Yë',
+    'dd.apps.todas': 'Apps CR',
+    'fe.emisor': 'Emisor',
+    'fe.receptor': 'Receptor',
+    'fe.btn.cerrar': '✓ Dawö',
+    'modal.factura.title': '🧾 Factura CR',
+    'modal.fn.fns': 'dawö',
+    'apps.todas': 'Todas',
+    'apps.gratis': '🆓 Dawö',
+    'chip.iva': 'IVA',
+    'chip.diario': 'Diario',
+    'chip.factura': 'Factura',
+    'chip.apps': 'Apps',
+    'chip.niif': 'NIIF',
+    'chip.bancaria': 'Bancaria',
+    'sb.libro.diario': 'Libro Diario',
+    'sb.libro.mayor': 'Libro Mayor',
+    'sb.balance': 'Balance',
+    'sb.conciliacion': 'Conciliación',
+    'sb.d151': 'D-151',
+    'sb.factura': 'Factura',
+    'sb.biblioteca': 'Biblioteca (452)',
+    'sb.financieras': 'Financieras',
+    'sb.estadisticas': 'Estadísticas',
+    'formula.placeholder': 'Dawö yë o fx...',
+    'sec.portapapeles': 'Yawö',
+    'sec.edicion': 'Dawö',
+    'sec.celdas': 'Yawö ùl',
+    'sec.elementos': 'Dawö yë',
+    'sec.libros': 'Yawö Libros',
+    'sec.reportes': 'Dawö CR',
+    'sec.funcion': 'fx Dawö',
+    'sec.categorias': 'Yawö dawö',
+    'sec.especiales': 'Dawö',
+    'sec.factura.cr': 'Factura CR',
+    'sec.sibo': 'Sibö ✦ IA',
+    'sec.capacidades': 'Sibö IA',
+    'sec.atajos': 'Yawö dawö',
+    'cv.tabla': '📋 Yawö',
+    'cv.nota': '📝 Dawö',
+    'cv.grafico': '📊 Yawö',
+    'cv.calcular': '∑ Dawö',
+    'cv.guardar': '💾 Yawö',
+    'status.funciones': 'dawö',
   },
 
   ngabe: {
@@ -1265,7 +1861,88 @@ var translations = {
     'alert.copiado': 'Kwe ngöbö portapapeles.',
     'alert.hacienda': '✓ Factura Hacienda CR\nNo. 001-00001-00000001',
     'alert.pdf': 'Kwe PDF...',
-    'credit': 'Ngöbö käre: Keny Chinchilla Navarro'
+    'credit': 'Ngöbö käre: Keny Chinchilla Navarro',
+  
+    'menu.archivo': '📁 Kräbätä',
+    'menu.inicio': '🏠 Ño',
+    'menu.insertar': '➕ Tö',
+    'menu.plantillas': '📋 Kräbätä',
+    'menu.formulas': 'fx Tö',
+    'menu.factura': '🧾 Tö',
+    'menu.lenguajes': '🌐 Ngäbere',
+    'menu.ia': '🦙 IA',
+    'sidebar.plantillas': 'Kräbätä',
+    'sidebar.formulas': 'Tö',
+    'status.listo': 'Ño tö',
+    'sibo.name': 'Sibö',
+    'tb.ver': 'v13',
+    'sibo.input.placeholder': 'Tö nt...',
+    'canvas.label': 'ÁREA DE TRABAJO',
+    'canvas.toolbar': 'ÁREA DE TRABAJO',
+    'canvas.empty': 'Tö nt kräbätä...',
+    'dd.nuevo': 'Ño Tö',
+    'dd.guardar': 'Tö Kräbätä',
+    'dd.restaurar': 'Tö ño',
+    'dd.limpiar': 'Tö',
+    'dd.exportar': 'Tö kräbätä',
+    'dd.compartir': 'Tö ño',
+    'dd.tabla': 'Kräbätä tö',
+    'dd.nota': 'Tö nt',
+    'dd.grafico': 'Tö kräbätä',
+    'dd.diario': 'Libro Diario',
+    'dd.mayor': 'Libro Mayor',
+    'dd.balance': 'Balance',
+    'dd.conciliacion': 'Conciliación',
+    'dd.d151': 'D-151',
+    'dd.factura': 'Factura',
+    'dd.insertar.fn': 'fx Tö...',
+    'dd.autosuma': '∑ Tö',
+    'dd.agregar.fila': '+ Tö',
+    'dd.quitar.fila': '- Tö',
+    'dd.calcular': '∑ Ño',
+    'dd.apps.todas': 'Apps CR',
+    'fe.emisor': 'Emisor',
+    'fe.receptor': 'Receptor',
+    'fe.btn.cerrar': '✓ Tö',
+    'modal.factura.title': '🧾 Factura CR',
+    'modal.fn.fns': 'tö',
+    'apps.todas': 'Todas',
+    'apps.gratis': '🆓 Tö',
+    'chip.iva': 'IVA',
+    'chip.diario': 'Diario',
+    'chip.factura': 'Factura',
+    'chip.apps': 'Apps',
+    'chip.niif': 'NIIF',
+    'chip.bancaria': 'Bancaria',
+    'sb.libro.diario': 'Libro Diario',
+    'sb.libro.mayor': 'Libro Mayor',
+    'sb.balance': 'Balance',
+    'sb.conciliacion': 'Conciliación',
+    'sb.d151': 'D-151',
+    'sb.factura': 'Factura',
+    'sb.biblioteca': 'Biblioteca (452)',
+    'sb.financieras': 'Financieras',
+    'sb.estadisticas': 'Estadísticas',
+    'formula.placeholder': 'Tö nt o fx...',
+    'sec.portapapeles': 'Kräbätä',
+    'sec.edicion': 'Tö',
+    'sec.celdas': 'Kräbätä tö',
+    'sec.elementos': 'Tö nt',
+    'sec.libros': 'Kräbätä Libros',
+    'sec.reportes': 'Tö CR',
+    'sec.funcion': 'fx Tö',
+    'sec.categorias': 'Kräbätä tö',
+    'sec.especiales': 'Tö',
+    'sec.factura.cr': 'Factura CR',
+    'sec.sibo': 'Sibö ✦ IA',
+    'sec.capacidades': 'Sibö IA',
+    'sec.atajos': 'Kräbätä tö',
+    'cv.tabla': '📋 Kräbätä',
+    'cv.nota': '📝 Tö',
+    'cv.grafico': '📊 Kräbätä',
+    'cv.calcular': '∑ Tö',
+    'cv.guardar': '💾 Kräbätä',
+    'status.funciones': 'tö',
   },
 
   boruca: {
@@ -1338,7 +2015,88 @@ var translations = {
     'alert.copiado': 'Ró shú portapapeles.',
     'alert.hacienda': '✓ Factura Hacienda CR\nNo. 001-00001-00000001',
     'alert.pdf': 'Ró PDF...',
-    'credit': 'Shú ki: Keny Chinchilla Navarro'
+    'credit': 'Shú ki: Keny Chinchilla Navarro',
+  
+    'menu.archivo': '📁 Boro',
+    'menu.inicio': '🏠 Bö',
+    'menu.insertar': '➕ Ísh',
+    'menu.plantillas': '📋 Boro',
+    'menu.formulas': 'fx Ísh',
+    'menu.factura': '🧾 Boro',
+    'menu.lenguajes': '🌐 Boruca',
+    'menu.ia': '🦙 IA',
+    'sidebar.plantillas': 'Boro',
+    'sidebar.formulas': 'Ísh',
+    'status.listo': 'Bö ísh',
+    'sibo.name': 'Sibö',
+    'tb.ver': 'v13',
+    'sibo.input.placeholder': 'Ísh boro...',
+    'canvas.label': 'ÁREA DE TRABAJO',
+    'canvas.toolbar': 'ÁREA DE TRABAJO',
+    'canvas.empty': 'Ísh boro...',
+    'dd.nuevo': 'Bö Ísh',
+    'dd.guardar': 'Ísh Boro',
+    'dd.restaurar': 'Ísh bö',
+    'dd.limpiar': 'Ísh',
+    'dd.exportar': 'Ísh boro',
+    'dd.compartir': 'Ísh bö',
+    'dd.tabla': 'Boro ísh',
+    'dd.nota': 'Ísh boro',
+    'dd.grafico': 'Boro ísh',
+    'dd.diario': 'Libro Diario',
+    'dd.mayor': 'Libro Mayor',
+    'dd.balance': 'Balance',
+    'dd.conciliacion': 'Conciliación',
+    'dd.d151': 'D-151',
+    'dd.factura': 'Factura',
+    'dd.insertar.fn': 'fx Ísh...',
+    'dd.autosuma': '∑ Ísh',
+    'dd.agregar.fila': '+ Ísh',
+    'dd.quitar.fila': '- Ísh',
+    'dd.calcular': '∑ Bö',
+    'dd.apps.todas': 'Apps CR',
+    'fe.emisor': 'Emisor',
+    'fe.receptor': 'Receptor',
+    'fe.btn.cerrar': '✓ Ísh',
+    'modal.factura.title': '🧾 Factura CR',
+    'modal.fn.fns': 'ísh',
+    'apps.todas': 'Todas',
+    'apps.gratis': '🆓 Ísh',
+    'chip.iva': 'IVA',
+    'chip.diario': 'Diario',
+    'chip.factura': 'Factura',
+    'chip.apps': 'Apps',
+    'chip.niif': 'NIIF',
+    'chip.bancaria': 'Bancaria',
+    'sb.libro.diario': 'Libro Diario',
+    'sb.libro.mayor': 'Libro Mayor',
+    'sb.balance': 'Balance',
+    'sb.conciliacion': 'Conciliación',
+    'sb.d151': 'D-151',
+    'sb.factura': 'Factura',
+    'sb.biblioteca': 'Biblioteca (452)',
+    'sb.financieras': 'Financieras',
+    'sb.estadisticas': 'Estadísticas',
+    'formula.placeholder': 'Ísh boro o fx...',
+    'sec.portapapeles': 'Boro',
+    'sec.edicion': 'Ísh',
+    'sec.celdas': 'Boro ísh',
+    'sec.elementos': 'Ísh boro',
+    'sec.libros': 'Boro Libros',
+    'sec.reportes': 'Ísh CR',
+    'sec.funcion': 'fx Ísh',
+    'sec.categorias': 'Boro ísh',
+    'sec.especiales': 'Ísh',
+    'sec.factura.cr': 'Factura CR',
+    'sec.sibo': 'Sibö ✦ IA',
+    'sec.capacidades': 'Sibö IA',
+    'sec.atajos': 'Boro ísh',
+    'cv.tabla': '📋 Boro',
+    'cv.nota': '📝 Ísh',
+    'cv.grafico': '📊 Boro',
+    'cv.calcular': '∑ Ísh',
+    'cv.guardar': '💾 Boro',
+    'status.funciones': 'ísh',
   },
 
   terraba: {
@@ -1411,7 +2169,88 @@ var translations = {
     'alert.copiado': 'Kò portapapeles.',
     'alert.hacienda': '✓ Factura Hacienda CR\nNo. 001-00001-00000001',
     'alert.pdf': 'Kò PDF...',
-    'credit': 'Së ki: Keny Chinchilla Navarro'
+    'credit': 'Së ki: Keny Chinchilla Navarro',
+  
+    'menu.archivo': '📁 Të Chon',
+    'menu.inicio': '🏠 Të',
+    'menu.insertar': '➕ Kà',
+    'menu.plantillas': '📋 Të Chon',
+    'menu.formulas': 'fx Kà',
+    'menu.factura': '🧾 Të',
+    'menu.lenguajes': '🌐 Teribe',
+    'menu.ia': '🦙 IA',
+    'sidebar.plantillas': 'Të Chon',
+    'sidebar.formulas': 'Kà',
+    'status.listo': 'Të kà',
+    'sibo.name': 'Sibö',
+    'tb.ver': 'v13',
+    'sibo.input.placeholder': 'Kà të...',
+    'canvas.label': 'ÁREA DE TRABAJO',
+    'canvas.toolbar': 'ÁREA DE TRABAJO',
+    'canvas.empty': 'Kà të chon...',
+    'dd.nuevo': 'Të Kà',
+    'dd.guardar': 'Kà Të',
+    'dd.restaurar': 'Kà të',
+    'dd.limpiar': 'Kà',
+    'dd.exportar': 'Kà të',
+    'dd.compartir': 'Kà të',
+    'dd.tabla': 'Të kà',
+    'dd.nota': 'Kà të',
+    'dd.grafico': 'Të kà',
+    'dd.diario': 'Libro Diario',
+    'dd.mayor': 'Libro Mayor',
+    'dd.balance': 'Balance',
+    'dd.conciliacion': 'Conciliación',
+    'dd.d151': 'D-151',
+    'dd.factura': 'Factura',
+    'dd.insertar.fn': 'fx Kà...',
+    'dd.autosuma': '∑ Kà',
+    'dd.agregar.fila': '+ Kà',
+    'dd.quitar.fila': '- Kà',
+    'dd.calcular': '∑ Të',
+    'dd.apps.todas': 'Apps CR',
+    'fe.emisor': 'Emisor',
+    'fe.receptor': 'Receptor',
+    'fe.btn.cerrar': '✓ Kà',
+    'modal.factura.title': '🧾 Factura CR',
+    'modal.fn.fns': 'kà',
+    'apps.todas': 'Todas',
+    'apps.gratis': '🆓 Kà',
+    'chip.iva': 'IVA',
+    'chip.diario': 'Diario',
+    'chip.factura': 'Factura',
+    'chip.apps': 'Apps',
+    'chip.niif': 'NIIF',
+    'chip.bancaria': 'Bancaria',
+    'sb.libro.diario': 'Libro Diario',
+    'sb.libro.mayor': 'Libro Mayor',
+    'sb.balance': 'Balance',
+    'sb.conciliacion': 'Conciliación',
+    'sb.d151': 'D-151',
+    'sb.factura': 'Factura',
+    'sb.biblioteca': 'Biblioteca (452)',
+    'sb.financieras': 'Financieras',
+    'sb.estadisticas': 'Estadísticas',
+    'formula.placeholder': 'Kà të o fx...',
+    'sec.portapapeles': 'Të Chon',
+    'sec.edicion': 'Kà',
+    'sec.celdas': 'Të kà',
+    'sec.elementos': 'Kà të',
+    'sec.libros': 'Të Libros',
+    'sec.reportes': 'Kà CR',
+    'sec.funcion': 'fx Kà',
+    'sec.categorias': 'Të kà',
+    'sec.especiales': 'Kà',
+    'sec.factura.cr': 'Factura CR',
+    'sec.sibo': 'Sibö ✦ IA',
+    'sec.capacidades': 'Sibö IA',
+    'sec.atajos': 'Të kà',
+    'cv.tabla': '📋 Të',
+    'cv.nota': '📝 Kà',
+    'cv.grafico': '📊 Të',
+    'cv.calcular': '∑ Kà',
+    'cv.guardar': '💾 Të',
+    'status.funciones': 'kà',
   },
 
   maleku: {
@@ -1484,7 +2323,88 @@ var translations = {
     'alert.copiado': 'Tó portapapeles.',
     'alert.hacienda': '✓ Factura Hacienda CR\nNo. 001-00001-00000001',
     'alert.pdf': 'Tó PDF...',
-    'credit': 'Marama ki: Keny Chinchilla Navarro'
+    'credit': 'Marama ki: Keny Chinchilla Navarro',
+  
+    'menu.archivo': '📁 Tó Yö',
+    'menu.inicio': '🏠 Tó',
+    'menu.insertar': '➕ Yö',
+    'menu.plantillas': '📋 Tó Yö',
+    'menu.formulas': 'fx Yö',
+    'menu.factura': '🧾 Tó',
+    'menu.lenguajes': '🌐 Maléku',
+    'menu.ia': '🦙 IA',
+    'sidebar.plantillas': 'Tó Yö',
+    'sidebar.formulas': 'Yö',
+    'status.listo': 'Tó yö',
+    'sibo.name': 'Sibö',
+    'tb.ver': 'v13',
+    'sibo.input.placeholder': 'Yö tó...',
+    'canvas.label': 'ÁREA DE TRABAJO',
+    'canvas.toolbar': 'ÁREA DE TRABAJO',
+    'canvas.empty': 'Yö tó...',
+    'dd.nuevo': 'Tó Yö',
+    'dd.guardar': 'Yö Tó',
+    'dd.restaurar': 'Yö tó',
+    'dd.limpiar': 'Yö',
+    'dd.exportar': 'Yö tó',
+    'dd.compartir': 'Yö tó',
+    'dd.tabla': 'Tó yö',
+    'dd.nota': 'Yö tó',
+    'dd.grafico': 'Tó yö',
+    'dd.diario': 'Libro Diario',
+    'dd.mayor': 'Libro Mayor',
+    'dd.balance': 'Balance',
+    'dd.conciliacion': 'Conciliación',
+    'dd.d151': 'D-151',
+    'dd.factura': 'Factura',
+    'dd.insertar.fn': 'fx Yö...',
+    'dd.autosuma': '∑ Yö',
+    'dd.agregar.fila': '+ Yö',
+    'dd.quitar.fila': '- Yö',
+    'dd.calcular': '∑ Tó',
+    'dd.apps.todas': 'Apps CR',
+    'fe.emisor': 'Emisor',
+    'fe.receptor': 'Receptor',
+    'fe.btn.cerrar': '✓ Yö',
+    'modal.factura.title': '🧾 Factura CR',
+    'modal.fn.fns': 'yö',
+    'apps.todas': 'Todas',
+    'apps.gratis': '🆓 Yö',
+    'chip.iva': 'IVA',
+    'chip.diario': 'Diario',
+    'chip.factura': 'Factura',
+    'chip.apps': 'Apps',
+    'chip.niif': 'NIIF',
+    'chip.bancaria': 'Bancaria',
+    'sb.libro.diario': 'Libro Diario',
+    'sb.libro.mayor': 'Libro Mayor',
+    'sb.balance': 'Balance',
+    'sb.conciliacion': 'Conciliación',
+    'sb.d151': 'D-151',
+    'sb.factura': 'Factura',
+    'sb.biblioteca': 'Biblioteca (452)',
+    'sb.financieras': 'Financieras',
+    'sb.estadisticas': 'Estadísticas',
+    'formula.placeholder': 'Yö tó o fx...',
+    'sec.portapapeles': 'Tó Yö',
+    'sec.edicion': 'Yö',
+    'sec.celdas': 'Tó yö',
+    'sec.elementos': 'Yö tó',
+    'sec.libros': 'Tó Libros',
+    'sec.reportes': 'Yö CR',
+    'sec.funcion': 'fx Yö',
+    'sec.categorias': 'Tó yö',
+    'sec.especiales': 'Yö',
+    'sec.factura.cr': 'Factura CR',
+    'sec.sibo': 'Sibö ✦ IA',
+    'sec.capacidades': 'Sibö IA',
+    'sec.atajos': 'Tó yö',
+    'cv.tabla': '📋 Tó',
+    'cv.nota': '📝 Yö',
+    'cv.grafico': '📊 Tó',
+    'cv.calcular': '∑ Yö',
+    'cv.guardar': '💾 Tó',
+    'status.funciones': 'yö',
   },
 
   guaymi: {
@@ -1557,7 +2477,88 @@ var translations = {
     'alert.copiado': 'Kugwe portapapeles.',
     'alert.hacienda': '✓ Factura Hacienda CR\nNo. 001-00001-00000001',
     'alert.pdf': 'Kugwe PDF...',
-    'credit': 'Kugwe niere: Keny Chinchilla Navarro'
+    'credit': 'Kugwe niere: Keny Chinchilla Navarro',
+  
+    'menu.archivo': '📁 Kugwe',
+    'menu.inicio': '🏠 Näin',
+    'menu.insertar': '➕ Tö',
+    'menu.plantillas': '📋 Kugwe',
+    'menu.formulas': 'fx Tö',
+    'menu.factura': '🧾 Kugwe',
+    'menu.lenguajes': '🌐 Ngäbere',
+    'menu.ia': '🦙 IA',
+    'sidebar.plantillas': 'Kugwe',
+    'sidebar.formulas': 'Tö',
+    'status.listo': 'Näin tö',
+    'sibo.name': 'Sibö',
+    'tb.ver': 'v13',
+    'sibo.input.placeholder': 'Tö kugwe...',
+    'canvas.label': 'ÁREA DE TRABAJO',
+    'canvas.toolbar': 'ÁREA DE TRABAJO',
+    'canvas.empty': 'Tö kugwe...',
+    'dd.nuevo': 'Näin Tö',
+    'dd.guardar': 'Tö Kugwe',
+    'dd.restaurar': 'Tö näin',
+    'dd.limpiar': 'Tö',
+    'dd.exportar': 'Tö kugwe',
+    'dd.compartir': 'Tö näin',
+    'dd.tabla': 'Kugwe tö',
+    'dd.nota': 'Tö kugwe',
+    'dd.grafico': 'Kugwe tö',
+    'dd.diario': 'Libro Diario',
+    'dd.mayor': 'Libro Mayor',
+    'dd.balance': 'Balance',
+    'dd.conciliacion': 'Conciliación',
+    'dd.d151': 'D-151',
+    'dd.factura': 'Factura',
+    'dd.insertar.fn': 'fx Tö...',
+    'dd.autosuma': '∑ Tö',
+    'dd.agregar.fila': '+ Tö',
+    'dd.quitar.fila': '- Tö',
+    'dd.calcular': '∑ Näin',
+    'dd.apps.todas': 'Apps CR',
+    'fe.emisor': 'Emisor',
+    'fe.receptor': 'Receptor',
+    'fe.btn.cerrar': '✓ Tö',
+    'modal.factura.title': '🧾 Factura CR',
+    'modal.fn.fns': 'tö',
+    'apps.todas': 'Todas',
+    'apps.gratis': '🆓 Tö',
+    'chip.iva': 'IVA',
+    'chip.diario': 'Diario',
+    'chip.factura': 'Factura',
+    'chip.apps': 'Apps',
+    'chip.niif': 'NIIF',
+    'chip.bancaria': 'Bancaria',
+    'sb.libro.diario': 'Libro Diario',
+    'sb.libro.mayor': 'Libro Mayor',
+    'sb.balance': 'Balance',
+    'sb.conciliacion': 'Conciliación',
+    'sb.d151': 'D-151',
+    'sb.factura': 'Factura',
+    'sb.biblioteca': 'Biblioteca (452)',
+    'sb.financieras': 'Financieras',
+    'sb.estadisticas': 'Estadísticas',
+    'formula.placeholder': 'Tö kugwe o fx...',
+    'sec.portapapeles': 'Kugwe',
+    'sec.edicion': 'Tö',
+    'sec.celdas': 'Kugwe tö',
+    'sec.elementos': 'Tö näin',
+    'sec.libros': 'Kugwe Libros',
+    'sec.reportes': 'Tö CR',
+    'sec.funcion': 'fx Tö',
+    'sec.categorias': 'Kugwe tö',
+    'sec.especiales': 'Tö',
+    'sec.factura.cr': 'Factura CR',
+    'sec.sibo': 'Sibö ✦ IA',
+    'sec.capacidades': 'Sibö IA',
+    'sec.atajos': 'Kugwe tö',
+    'cv.tabla': '📋 Kugwe',
+    'cv.nota': '📝 Tö',
+    'cv.grafico': '📊 Kugwe',
+    'cv.calcular': '∑ Tö',
+    'cv.guardar': '💾 Kugwe',
+    'status.funciones': 'tö',
   },
 
   brunca: {
@@ -1630,7 +2631,88 @@ var translations = {
     'alert.copiado': 'Di portapapeles.',
     'alert.hacienda': '✓ Factura Hacienda CR\nNo. 001-00001-00000001',
     'alert.pdf': 'Di PDF...',
-    'credit': 'Ish ki: Keny Chinchilla Navarro'
+    'credit': 'Ish ki: Keny Chinchilla Navarro',
+  
+    'menu.archivo': '📁 Di Chom',
+    'menu.inicio': '🏠 Di',
+    'menu.insertar': '➕ Chom',
+    'menu.plantillas': '📋 Di Chom',
+    'menu.formulas': 'fx Chom',
+    'menu.factura': '🧾 Di',
+    'menu.lenguajes': '🌐 Brunca',
+    'menu.ia': '🦙 IA',
+    'sidebar.plantillas': 'Di Chom',
+    'sidebar.formulas': 'Chom',
+    'status.listo': 'Di chom',
+    'sibo.name': 'Sibö',
+    'tb.ver': 'v13',
+    'sibo.input.placeholder': 'Chom di...',
+    'canvas.label': 'ÁREA DE TRABAJO',
+    'canvas.toolbar': 'ÁREA DE TRABAJO',
+    'canvas.empty': 'Chom di...',
+    'dd.nuevo': 'Di Chom',
+    'dd.guardar': 'Chom Di',
+    'dd.restaurar': 'Chom di',
+    'dd.limpiar': 'Chom',
+    'dd.exportar': 'Chom di',
+    'dd.compartir': 'Chom di',
+    'dd.tabla': 'Di chom',
+    'dd.nota': 'Chom di',
+    'dd.grafico': 'Di chom',
+    'dd.diario': 'Libro Diario',
+    'dd.mayor': 'Libro Mayor',
+    'dd.balance': 'Balance',
+    'dd.conciliacion': 'Conciliación',
+    'dd.d151': 'D-151',
+    'dd.factura': 'Factura',
+    'dd.insertar.fn': 'fx Chom...',
+    'dd.autosuma': '∑ Chom',
+    'dd.agregar.fila': '+ Chom',
+    'dd.quitar.fila': '- Chom',
+    'dd.calcular': '∑ Di',
+    'dd.apps.todas': 'Apps CR',
+    'fe.emisor': 'Emisor',
+    'fe.receptor': 'Receptor',
+    'fe.btn.cerrar': '✓ Chom',
+    'modal.factura.title': '🧾 Factura CR',
+    'modal.fn.fns': 'chom',
+    'apps.todas': 'Todas',
+    'apps.gratis': '🆓 Chom',
+    'chip.iva': 'IVA',
+    'chip.diario': 'Diario',
+    'chip.factura': 'Factura',
+    'chip.apps': 'Apps',
+    'chip.niif': 'NIIF',
+    'chip.bancaria': 'Bancaria',
+    'sb.libro.diario': 'Libro Diario',
+    'sb.libro.mayor': 'Libro Mayor',
+    'sb.balance': 'Balance',
+    'sb.conciliacion': 'Conciliación',
+    'sb.d151': 'D-151',
+    'sb.factura': 'Factura',
+    'sb.biblioteca': 'Biblioteca (452)',
+    'sb.financieras': 'Financieras',
+    'sb.estadisticas': 'Estadísticas',
+    'formula.placeholder': 'Chom di o fx...',
+    'sec.portapapeles': 'Di Chom',
+    'sec.edicion': 'Chom',
+    'sec.celdas': 'Di chom',
+    'sec.elementos': 'Chom di',
+    'sec.libros': 'Di Libros',
+    'sec.reportes': 'Chom CR',
+    'sec.funcion': 'fx Chom',
+    'sec.categorias': 'Di chom',
+    'sec.especiales': 'Chom',
+    'sec.factura.cr': 'Factura CR',
+    'sec.sibo': 'Sibö ✦ IA',
+    'sec.capacidades': 'Sibö IA',
+    'sec.atajos': 'Di chom',
+    'cv.tabla': '📋 Di',
+    'cv.nota': '📝 Chom',
+    'cv.grafico': '📊 Di',
+    'cv.calcular': '∑ Chom',
+    'cv.guardar': '💾 Di',
+    'status.funciones': 'chom',
   }
 };
 
@@ -1701,13 +2783,26 @@ const i18nMap = {
 
 
 var currentLang = (function(){ try{ return localStorage.getItem('lang')||'es'; }catch(e){ return 'es'; }})();
-function t(k){ var d=translations[currentLang]||translations['es']; return (d&&d[k])||(translations['es']&&translations['es'][k])||k; }
+function t(k){
+  var langMap={'bri':'bribri','cab':'cabecar','ngb':'ngabe','mek':'bribri','bor':'boruca','ter':'terraba','mal':'maleku','cho':'brunca'};
+  var key=langMap[currentLang]||currentLang;
+  var d=translations[key]||translations[currentLang]||translations['es'];
+  return (d&&d[k])||(translations['es']&&translations['es'][k])||k;
+}
 function setLang(lang){
+  // Map selector values to translation object keys
+  var langMap = {
+    'bri': 'bribri', 'cab': 'cabecar', 'ngb': 'ngabe',
+    'mek': 'bribri', // Mekatelyu uses Bribri as fallback
+    'bor': 'boruca', 'ter': 'terraba', 'mal': 'maleku',
+    'cho': 'brunca'  // Chorotega uses Brunca (Boruca) as closest
+  };
+  var transKey = langMap[lang] || lang;
   currentLang = lang;
   try{ localStorage.setItem('lang', lang); }catch(e){}
   var s = document.getElementById('langSelect');
   if(s) s.value = lang;
-  var d = translations[lang] || translations['es'];
+  var d = translations[transKey] || translations[lang] || translations['es'];
   var fb = translations['es'] || {};
 
   // Translate all data-i18n elements
@@ -1760,7 +2855,60 @@ function setLang(lang){
 
   // Credit
   var cred = document.getElementById('credit');
-  if(cred){ var cv = (d && d['credit']) || (fb && fb['credit']); if(cv) cred.textContent = cv; }
+  if(cred){ var cv2 = (d && d['credit']) || (fb && fb['credit']); if(cv2) cred.textContent = cv2; }
+
+  // Canvas empty placeholder via CSS variable
+  var emptyText = (d && d['canvas.empty']) || (fb && fb['canvas.empty']) || '';
+  if(emptyText) {
+    var cvEl = document.getElementById('canvas');
+    if(cvEl) cvEl.setAttribute('data-empty', emptyText);
+  }
+
+  // data-i18n-placeholder elements
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(function(el){
+    var key = el.getAttribute('data-i18n-placeholder');
+    var val = (d && d[key]) || (fb && fb[key]);
+    if(val) el.placeholder = val;
+  });
+
+  // Translate all elements with data-i18n (generic pass)
+  document.querySelectorAll('[data-i18n]').forEach(function(el){
+    var key = el.getAttribute('data-i18n');
+    var val = (d && d[key]) || (fb && fb[key]);
+    if(!val) return;
+    // Preserve child elements (icons, badges)
+    var children = Array.from(el.childNodes).filter(function(n){ return n.nodeType===1; });
+    if(children.length === 0) {
+      el.textContent = val;
+    } else {
+      // Replace only text nodes, keep element children
+      Array.from(el.childNodes).forEach(function(n){
+        if(n.nodeType === 3) n.textContent = '';
+      });
+      el.appendChild(document.createTextNode(' ' + val));
+    }
+  });
+
+  // Formula bar placeholder
+  var fi = document.getElementById('formulaInput');
+  if(fi) fi.placeholder = (d&&d['formula.placeholder'])||(fb&&fb['formula.placeholder'])||'Ingresá un valor o fórmula...';
+
+  // Sibo chips translation
+  var chipKeys = ['IVA CR','Diario','Factura','Apps','NIIF','Bancaria'];
+  var chipTranslated = [
+    (d&&d['chip.iva'])||(fb&&fb['chip.iva'])||'IVA CR',
+    (d&&d['chip.diario'])||(fb&&fb['chip.diario'])||'Diario',
+    (d&&d['chip.factura'])||(fb&&fb['chip.factura'])||'Factura',
+    (d&&d['chip.apps'])||(fb&&fb['chip.apps'])||'Apps',
+    (d&&d['chip.niif'])||(fb&&fb['chip.niif'])||'NIIF',
+    (d&&d['chip.bancaria'])||(fb&&fb['chip.bancaria'])||'Bancaria'
+  ];
+  document.querySelectorAll('.sw-chip, .smp-chip').forEach(function(btn, i){
+    if(chipTranslated[i]) btn.textContent = chipTranslated[i];
+  });
+
+  // Translate sheet column header row if it exists
+  translateSheetHeaders(lang);
 }
 
 // ── Modals ────────────────────────────────────────
@@ -2758,6 +3906,1313 @@ function renderApps() {
 }
 
 // ── DOMContentLoaded ────────────────────────────────
+
+// ════════════════════════════════════════════════════
+// SPREADSHEET ENGINE — Excel-like
+// ════════════════════════════════════════════════════
+
+var SHEET_ROWS = 50;
+var SHEET_COLS = 26;
+var sheetData  = {};        // { 'A1': 'value', ... }
+var activeCell = { r:0, c:0 };  // 0-based
+var isEditing  = false;
+var selStart   = null;
+var selEnd     = null;
+
+// Column index to letter(s)
+function colLetter(n) {
+  var s = '';
+  n = n + 1;
+  while (n > 0) {
+    n--;
+    s = String.fromCharCode(65 + (n % 26)) + s;
+    n = Math.floor(n / 26);
+  }
+  return s;
+}
+function cellId(r, c) { return colLetter(c) + (r + 1); }
+function cellEl(r, c) { return document.getElementById('sc_' + r + '_' + c); }
+
+// Build sheet
+
+// ════════════════════════════════════════════════════
+// SPREADSHEET ENGINE — Extended Features
+// ════════════════════════════════════════════════════
+
+// ── Cell formatting storage ────────────────────────
+var cellFormats = {};  // { 'A1': { bold, italic, underline, align, bg, border, font, fontSize } }
+var freezeRow = 0;
+var freezeCol = 0;
+var zoomLevel = 1;
+var sheets = [{ name: 'Hoja 1', data: {}, formats: {} }];
+var activeSheet = 0;
+var findResults = []; var findIdx = -1;
+var selStart = null; var selEnd = null;
+var isSelecting = false;
+var undoStack = []; var redoStack = [];
+
+// Undo/Redo
+function pushUndo() {
+  undoStack.push({ data: JSON.stringify(sheetData), formats: JSON.stringify(cellFormats) });
+  if (undoStack.length > 50) undoStack.shift();
+  redoStack = [];
+}
+function doUndo() {
+  if (!undoStack.length) return;
+  redoStack.push({ data: JSON.stringify(sheetData), formats: JSON.stringify(cellFormats) });
+  var prev = undoStack.pop();
+  sheetData = JSON.parse(prev.data);
+  cellFormats = JSON.parse(prev.formats);
+  renderAllCells(); applyAllFormats();
+}
+function doRedo() {
+  if (!redoStack.length) return;
+  undoStack.push({ data: JSON.stringify(sheetData), formats: JSON.stringify(cellFormats) });
+  var next = redoStack.pop();
+  sheetData = JSON.parse(next.data);
+  cellFormats = JSON.parse(next.formats);
+  renderAllCells(); applyAllFormats();
+}
+
+// ── Format functions ───────────────────────────────
+function getCellFormat(key) {
+  return cellFormats[key] || {};
+}
+function setCellFormat(key, prop, val) {
+  if (!cellFormats[key]) cellFormats[key] = {};
+  cellFormats[key][prop] = val;
+  applyFormatToCell(key);
+  updateFmtBar();
+}
+function applyFormatToCell(key) {
+  var parts = key.match(/([A-Z]+)(\d+)/);
+  if (!parts) return;
+  var r = parseInt(parts[2]) - 1;
+  var col = colIndex(parts[1]);
+  var inner = document.getElementById('si_' + r + '_' + col);
+  if (!inner) return;
+  var fmt = cellFormats[key] || {};
+  inner.style.fontWeight    = fmt.bold      ? '700' : '';
+  inner.style.fontStyle     = fmt.italic    ? 'italic' : '';
+  inner.style.textDecoration= fmt.underline ? 'underline' : '';
+  inner.style.textAlign     = fmt.align     || '';
+  inner.style.background    = fmt.bg        || '';
+  inner.style.fontFamily    = fmt.font      || '';
+  inner.style.fontSize      = fmt.fontSize  || '';
+  var td = inner.closest('td');
+  if (td) {
+    td.style.border = fmt.border ? '2px solid var(--g2)' : '';
+  }
+}
+function applyAllFormats() {
+  Object.keys(cellFormats).forEach(function(key){ applyFormatToCell(key); });
+}
+function toggleFormat(prop) {
+  pushUndo();
+  var key = cellId(activeCell.r, activeCell.c);
+  var fmt = getCellFormat(key);
+  setCellFormat(key, prop, !fmt[prop]);
+  updateFmtBar();
+}
+function applyAlign(align) {
+  pushUndo();
+  var key = cellId(activeCell.r, activeCell.c);
+  setCellFormat(key, 'align', align);
+}
+function applyBgColor(color) {
+  pushUndo();
+  var key = cellId(activeCell.r, activeCell.c);
+  setCellFormat(key, 'bg', color);
+}
+function applyFont(font) {
+  var key = cellId(activeCell.r, activeCell.c);
+  setCellFormat(key, 'font', font);
+}
+function applyFontSize(size) {
+  var key = cellId(activeCell.r, activeCell.c);
+  setCellFormat(key, 'fontSize', size);
+}
+function applyBorder() {
+  var key = cellId(activeCell.r, activeCell.c);
+  var fmt = getCellFormat(key);
+  setCellFormat(key, 'border', !fmt.border);
+}
+function mergeCells() {
+  alert('Combinar celdas: seleccioná un rango primero con Shift+clic, luego usá esta función.');
+}
+function updateFmtBar() {
+  var key = cellId(activeCell.r, activeCell.c);
+  var fmt = getCellFormat(key);
+  var b = document.getElementById('fmtBold');
+  var i = document.getElementById('fmtItalic');
+  var u = document.getElementById('fmtUnder');
+  if (b) b.classList.toggle('on', !!fmt.bold);
+  if (i) i.classList.toggle('on', !!fmt.italic);
+  if (u) u.classList.toggle('on', !!fmt.underline);
+}
+
+// ── Keyboard shortcuts extended ─────────────────────
+function handleCtrlKey(e) {
+  if (!e.ctrlKey && !e.metaKey) return false;
+  switch(e.key.toLowerCase()) {
+    case 'z': e.preventDefault(); doUndo(); return true;
+    case 'y': e.preventDefault(); doRedo(); return true;
+    case 'b': e.preventDefault(); toggleFormat('bold'); return true;
+    case 'i': e.preventDefault(); toggleFormat('italic'); return true;
+    case 'u': e.preventDefault(); toggleFormat('underline'); return true;
+    case 'f': e.preventDefault(); openFindBar(); return true;
+    case 'c': copyCell(); return true;
+    case 'v': e.preventDefault(); pasteCell(); return true;
+    case 'x': e.preventDefault(); cutCell(); return true;
+    case 'a': e.preventDefault(); selectAll(); return true;
+    case 'home': e.preventDefault(); activateCell(0,0); return true;
+    case 'end': e.preventDefault(); activateCell(SHEET_ROWS-1, SHEET_COLS-1); return true;
+  }
+  return false;
+}
+
+// ── Copy / Paste ────────────────────────────────────
+var clipboard = { value: '', format: null };
+function copyCell() {
+  var key = cellId(activeCell.r, activeCell.c);
+  clipboard.value  = sheetData[key] || '';
+  clipboard.format = cellFormats[key] ? JSON.parse(JSON.stringify(cellFormats[key])) : null;
+  try {
+    navigator.clipboard.writeText(clipboard.value);
+  } catch(e) {}
+}
+function cutCell() {
+  copyCell();
+  pushUndo();
+  var key = cellId(activeCell.r, activeCell.c);
+  delete sheetData[key];
+  renderCell(activeCell.r, activeCell.c);
+  var fi = document.getElementById('formulaInput');
+  if (fi) fi.value = '';
+}
+function pasteCell() {
+  pushUndo();
+  var key = cellId(activeCell.r, activeCell.c);
+  if (clipboard.value) {
+    sheetData[key] = clipboard.value;
+    if (clipboard.format) cellFormats[key] = JSON.parse(JSON.stringify(clipboard.format));
+    renderCell(activeCell.r, activeCell.c);
+    applyFormatToCell(key);
+    var fi = document.getElementById('formulaInput');
+    if (fi) fi.value = clipboard.value;
+  } else {
+    try {
+      navigator.clipboard.readText().then(function(txt) {
+        if (txt) { sheetData[key] = txt; renderCell(activeCell.r, activeCell.c); }
+      });
+    } catch(e) {}
+  }
+}
+function selectAll() {
+  selStart = {r:0, c:0};
+  selEnd   = {r:SHEET_ROWS-1, c:SHEET_COLS-1};
+  renderSelection();
+}
+
+// ── Selection range ─────────────────────────────────
+function renderSelection() {
+  document.querySelectorAll('.sh-cell.in-selection').forEach(function(el){ el.classList.remove('in-selection'); });
+  if (!selStart || !selEnd) return;
+  var r1=Math.min(selStart.r,selEnd.r), r2=Math.max(selStart.r,selEnd.r);
+  var c1=Math.min(selStart.c,selEnd.c), c2=Math.max(selStart.c,selEnd.c);
+  for (var r=r1; r<=r2; r++) for (var col=c1; col<=c2; col++) {
+    var el = cellEl(r, col);
+    if (el) el.classList.add('in-selection');
+  }
+}
+
+// ── Sort ────────────────────────────────────────────
+function sortAsc()  { sortColumn(true); }
+function sortDesc() { sortColumn(false); }
+function sortColumn(asc) {
+  pushUndo();
+  var col = activeCell.c;
+  var rows = [];
+  for (var r=0; r<SHEET_ROWS; r++) {
+    var key = cellId(r, col);
+    rows.push({ r: r, val: sheetData[key] || '' });
+  }
+  rows.sort(function(a,b) {
+    var av = isNaN(a.val) ? a.val : parseFloat(a.val);
+    var bv = isNaN(b.val) ? b.val : parseFloat(b.val);
+    if (av < bv) return asc ? -1 : 1;
+    if (av > bv) return asc ? 1 : -1;
+    return 0;
+  });
+  var newData = {};
+  rows.forEach(function(item, newRow) {
+    for (var c2=0; c2<SHEET_COLS; c2++) {
+      var oldKey = cellId(item.r, c2);
+      var newKey = cellId(newRow, c2);
+      if (sheetData[oldKey]) newData[newKey] = sheetData[oldKey];
+    }
+  });
+  // Apply sorted data for sorted column's rows
+  for (var r2=0; r2<SHEET_ROWS; r2++) {
+    var k = cellId(r2, col);
+    sheetData[k] = rows[r2].val;
+  }
+  renderAllCells();
+  document.getElementById('statusLeft').textContent = 'Ordenado ' + (asc ? 'A→Z' : 'Z→A');
+}
+
+// ── Filter ──────────────────────────────────────────
+var filterActive = false;
+function toggleFilter() {
+  filterActive = !filterActive;
+  var btn = document.querySelector('[onclick="toggleFilter()"]');
+  if (btn) btn.classList.toggle('on', filterActive);
+  // Add/remove filter dropdowns on header row
+  document.querySelectorAll('.sh-col-header').forEach(function(th, i) {
+    var existing = th.querySelector('.filter-dd');
+    if (filterActive) {
+      if (!existing) {
+        var dd = document.createElement('span');
+        dd.className = 'filter-dd';
+        dd.textContent = '▾';
+        dd.style.cssText = 'position:absolute;right:4px;font-size:10px;color:var(--g2);cursor:pointer;';
+        dd.setAttribute('data-col', i);
+        dd.onclick = function(e) { e.stopPropagation(); showFilterMenu(parseInt(this.dataset.col)); };
+        th.appendChild(dd);
+      }
+    } else {
+      if (existing) existing.remove();
+      // Show all rows
+      document.querySelectorAll('.sh-row').forEach(function(tr){ tr.style.display=''; });
+    }
+  });
+  document.getElementById('statusLeft').textContent = filterActive ? 'Filtro activado' : 'Filtro desactivado';
+}
+function showFilterMenu(col) {
+  var vals = new Set();
+  for (var r=1; r<SHEET_ROWS; r++) {
+    var v = sheetData[cellId(r,col)] || '';
+    if (v) vals.add(v);
+  }
+  var menu = prompt('Filtrar columna ' + colLetter(col) + ' por valor (vacío = mostrar todo):');
+  if (menu === null) return;
+  document.querySelectorAll('.sh-row').forEach(function(tr, ri) {
+    if (ri === 0) return; // skip header data row
+    var key = cellId(ri, col);
+    var val = sheetData[key] || '';
+    tr.style.display = (!menu || val.toLowerCase().indexOf(menu.toLowerCase()) >= 0) ? '' : 'none';
+  });
+  document.getElementById('statusLeft').textContent = menu ? 'Filtro: "'+menu+'"' : 'Filtro limpio';
+}
+
+// ── Find / Replace ──────────────────────────────────
+function openFindBar() {
+  var fb = document.getElementById('findBar');
+  if (fb) { fb.classList.add('open'); document.getElementById('findInput').focus(); }
+}
+function closeFindBar() {
+  var fb = document.getElementById('findBar');
+  if (fb) fb.classList.remove('open');
+  // Remove highlights
+  document.querySelectorAll('.sh-cell').forEach(function(el){ el.style.outline=''; });
+  findResults = []; findIdx = -1;
+}
+function doFind(term) {
+  findResults = [];
+  if (!term) return;
+  for (var r=0; r<SHEET_ROWS; r++) for (var col=0; col<SHEET_COLS; col++) {
+    var key = cellId(r,col);
+    var val = sheetData[key] || '';
+    if (val.toLowerCase().indexOf(term.toLowerCase()) >= 0) findResults.push({r:r,c:col});
+  }
+  var st = document.getElementById('findStatus');
+  if (st) st.textContent = findResults.length + ' resultado(s)';
+  return findResults;
+}
+function findNext() {
+  var term = (document.getElementById('findInput')||{}).value || '';
+  doFind(term);
+  if (!findResults.length) return;
+  findIdx = (findIdx + 1) % findResults.length;
+  var res = findResults[findIdx];
+  activateCell(res.r, res.c);
+  var el = cellEl(res.r, res.c);
+  if (el) el.style.outline = '2px solid var(--danger)';
+}
+function findPrev() {
+  var term = (document.getElementById('findInput')||{}).value || '';
+  doFind(term);
+  if (!findResults.length) return;
+  findIdx = (findIdx - 1 + findResults.length) % findResults.length;
+  var res = findResults[findIdx];
+  activateCell(res.r, res.c);
+}
+function replaceOne() {
+  var find    = (document.getElementById('findInput')||{}).value || '';
+  var replace = (document.getElementById('replaceInput')||{}).value || '';
+  if (!find) return;
+  pushUndo();
+  var key = cellId(activeCell.r, activeCell.c);
+  if (sheetData[key]) {
+    sheetData[key] = sheetData[key].split(find).join(replace);
+    renderCell(activeCell.r, activeCell.c);
+  }
+}
+function replaceAll() {
+  var find    = (document.getElementById('findInput')||{}).value || '';
+  var replace = (document.getElementById('replaceInput')||{}).value || '';
+  if (!find) return;
+  pushUndo();
+  var count = 0;
+  Object.keys(sheetData).forEach(function(key) {
+    if (sheetData[key].indexOf(find) >= 0) {
+      sheetData[key] = sheetData[key].split(find).join(replace);
+      count++;
+    }
+  });
+  renderAllCells();
+  document.getElementById('statusLeft').textContent = count + ' reemplazos';
+}
+
+// ── Freeze panes ────────────────────────────────────
+var isFrozen = false;
+function toggleFreeze() {
+  isFrozen = !isFrozen;
+  freezeRow = isFrozen ? activeCell.r : 0;
+  freezeCol = isFrozen ? activeCell.c : 0;
+  var btn = document.getElementById('btnFreeze');
+  if (btn) btn.classList.toggle('on', isFrozen);
+  // Apply sticky positioning to frozen headers
+  document.getElementById('statusLeft').textContent = isFrozen
+    ? 'Inmovilizado en ' + cellId(freezeRow, freezeCol)
+    : 'Panel desinmovilizado';
+}
+
+// ── Column resize ───────────────────────────────────
+function addColumnResizers() {
+  document.querySelectorAll('.sh-col-header').forEach(function(th) {
+    var resizer = document.createElement('div');
+    resizer.className = 'col-resizer';
+    th.appendChild(resizer);
+    var startX, startW;
+    resizer.addEventListener('mousedown', function(e) {
+      e.preventDefault(); e.stopPropagation();
+      startX = e.clientX;
+      startW = th.offsetWidth;
+      resizer.classList.add('dragging');
+      var onMove = function(e2) {
+        var newW = Math.max(40, startW + e2.clientX - startX);
+        th.style.minWidth = newW + 'px';
+        th.style.width    = newW + 'px';
+        var col = parseInt(th.id.replace('sch_',''));
+        document.querySelectorAll('.sh-cell[id^="sc_"]').forEach(function(td) {
+          if (parseInt(td.dataset.c) === col) {
+            td.style.minWidth = newW + 'px';
+            td.style.width    = newW + 'px';
+          }
+        });
+      };
+      var onUp = function() {
+        resizer.classList.remove('dragging');
+        document.removeEventListener('mousemove', onMove);
+        document.removeEventListener('mouseup', onUp);
+      };
+      document.addEventListener('mousemove', onMove);
+      document.addEventListener('mouseup', onUp);
+    });
+  });
+}
+
+// ── Sheet tabs ──────────────────────────────────────
+function addSheet() {
+  var idx = sheets.length;
+  sheets.push({ name: 'Hoja ' + (idx+1), data: {}, formats: {} });
+  var tabs = document.getElementById('sheetTabs');
+  var addBtn = tabs.querySelector('.sh-tab-add');
+  var btn = document.createElement('button');
+  btn.className = 'sh-tab';
+  btn.id = 'tab-' + idx;
+  btn.textContent = 'Hoja ' + (idx+1);
+  btn.setAttribute('ondblclick', 'renameSheet('+idx+')');
+  btn.onclick = function() { switchSheet(idx); };
+  tabs.insertBefore(btn, addBtn);
+  switchSheet(idx);
+}
+function switchSheet(idx) {
+  // Save current sheet
+  sheets[activeSheet].data    = JSON.parse(JSON.stringify(sheetData));
+  sheets[activeSheet].formats = JSON.parse(JSON.stringify(cellFormats));
+  // Switch
+  activeSheet = idx;
+  sheetData    = JSON.parse(JSON.stringify(sheets[idx].data));
+  cellFormats  = JSON.parse(JSON.stringify(sheets[idx].formats));
+  renderAllCells();
+  applyAllFormats();
+  document.querySelectorAll('.sh-tab').forEach(function(t,i){ t.classList.toggle('active', i===idx); });
+  activateCell(0,0);
+}
+function renameSheet(idx) {
+  var name = prompt('Nombre de la hoja:', sheets[idx].name);
+  if (name) {
+    sheets[idx].name = name;
+    var btn = document.getElementById('tab-'+idx);
+    if (btn) btn.textContent = name;
+  }
+}
+
+// ── Zoom ────────────────────────────────────────────
+function setZoom(val) {
+  zoomLevel = parseFloat(val);
+  var outer = document.getElementById('sheetOuter');
+  if (outer) {
+    outer.style.transform = 'scale(' + zoomLevel + ')';
+    outer.style.transformOrigin = 'top left';
+    outer.style.width  = (100 / zoomLevel) + '%';
+    outer.style.height = (100 / zoomLevel) + '%';
+  }
+  document.getElementById('statusLeft').textContent = 'Zoom: ' + Math.round(zoomLevel*100) + '%';
+}
+
+// ── Chart from selection ────────────────────────────
+function chartFromSelection() {
+  if (!selStart || !selEnd) {
+    alert('Seleccioná un rango de celdas primero (Shift+clic) para crear un gráfico.');
+    return;
+  }
+  var r1=Math.min(selStart.r,selEnd.r), r2=Math.max(selStart.r,selEnd.r);
+  var c1=Math.min(selStart.c,selEnd.c), c2=Math.max(selStart.c,selEnd.c);
+  var labels=[]; var values=[];
+  for (var r=r1; r<=r2; r++) {
+    labels.push(cellId(r,c1));
+    var v = numVal(cellId(r, Math.min(c1+1, c2)));
+    values.push(isNaN(v)?0:v);
+  }
+  // Find an empty area below selection to draw chart
+  var chartRow = r2 + 2;
+  var id = 'chart_sel_' + Date.now();
+  // We'll insert as a floating div
+  var wrap = document.createElement('div');
+  wrap.style.cssText = 'background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:14px;margin:8px;position:relative;';
+  wrap.innerHTML = '<p style="font-size:11px;color:var(--text3);margin-bottom:8px;font-weight:600;">Gráfico del rango ' + cellId(r1,c1) + ':' + cellId(r2,c2) + '</p>' +
+    '<button onclick="this.closest(\'div\').remove()" style="position:absolute;top:6px;right:8px;background:none;border:none;font-size:14px;cursor:pointer;color:var(--text3);">×</button>' +
+    '<canvas id="' + id + '" height="120" width="320"></canvas>';
+  document.getElementById('sheetOuter').parentElement.appendChild(wrap);
+  var ctx = document.getElementById(id).getContext('2d');
+  var max = Math.max.apply(null, values) || 1;
+  values.forEach(function(v, i) {
+    var h = (v/max)*100; var x = 20 + i*40;
+    ctx.fillStyle = i%2===0 ? '#5abf2a' : '#3a9e10';
+    ctx.fillRect(x, 110-h, 30, h);
+    ctx.fillStyle = '#4a6b2a'; ctx.font = '10px sans-serif';
+    ctx.fillText(labels[i], x+2, 120);
+  });
+}
+
+// ── Autocomplete formulas ───────────────────────────
+var fnNames = null;
+function getFnNames() {
+  if (fnNames) return fnNames;
+  fnNames = [];
+  Object.values(fnData).forEach(function(arr) {
+    (arr||[]).forEach(function(f) { if (f.n) fnNames.push({ n: f.n, e: f.e, s: f.s, d: f.d }); });
+  });
+  return fnNames;
+}
+var acHighlight = -1;
+function showAutocomplete(term) {
+  var ac = document.getElementById('fnAutoComplete');
+  if (!ac) return;
+  if (!term || term.length < 1) { ac.classList.remove('open'); return; }
+  var fns = getFnNames().filter(function(f) {
+    return f.n.startsWith(term) || f.e.startsWith(term.toUpperCase());
+  }).slice(0, 10);
+  if (!fns.length) { ac.classList.remove('open'); return; }
+  acHighlight = -1;
+  ac.innerHTML = fns.map(function(f, i) {
+    return '<div class="fn-ac-item" data-fn="' + f.n + '" data-syn="' + (f.s||'').replace(/"/g,'&quot;') + '">' +
+      '<span class="fn-ac-name">' + f.n + '</span>' +
+      '<span class="fn-ac-desc">' + (f.d||'').substring(0,40) + '</span></div>';
+  }).join('');
+  ac.classList.add('open');
+  // Position near formula bar
+  var fi = document.getElementById('formulaInput');
+  if (fi) {
+    var rect = fi.getBoundingClientRect();
+    ac.style.top  = (rect.bottom + 2) + 'px';
+    ac.style.left = rect.left + 'px';
+  }
+  ac.querySelectorAll('.fn-ac-item').forEach(function(item) {
+    item.addEventListener('click', function() {
+      insertFnFromAC(this.dataset.fn, this.dataset.syn);
+    });
+  });
+}
+function insertFnFromAC(name, syn) {
+  var fi = document.getElementById('formulaInput');
+  if (fi) {
+    var val = fi.value;
+    var eqIdx = val.lastIndexOf('=');
+    var base  = eqIdx >= 0 ? val.substring(0, eqIdx+1) : '=';
+    fi.value = base + name + '(';
+    fi.focus();
+  }
+  document.getElementById('fnAutoComplete').classList.remove('open');
+}
+
+// ── Comments ────────────────────────────────────────
+var cellComments = {};
+function addComment() {
+  var key = cellId(activeCell.r, activeCell.c);
+  var existing = cellComments[key] || '';
+  var comment = prompt('Comentario para celda ' + key + ':', existing);
+  if (comment !== null) {
+    if (comment) {
+      cellComments[key] = comment;
+      var el = cellEl(activeCell.r, activeCell.c);
+      if (el) el.classList.add('has-comment');
+      el.title = comment;
+    } else {
+      delete cellComments[key];
+      var el2 = cellEl(activeCell.r, activeCell.c);
+      if (el2) { el2.classList.remove('has-comment'); el2.title = ''; }
+    }
+  }
+}
+
+// ── Extended formulas ────────────────────────────────
+// Extend evalFormula to support more functions
+var _origEval = typeof evalFormula === 'function' ? evalFormula : null;
+function evalFormula(formula, row, col) {
+  var expr = formula.substring(1).toUpperCase().trim();
+  try {
+    // SI/IF
+    var ifMatch = expr.match(/^(?:SI|IF)\((.+)\)$/);
+    if (ifMatch) {
+      var args = splitArgs(ifMatch[1]);
+      if (args.length >= 2) {
+        var cond = evalCondition(args[0]);
+        return cond ? (evalVal(args[1])) : (args[2] ? evalVal(args[2]) : '');
+      }
+    }
+    // BUSCARV/VLOOKUP — simplified
+    var vlMatch = expr.match(/^(?:BUSCARV|VLOOKUP)\((.+)\)$/);
+    if (vlMatch) {
+      var vArgs = splitArgs(vlMatch[1]);
+      if (vArgs.length >= 3) {
+        var searchVal = evalVal(vArgs[0]);
+        var range     = vArgs[1];
+        var colNum    = parseInt(evalVal(vArgs[2])) - 1;
+        var cells     = rangeCells(range.split(':')[0], range.split(':')[1]||range.split(':')[0]);
+        // Group by rows
+        var firstCol  = colIndex(cells[0].match(/[A-Z]+/)[0]);
+        for (var ri=0; ri<SHEET_ROWS; ri++) {
+          var lookKey = cellId(ri, firstCol);
+          if ((sheetData[lookKey]||'').toString().toLowerCase() === searchVal.toString().toLowerCase()) {
+            return sheetData[cellId(ri, firstCol+colNum)] || '#N/A';
+          }
+        }
+        return '#N/A';
+      }
+    }
+    // CONCATENAR/CONCAT
+    var concatMatch = expr.match(/^(?:CONCATENAR|CONCAT|UNIR)\((.+)\)$/);
+    if (concatMatch) {
+      var cArgs = splitArgs(concatMatch[1]);
+      return cArgs.map(function(a){ return evalVal(a); }).join('');
+    }
+    // MAYUSC/UPPER, MINUSC/LOWER
+    var upperMatch = expr.match(/^(?:MAYUSC|UPPER)\((.+)\)$/);
+    if (upperMatch) return String(evalVal(upperMatch[1])).toUpperCase();
+    var lowerMatch = expr.match(/^(?:MINUSC|LOWER)\((.+)\)$/);
+    if (lowerMatch) return String(evalVal(lowerMatch[1])).toLowerCase();
+    // HOY/TODAY
+    if (expr === 'HOY()' || expr === 'TODAY()') return new Date().toLocaleDateString('es-CR');
+    // AHORA/NOW
+    if (expr === 'AHORA()' || expr === 'NOW()') return new Date().toLocaleString('es-CR');
+    // ABS
+    var absMatch = expr.match(/^ABS\((.+)\)$/);
+    if (absMatch) return Math.abs(numVal(evalVal(absMatch[1]))).toLocaleString('es-CR');
+    // REDONDEAR/ROUND
+    var roundMatch = expr.match(/^(?:REDONDEAR|ROUND)\((.+),(\d+)\)$/);
+    if (roundMatch) {
+      var rv = parseFloat(evalVal(roundMatch[1]));
+      var dec = parseInt(roundMatch[2]);
+      return Number(rv.toFixed(dec)).toLocaleString('es-CR');
+    }
+    // LARGO/LEN
+    var lenMatch = expr.match(/^(?:LARGO|LEN)\((.+)\)$/);
+    if (lenMatch) return String(evalVal(lenMatch[1])).length;
+    // Call original
+    if (_origEval) return _origEval(formula, row, col);
+    return '#ERR';
+  } catch(e) { return '#ERR'; }
+}
+function splitArgs(str) {
+  var args=[]; var depth=0; var cur='';
+  for (var i=0; i<str.length; i++) {
+    if (str[i]==='(') depth++;
+    if (str[i]===')') depth--;
+    if (str[i]===';' && depth===0) { args.push(cur.trim()); cur=''; }
+    else if (str[i]===',' && depth===0) { args.push(cur.trim()); cur=''; }
+    else cur+=str[i];
+  }
+  if (cur.trim()) args.push(cur.trim());
+  return args;
+}
+function evalVal(expr) {
+  expr = expr.trim();
+  // String literal "text" or 'text'
+  if ((expr.startsWith('"') && expr.endsWith('"')) || (expr.startsWith("'") && expr.endsWith("'"))) {
+    return expr.slice(1,-1);
+  }
+  // Cell reference
+  if (/^[A-Z]+\d+$/.test(expr.toUpperCase())) return sheetData[expr.toUpperCase()] || '';
+  // Number
+  if (!isNaN(expr)) return parseFloat(expr);
+  return expr;
+}
+function evalCondition(cond) {
+  cond = cond.trim().toUpperCase();
+  var ops = ['>=','<=','<>','!=','>','<','='];
+  for (var i=0; i<ops.length; i++) {
+    var idx = cond.indexOf(ops[i]);
+    if (idx>0) {
+      var left  = evalVal(cond.substring(0,idx).trim());
+      var right = evalVal(cond.substring(idx+ops[i].length).trim());
+      var lv = isNaN(left) ? left : parseFloat(left);
+      var rv = isNaN(right) ? right : parseFloat(right);
+      switch(ops[i]) {
+        case '>=': return lv >= rv;
+        case '<=': return lv <= rv;
+        case '<>': case '!=': return lv != rv;
+        case '>':  return lv > rv;
+        case '<':  return lv < rv;
+        case '=':  return lv == rv;
+      }
+    }
+  }
+  return !!cond;
+}
+
+// ── Extend sheetKeyDown to handle Ctrl ─────────────
+var _origKeyDown = typeof sheetKeyDown === 'function' ? sheetKeyDown : null;
+function sheetKeyDown(e) {
+  if (e.target.id === 'formulaInput') return;
+  if (e.target.closest && e.target.closest('.modal.active')) return;
+  if (e.target.closest && e.target.closest('.sibo-widget')) return;
+  if (handleCtrlKey(e)) return;
+  if (_origKeyDown) _origKeyDown(e);
+}
+
+// ── Extend formula bar to show autocomplete ─────────
+var _origFormulaInput = null;
+function setupFormulaBarAC() {
+  var fi = document.getElementById('formulaInput');
+  if (!fi) return;
+  fi.addEventListener('input', function() {
+    var val = this.value;
+    if (val.startsWith('=')) {
+      var term = val.substring(1).split(/[\+\-\*\/\(;,\s]/).pop().toUpperCase();
+      if (term.length >= 1) showAutocomplete(term);
+      else document.getElementById('fnAutoComplete').classList.remove('open');
+    } else {
+      document.getElementById('fnAutoComplete').classList.remove('open');
+    }
+  });
+  // Close AC on click outside
+  document.addEventListener('click', function(e) {
+    var ac = document.getElementById('fnAutoComplete');
+    if (ac && !ac.contains(e.target) && e.target.id !== 'formulaInput') {
+      ac.classList.remove('open');
+    }
+  });
+}
+
+// ── Context menu ────────────────────────────────────
+function setupContextMenu() {
+  var table = document.getElementById('sheetTable');
+  if (!table) return;
+  table.addEventListener('contextmenu', function(e) {
+    e.preventDefault();
+    var td = e.target.closest('.sh-cell');
+    if (!td) return;
+    var r = parseInt(td.dataset.r); var col = parseInt(td.dataset.c);
+    activateCell(r, col);
+    var menu = document.createElement('div');
+    menu.style.cssText = 'position:fixed;top:'+e.clientY+'px;left:'+e.clientX+'px;background:#fff;border:1.5px solid var(--border);border-radius:var(--r2);box-shadow:var(--sh2);z-index:9999;min-width:180px;padding:5px 0;font-size:13px;';
+    var items = [
+      ['✂️ Cortar', cutCell],
+      ['📋 Copiar', copyCell],
+      ['📌 Pegar', pasteCell],
+      ['—', null],
+      ['🗑 Borrar celda', function(){ pushUndo(); delete sheetData[cellId(r,col)]; renderCell(r,col); }],
+      ['💬 Comentario', addComment],
+      ['—', null],
+      ['↑ Ordenar A→Z', sortAsc],
+      ['↓ Ordenar Z→A', sortDesc],
+    ];
+    items.forEach(function(item) {
+      if (item[0]==='—') { var sep=document.createElement('div'); sep.style.cssText='height:1px;background:var(--border);margin:3px 0;'; menu.appendChild(sep); return; }
+      var div = document.createElement('div');
+      div.textContent = item[0];
+      div.style.cssText = 'padding:7px 14px;cursor:pointer;color:var(--text2);';
+      div.addEventListener('mouseover', function(){ this.style.background='var(--bg2)'; });
+      div.addEventListener('mouseout',  function(){ this.style.background=''; });
+      div.addEventListener('click', function(){ item[1](); document.body.removeChild(menu); });
+      menu.appendChild(div);
+    });
+    document.body.appendChild(menu);
+    var close = function(){ if(document.body.contains(menu)) document.body.removeChild(menu); document.removeEventListener('click',close); };
+    setTimeout(function(){ document.addEventListener('click', close); }, 10);
+  });
+}
+
+// ── Status bar info ──────────────────────────────────
+function updateStatusBar() {
+  if (!selStart || !selEnd) return;
+  var r1=Math.min(selStart.r,selEnd.r), r2=Math.max(selStart.r,selEnd.r);
+  var c1=Math.min(selStart.c,selEnd.c), c2=Math.max(selStart.c,selEnd.c);
+  var sum=0, count=0, nums=[];
+  for (var r=r1;r<=r2;r++) for (var col=c1;col<=c2;col++) {
+    var v=sheetData[cellId(r,col)];
+    if (v && !isNaN(parseFloat(v.replace(/[,₡]/g,'')))) {
+      var n=parseFloat(v.replace(/[,₡]/g,'')); sum+=n; count++; nums.push(n);
+    }
+  }
+  var info = 'Suma: '+sum.toLocaleString('es-CR')+' | Promedio: '+(count?( sum/count).toLocaleString('es-CR'):'—')+' | Conteo: '+count;
+  var sl = document.getElementById('statusLeft');
+  if (sl) sl.textContent = info;
+}
+
+// ── Override canvasGuardar to include formats ────────
+function canvasGuardar() {
+  try {
+    localStorage.setItem('sheetData_v13', JSON.stringify(sheetData));
+    localStorage.setItem('cellFormats_v13', JSON.stringify(cellFormats));
+    localStorage.setItem('cellComments_v13', JSON.stringify(cellComments));
+    localStorage.setItem('sheets_v13', JSON.stringify(sheets));
+  } catch(e) {}
+  var sl = document.getElementById('statusLeft');
+  if (sl) sl.textContent = 'Guardado: ' + new Date().toLocaleTimeString('es-CR');
+}
+function canvasRestaurar() {
+  try {
+    var s = localStorage.getItem('sheetData_v13');
+    var f = localStorage.getItem('cellFormats_v13');
+    var cm = localStorage.getItem('cellComments_v13');
+    var sh = localStorage.getItem('sheets_v13');
+    if (s) { sheetData = JSON.parse(s); renderAllCells(); }
+    if (f) { cellFormats = JSON.parse(f); applyAllFormats(); }
+    if (cm) cellComments = JSON.parse(cm);
+    if (sh) sheets = JSON.parse(sh);
+    document.getElementById('statusLeft').textContent = 'Restaurado OK';
+  } catch(e) { alert('No hay datos guardados.'); }
+}
+
+// ── Mouse selection (Shift+Click) ────────────────────
+function setupMouseSelection() {
+  var table = document.getElementById('sheetTable');
+  if (!table) return;
+  table.addEventListener('mousedown', function(e) {
+    var td = e.target.closest('.sh-cell');
+    if (!td) return;
+    var r=parseInt(td.dataset.r), col=parseInt(td.dataset.c);
+    if (e.shiftKey && selStart) {
+      selEnd = {r:r,c:col};
+      renderSelection();
+      updateStatusBar();
+    } else {
+      selStart = {r:r,c:col}; selEnd={r:r,c:col};
+      isSelecting = true;
+    }
+  });
+  table.addEventListener('mousemove', function(e) {
+    if (!isSelecting) return;
+    var td = e.target.closest('.sh-cell');
+    if (!td) return;
+    selEnd = {r:parseInt(td.dataset.r), c:parseInt(td.dataset.c)};
+    renderSelection();
+  });
+  document.addEventListener('mouseup', function() {
+    if (isSelecting) { isSelecting=false; updateStatusBar(); }
+  });
+}
+
+// ── Init all extended features ───────────────────────
+function initExtendedFeatures() {
+  addColumnResizers();
+  setupFormulaBarAC();
+  setupContextMenu();
+  setupMouseSelection();
+  // Add comment button to format bar
+  var fmtBar = document.getElementById('fmtBar');
+  if (fmtBar) {
+    var btn = document.createElement('button');
+    btn.className = 'fmt-btn';
+    btn.title = 'Agregar comentario';
+    btn.textContent = '💬';
+    btn.onclick = addComment;
+    fmtBar.appendChild(btn);
+  }
+}
+
+
+function translateSheetHeaders(lang) {
+  // The spreadsheet column/row labels (A,B,C / 1,2,3) are universal
+  // What translates are: formula bar placeholder, section titles in templates
+  // Re-render any template that's currently active in the sheet
+  var fi = document.getElementById('formulaInput');
+  if(fi) {
+    var d2 = translations[lang] || translations['es'];
+    fi.placeholder = (d2&&d2['formula.placeholder']) || 'Ingresá un valor o fórmula...';
+  }
+}
+
+function buildSheet() {
+  var table = document.getElementById('sheetTable');
+  if (!table) return;
+  var html = '';
+
+  // Header row
+  html += '<thead><tr>';
+  html += '<th class="sh-corner"></th>';
+  for (var col = 0; col < SHEET_COLS; col++) {
+    html += '<th class="sh-col-header" id="sch_' + col + '" onclick="selectCol(' + col + ')">' + colLetter(col) + '</th>';
+  }
+  html += '</tr></thead><tbody>';
+
+  // Data rows
+  for (var row = 0; row < SHEET_ROWS; row++) {
+    html += '<tr class="sh-row">';
+    html += '<td class="sh-row-header" id="srh_' + row + '" onclick="selectRow(' + row + ')">' + (row + 1) + '</td>';
+    for (var col2 = 0; col2 < SHEET_COLS; col2++) {
+      var id = 'sc_' + row + '_' + col2;
+      html += '<td class="sh-cell" id="' + id + '" data-r="' + row + '" data-c="' + col2 + '">' +
+              '<div class="sh-cell-inner" id="si_' + row + '_' + col2 + '"></div></td>';
+    }
+    html += '</tr>';
+  }
+  html += '</tbody>';
+  table.innerHTML = html;
+
+  // Attach events after build
+  attachSheetEvents();
+  activateCell(0, 0);
+  renderAllCells();
+}
+
+function attachSheetEvents() {
+  var table = document.getElementById('sheetTable');
+  if (!table) return;
+
+  // Click to select cell
+  table.addEventListener('mousedown', function(e) {
+    var td = e.target.closest('.sh-cell');
+    if (!td) return;
+    var r = parseInt(td.dataset.r);
+    var c = parseInt(td.dataset.c);
+    if (isEditing) commitEdit();
+    activateCell(r, c);
+    selStart = { r: r, c: c };
+    selEnd   = { r: r, c: c };
+    e.preventDefault();
+  });
+
+  // Keyboard navigation
+  document.addEventListener('keydown', sheetKeyDown);
+
+  // Formula bar input
+  var fi = document.getElementById('formulaInput');
+  if (fi) {
+    fi.addEventListener('input', function() {
+      if (!isEditing) startEdit();
+      var inner = document.getElementById('si_' + activeCell.r + '_' + activeCell.c);
+      if (inner) inner.textContent = fi.value;
+    });
+    fi.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') { e.preventDefault(); commitEdit(); moveCell(1, 0); }
+      if (e.key === 'Escape') { e.preventDefault(); cancelEdit(); }
+      if (e.key === 'Tab') { e.preventDefault(); commitEdit(); moveCell(0, 1); }
+    });
+  }
+}
+
+function activateCell(r, c) {
+  // Remove previous active
+  if (activeCell) {
+    var prev = cellEl(activeCell.r, activeCell.c);
+    if (prev) prev.classList.remove('active');
+    var prevRH = document.getElementById('srh_' + activeCell.r);
+    var prevCH = document.getElementById('sch_' + activeCell.c);
+    if (prevRH) prevRH.classList.remove('active-row');
+    if (prevCH) prevCH.classList.remove('active-col');
+  }
+  activeCell = { r: r, c: c };
+  var el = cellEl(r, c);
+  if (!el) return;
+  el.classList.add('active');
+
+  // Highlight row/col headers
+  var rh = document.getElementById('srh_' + r);
+  var ch = document.getElementById('sch_' + c);
+  if (rh) rh.classList.add('active-row');
+  if (ch) ch.classList.add('active-col');
+
+  // Update cell ref box
+  var ref = document.getElementById('cellRef');
+  if (ref) ref.textContent = cellId(r, c);
+
+  // Update formula bar with cell value
+  var fi = document.getElementById('formulaInput');
+  var key = cellId(r, c);
+  if (fi) fi.value = sheetData[key] || '';
+
+  // Scroll into view
+  el.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+}
+
+function startEdit() {
+  isEditing = true;
+  var el = cellEl(activeCell.r, activeCell.c);
+  if (el) {
+    el.classList.remove('active');
+    el.classList.add('editing');
+    var inner = document.getElementById('si_' + activeCell.r + '_' + activeCell.c);
+    if (inner) {
+      inner.contentEditable = 'true';
+      inner.focus();
+      // Put cursor at end
+      var range = document.createRange();
+      range.selectNodeContents(inner);
+      range.collapse(false);
+      var sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+    }
+  }
+}
+
+function commitEdit() {
+  if (!isEditing) return;
+  isEditing = false;
+  var inner = document.getElementById('si_' + activeCell.r + '_' + activeCell.c);
+  var fi    = document.getElementById('formulaInput');
+  // Get value from formula bar (primary) or inner
+  var val = fi ? fi.value : (inner ? inner.textContent : '');
+  var key = cellId(activeCell.r, activeCell.c);
+  if (val.trim() === '') {
+    delete sheetData[key];
+  } else {
+    sheetData[key] = val;
+  }
+  var el = cellEl(activeCell.r, activeCell.c);
+  if (el) {
+    el.classList.remove('editing');
+    el.classList.add('active');
+    if (inner) inner.contentEditable = 'false';
+  }
+  renderCell(activeCell.r, activeCell.c);
+}
+
+function cancelEdit() {
+  isEditing = false;
+  var el = cellEl(activeCell.r, activeCell.c);
+  if (el) {
+    el.classList.remove('editing');
+    el.classList.add('active');
+  }
+  var inner = document.getElementById('si_' + activeCell.r + '_' + activeCell.c);
+  if (inner) inner.contentEditable = 'false';
+  renderCell(activeCell.r, activeCell.c);
+}
+
+function renderCell(r, c) {
+  var key   = cellId(r, c);
+  var val   = sheetData[key] || '';
+  var inner = document.getElementById('si_' + r + '_' + c);
+  var el    = cellEl(r, c);
+  if (!inner || !el) return;
+  inner.contentEditable = 'false';
+
+  // Evaluate if formula
+  var display = val;
+  if (val.startsWith('=')) {
+    display = evalFormula(val, r, c);
+    el.classList.add('is-formula');
+    el.classList.remove('is-number');
+  } else if (val !== '' && !isNaN(val.replace(/[,₡\s]/g, ''))) {
+    el.classList.add('is-number');
+    el.classList.remove('is-formula');
+    // Format numbers
+    var num = parseFloat(val.replace(/[,₡\s]/g, ''));
+    if (!isNaN(num)) display = num.toLocaleString('es-CR');
+  } else {
+    el.classList.remove('is-number');
+    el.classList.remove('is-formula');
+  }
+
+  inner.textContent = display;
+  el.classList.toggle('has-data', val !== '');
+}
+
+function renderAllCells() {
+  for (var r = 0; r < SHEET_ROWS; r++) {
+    for (var col = 0; col < SHEET_COLS; col++) {
+      renderCell(r, col);
+    }
+  }
+}
+
+// Simple formula evaluator
+function evalFormula(formula, row, col) {
+  var expr = formula.substring(1).toUpperCase();
+  try {
+    // SUMA(A1:B5) or SUM(A1:B5)
+    var sumMatch = expr.match(/^(SUMA|SUM)\(([A-Z]+\d+):([A-Z]+\d+)\)$/);
+    if (sumMatch) {
+      var sum = 0;
+      var cells = rangeCells(sumMatch[2], sumMatch[3]);
+      cells.forEach(function(cid) { sum += numVal(cid); });
+      return sum.toLocaleString('es-CR');
+    }
+    // PROMEDIO/AVERAGE
+    var avgMatch = expr.match(/^(PROMEDIO|AVERAGE)\(([A-Z]+\d+):([A-Z]+\d+)\)$/);
+    if (avgMatch) {
+      var cells2 = rangeCells(avgMatch[2], avgMatch[3]);
+      var total = 0, count = 0;
+      cells2.forEach(function(cid) { var v = numVal(cid); if (!isNaN(v)) { total += v; count++; } });
+      return count > 0 ? (total / count).toLocaleString('es-CR') : '0';
+    }
+    // MAX / MIN
+    var mmMatch = expr.match(/^(MAX|MIN|MAXIMO|MINIMO)\(([A-Z]+\d+):([A-Z]+\d+)\)$/);
+    if (mmMatch) {
+      var cells3 = rangeCells(mmMatch[2], mmMatch[3]);
+      var vals = cells3.map(function(cid) { return numVal(cid); }).filter(function(v) { return !isNaN(v); });
+      if (vals.length === 0) return '0';
+      var res = mmMatch[1] === 'MAX' || mmMatch[1] === 'MAXIMO' ? Math.max.apply(null, vals) : Math.min.apply(null, vals);
+      return res.toLocaleString('es-CR');
+    }
+    // CONTAR/COUNT
+    var cntMatch = expr.match(/^(CONTAR|COUNT)\(([A-Z]+\d+):([A-Z]+\d+)\)$/);
+    if (cntMatch) {
+      var cells4 = rangeCells(cntMatch[2], cntMatch[3]);
+      var cnt = cells4.filter(function(cid) { return sheetData[cid] && !isNaN(numVal(cid)); }).length;
+      return cnt.toString();
+    }
+    // IVA(cel) = cel * 0.13
+    var ivaMatch = expr.match(/^IVA\(([A-Z]+\d+)\)$/);
+    if (ivaMatch) {
+      var v = numVal(ivaMatch[1]);
+      return (v * 0.13).toLocaleString('es-CR');
+    }
+    // Simple cell reference: =A1
+    var refMatch = expr.match(/^([A-Z]+\d+)$/);
+    if (refMatch) { return sheetData[refMatch[1]] || '0'; }
+    // Arithmetic with cell refs: =A1+B1 etc
+    var evalExpr = expr.replace(/([A-Z]+\d+)/g, function(m) { return numVal(m); });
+    var result = Function('"use strict"; return (' + evalExpr + ')')();
+    return isNaN(result) ? '#ERR' : Number(result).toLocaleString('es-CR');
+  } catch(e) {
+    return '#ERR';
+  }
+}
+
+function rangeCells(from, to) {
+  var fromCol = from.match(/[A-Z]+/)[0]; var fromRow = parseInt(from.match(/\d+/)[0]) - 1;
+  var toCol   = to.match(/[A-Z]+/)[0];   var toRow   = parseInt(to.match(/\d+/)[0]) - 1;
+  var fc = colIndex(fromCol); var tc = colIndex(toCol);
+  var cells = [];
+  for (var r = fromRow; r <= toRow; r++)
+    for (var col = fc; col <= tc; col++)
+      cells.push(cellId(r, col));
+  return cells;
+}
+
+function colIndex(letters) {
+  var n = 0;
+  for (var i = 0; i < letters.length; i++)
+    n = n * 26 + letters.charCodeAt(i) - 64;
+  return n - 1;
+}
+
+function numVal(cid) {
+  var v = sheetData[cid] || '0';
+  if (v.startsWith('=')) v = evalFormula(v, 0, 0);
+  return parseFloat(String(v).replace(/[,₡\s]/g, '')) || 0;
+}
+
+function moveCell(dr, dc) {
+  var r = Math.max(0, Math.min(SHEET_ROWS - 1, activeCell.r + dr));
+  var c2 = Math.max(0, Math.min(SHEET_COLS - 1, activeCell.c + dc));
+  activateCell(r, c2);
+}
+
+function selectRow(row) {
+  activateCell(row, 0);
+  var rh = document.getElementById('srh_' + row);
+  if (rh) rh.classList.add('selected');
+}
+function selectCol(col) {
+  activateCell(0, col);
+  var ch = document.getElementById('sch_' + col);
+  if (ch) ch.classList.add('selected');
+}
+
+function sheetKeyDown(e) {
+  // Don't interfere when typing in formula bar or modals are open
+  if (e.target.id === 'formulaInput') return;
+  if (e.target.closest('.modal.active')) return;
+  if (e.target.closest('.sibo-widget')) return;
+
+  if (isEditing) {
+    if (e.key === 'Enter' || e.key === 'Tab') {
+      e.preventDefault();
+      commitEdit();
+      if (e.key === 'Enter') moveCell(1, 0);
+      else moveCell(0, e.shiftKey ? -1 : 1);
+    }
+    if (e.key === 'Escape') { e.preventDefault(); cancelEdit(); }
+    return;
+  }
+
+  switch(e.key) {
+    case 'ArrowUp':    e.preventDefault(); moveCell(-1, 0); break;
+    case 'ArrowDown':  e.preventDefault(); moveCell(1, 0);  break;
+    case 'ArrowLeft':  e.preventDefault(); moveCell(0, -1); break;
+    case 'ArrowRight': e.preventDefault(); moveCell(0, 1);  break;
+    case 'Tab':        e.preventDefault(); moveCell(0, e.shiftKey ? -1 : 1); break;
+    case 'Enter':      e.preventDefault(); startEdit(); break;
+    case 'F2':         e.preventDefault(); startEdit(); break;
+    case 'Delete':
+    case 'Backspace':
+      e.preventDefault();
+      var key2 = cellId(activeCell.r, activeCell.c);
+      delete sheetData[key2];
+      renderCell(activeCell.r, activeCell.c);
+      var fi2 = document.getElementById('formulaInput');
+      if (fi2) fi2.value = '';
+      break;
+    default:
+      // Printable character — start editing
+      if (e.key.length === 1 && !e.ctrlKey && !e.metaKey) {
+        startEdit();
+        var inner = document.getElementById('si_' + activeCell.r + '_' + activeCell.c);
+        if (inner) { inner.textContent = ''; }
+        var fi3 = document.getElementById('formulaInput');
+        if (fi3) { fi3.value = e.key; fi3.focus(); }
+        e.preventDefault();
+      }
+      break;
+  }
+}
+
+// Double-click to edit
+document.addEventListener('dblclick', function(e) {
+  var td = e.target.closest('.sh-cell');
+  if (!td) return;
+  startEdit();
+});
+
+// Autosuma
+function sheetAutoSum() {
+  // Sum the column above the active cell
+  var r = activeCell.r; var col = activeCell.c;
+  if (r === 0) return;
+  var fromId = cellId(0, col);
+  var toId   = cellId(r - 1, col);
+  var formula = '=SUMA(' + fromId + ':' + toId + ')';
+  var key = cellId(r, col);
+  sheetData[key] = formula;
+  renderCell(r, col);
+  activateCell(r, col);
+  var fi = document.getElementById('formulaInput');
+  if (fi) fi.value = formula;
+}
+
+// Insert accounting template
+function sheetInsertTable() {
+  var templates = {
+    headers:  ['Fecha',   'Cuenta',        'Debe (CRC)', 'Haber (CRC)', 'Saldo'],
+    row1:     ['',        'Caja y Bancos',  '56500',      '',            '56500'],
+    row2:     ['',        'Ventas',         '',           '50000',       ''],
+    row3:     ['',        'IVA por Pagar',  '',           '6500',        ''],
+  };
+  var startRow = activeCell.r;
+  var startCol = activeCell.c;
+  var today = new Date().toLocaleDateString('es-CR');
+
+  // Headers in bold-ish
+  var cols = templates.headers;
+  cols.forEach(function(h, i) {
+    var key = cellId(startRow, startCol + i);
+    sheetData[key] = h;
+    renderCell(startRow, startCol + i);
+  });
+  // Data rows
+  [templates.row1, templates.row2, templates.row3].forEach(function(row, ri) {
+    row.forEach(function(val, ci) {
+      var key = cellId(startRow + 1 + ri, startCol + ci);
+      sheetData[key] = ci === 0 ? today : val;
+      renderCell(startRow + 1 + ri, startCol + ci);
+    });
+  });
+  // Sum row
+  var sumRow = startRow + 4;
+  sheetData[cellId(sumRow, startCol + 1)] = 'TOTAL';
+  sheetData[cellId(sumRow, startCol + 2)] = '=SUMA(' + cellId(startRow+1, startCol+2) + ':' + cellId(startRow+3, startCol+2) + ')';
+  sheetData[cellId(sumRow, startCol + 3)] = '=SUMA(' + cellId(startRow+1, startCol+3) + ':' + cellId(startRow+3, startCol+3) + ')';
+  for (var i = 0; i < 5; i++) renderCell(sumRow, startCol + i);
+  activateCell(startRow, startCol);
+}
+
+// Clear sheet
+function sheetClear() {
+  if (confirm('Limpiar toda la hoja?')) {
+    sheetData = {};
+    renderAllCells();
+    activateCell(0, 0);
+    var fi = document.getElementById('formulaInput');
+    if (fi) fi.value = '';
+  }
+}
+
+// Save/restore sheetData
+function canvasGuardar() {
+  try { localStorage.setItem('sheetData_v13', JSON.stringify(sheetData)); } catch(e) {}
+  var sl = document.getElementById('statusLeft');
+  if (sl) sl.textContent = 'Guardado: ' + new Date().toLocaleTimeString('es-CR');
+}
+function canvasRestaurar() {
+  try {
+    var s = localStorage.getItem('sheetData_v13');
+    if (s) {
+      sheetData = JSON.parse(s);
+      renderAllCells();
+      document.getElementById('statusLeft').textContent = 'Restaurado OK';
+    } else { alert('No hay datos guardados.'); }
+  } catch(e) {}
+}
+function canvasNuevo() {
+  if (confirm('Crear nueva hoja? Se perderá el contenido actual.')) {
+    sheetData = {};
+    renderAllCells();
+    activateCell(0, 0);
+  }
+}
+function canvasLimpiar() { sheetClear(); }
+
+// Legacy compat (used in loadTemplate etc.)
+function insertarTabla() { sheetInsertTable(); }
+function insertarNota() {
+  var key = cellId(activeCell.r, activeCell.c);
+  sheetData[key] = '📝 Nota: ';
+  renderCell(activeCell.r, activeCell.c);
+  startEdit();
+}
+function insertarGrafico() { alert('Usá el menú Insertar → Gráfico para gráficos avanzados.'); }
+function calcularTotalesCeldas() { sheetAutoSum(); }
+
+
 document.addEventListener('DOMContentLoaded', function() {
 
   // Language
@@ -2796,8 +5251,13 @@ document.addEventListener('DOMContentLoaded', function() {
   if(fechaInput) fechaInput.value=new Date().toISOString().split('T')[0];
   agregarLineaFactura();
 
-  // Restore canvas
-  try{ var saved=localStorage.getItem('canvasData_v13'); if(saved) document.getElementById('canvas').innerHTML=saved; }catch(e){}
+  // Build spreadsheet
+  buildSheet();
+  // Restore sheet data
+  try{
+    var saved = localStorage.getItem('sheetData_v13');
+    if(saved){ sheetData = JSON.parse(saved); renderAllCells(); }
+  }catch(e){}
 
   // Update fn count
   var total=0; Object.values(fnData).forEach(function(arr){ total+=arr?arr.length:0; });
@@ -2808,8 +5268,20 @@ document.addEventListener('DOMContentLoaded', function() {
     var sm=document.getElementById('statusMid'); if(sm) sm.style.display='flex';
   }
 
+  // Extended spreadsheet features
+  setTimeout(initExtendedFeatures, 100);
+
+  // Restore formats too
+  try{
+    var fmts = localStorage.getItem('cellFormats_v13');
+    if(fmts){ cellFormats = JSON.parse(fmts); applyAllFormats(); }
+  }catch(e){}
+
   console.log('Matriz Contable CR v13 OK — '+total+' funciones');
 });
+
+
+
 </script>
 </body>
 </html>
