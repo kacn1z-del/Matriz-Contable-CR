@@ -2,266 +2,372 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Matriz Contable CR v12</title>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Matriz Contable CR · v13</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 34 34'><polygon points='17,2 30,9.5 30,24.5 17,32 4,24.5 4,9.5' fill='%235abf2a'/><text x='17' y='24' text-anchor='middle' font-size='13' font-weight='700' fill='white' font-family='Georgia'>₡</text></svg>">
 <style>
-/* ── TOKENS ─────────────────────────────────────────────── */
-:root {
-  --g1:#5abf2a; --g2:#3a9e10; --g3:#2d7a0c;
-  --white:#fff; --off:#f8fef4; --bg2:#f0fae8; --bg3:#e6f5d8;
-  --border:#d4edbc; --border2:#b8df94;
-  --text:#1a2e0f; --text2:#4a6b2a; --text3:#7a9b5a;
-  --danger:#dc2626; --warn:#d97706;
-  --shadow:0 4px 24px rgba(58,158,16,.13);
-  --shadow2:0 8px 40px rgba(58,158,16,.18);
-  --radius:14px; --radius2:20px;
+:root{
+  --g1:#5abf2a;--g2:#3a9e10;--g3:#2d7a0c;--g4:#1e5208;
+  --white:#fff;--off:#f7fdf2;--bg2:#eef8e4;--bg3:#e2f2d4;
+  --border:#cce9ae;--border2:#aad98a;
+  --text:#152b09;--text2:#3d6020;--text3:#6b8f48;
+  --danger:#dc2626;
+  --sh1:0 2px 8px rgba(0,0,0,.09);
+  --sh2:0 8px 32px rgba(0,0,0,.15);
+  --r1:7px;--r2:11px;--r3:16px;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--white);color:var(--text);min-height:100vh}
+html{height:100%;-webkit-text-size-adjust:100%;}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#e6f0e6;color:var(--text);font-size:13px;min-height:100vh;overflow-x:hidden;}
+button,input,select{font-family:inherit;font-size:13px;}
+button{cursor:pointer;}
 
-/* ── HERO HEADER ─────────────────────────────────────────── */
-.hero-header{
-  background:linear-gradient(135deg,#5abf2a 0%,#3a9e10 35%,#e8f5e0 70%,#ffffff 100%);
-  padding:36px 32px 0;
-  position:relative;overflow:hidden;
+/* ═══ TITLEBAR ══════════════════════════════════════ */
+.titlebar{
+  background:linear-gradient(120deg,var(--g4) 0%,var(--g3) 35%,var(--g2) 65%,#52b826 88%,#8fdc52 100%);
+  position:sticky;top:0;z-index:800;
+  box-shadow:0 2px 16px rgba(0,0,0,.22);
 }
-.hero-header::before{
-  content:'';position:absolute;inset:0;
-  background:radial-gradient(ellipse at 70% 50%,rgba(255,255,255,.35) 0%,transparent 70%);
+.tb-top{
+  display:flex;align-items:center;gap:10px;
+  padding:8px 14px 6px;
 }
-.hero-top{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;}
-.hero-logo{display:flex;align-items:center;gap:12px;}
-.hero-logo-icon{width:44px;height:44px;background:rgba(255,255,255,.25);backdrop-filter:blur(8px);border:1.5px solid rgba(255,255,255,.5);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;}
-.hero-title-block h1{font-size:22px;font-weight:800;color:#fff;letter-spacing:-.3px;line-height:1.1;}
-.hero-title-block p{font-size:11px;font-weight:600;color:rgba(255,255,255,.8);letter-spacing:2px;text-transform:uppercase;margin-top:2px;}
-.hero-actions{display:flex;align-items:center;gap:8px;}
-.btn-hero{display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;border:none;transition:all .18s;}
-.btn-hero-white{background:rgba(255,255,255,.95);color:var(--g3);}
-.btn-hero-white:hover{background:#fff;box-shadow:0 4px 16px rgba(0,0,0,.12);}
-.btn-hero-ghost{background:rgba(255,255,255,.18);backdrop-filter:blur(6px);border:1.5px solid rgba(255,255,255,.4);color:#fff;}
-.btn-hero-ghost:hover{background:rgba(255,255,255,.28);}
-.lang-select{background:rgba(255,255,255,.18);backdrop-filter:blur(6px);border:1.5px solid rgba(255,255,255,.35);border-radius:9px;color:#fff;padding:6px 10px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;}
-.lang-select option{color:var(--text);background:#fff;}
+.tb-logo{display:flex;align-items:center;gap:9px;text-decoration:none;flex-shrink:0;}
+.tb-logo-icon{width:34px;height:34px;background:rgba(255,255,255,.22);border:1.5px solid rgba(255,255,255,.4);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px;}
+.tb-name{color:#fff;font-size:15px;font-weight:800;letter-spacing:-.3px;line-height:1.1;}
+.tb-ver{color:rgba(255,255,255,.65);font-size:9.5px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;}
+.tb-spacer{flex:1;min-width:0;}
+.tb-actions{display:flex;align-items:center;gap:6px;flex-shrink:0;}
+.tb-btn{display:flex;align-items:center;gap:4px;padding:5px 10px;border-radius:var(--r1);border:1.5px solid rgba(255,255,255,.3);background:rgba(255,255,255,.15);color:#fff;font-size:12px;font-weight:600;white-space:nowrap;}
+.tb-btn:hover{background:rgba(255,255,255,.26);}
+.tb-sibo-btn{background:rgba(255,255,255,.95)!important;color:var(--g3)!important;border-color:transparent!important;box-shadow:0 2px 8px rgba(0,0,0,.13);}
+.tb-sibo-btn:hover{background:#fff!important;transform:translateY(-1px);box-shadow:0 4px 14px rgba(0,0,0,.18)!important;}
+.sibo-dot{width:7px;height:7px;border-radius:50%;background:var(--g1);display:inline-block;animation:sdot 2s infinite;}
+@keyframes sdot{0%,100%{opacity:1}50%{opacity:.35}}
+.lang-sel{background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.28);border-radius:var(--r1);color:#fff;padding:5px 7px;font-size:11.5px;font-weight:600;max-width:110px;}
+.lang-sel option{color:var(--text);background:#fff;}
 
-/* ── RIBBON (tabs like Office) ───────────────────────────── */
-.ribbon{
-  position:relative;z-index:2;
-  background:rgba(255,255,255,.72);
-  backdrop-filter:blur(20px);
-  border-top:1px solid rgba(255,255,255,.6);
-  padding:0 32px;
-  display:flex;align-items:stretch;gap:2px;
+/* ═══ MENUBAR (dropdown trigger row) ════════════════ */
+.menubar{
+  display:flex;align-items:flex-end;
+  padding:0 6px;
+  overflow-x:auto;
+  gap:1px;
+  -webkit-overflow-scrolling:touch;
 }
-.ribbon-tab{
-  display:flex;align-items:center;gap:6px;
-  padding:13px 18px;font-size:13px;font-weight:600;
-  color:var(--text2);cursor:pointer;
-  border:none;background:none;font-family:inherit;
-  border-bottom:3px solid transparent;
-  transition:all .15s;white-space:nowrap;
-}
-.ribbon-tab:hover{color:var(--g2);background:rgba(90,191,42,.06);}
-.ribbon-tab.active{color:var(--g2);border-bottom-color:var(--g2);background:rgba(90,191,42,.08);}
-.ribbon-tab svg{width:15px;height:15px;flex-shrink:0;}
-.ribbon-ia{
-  margin-left:auto;display:flex;align-items:center;gap:6px;
-  padding:8px 16px;border-radius:10px;
-  background:linear-gradient(135deg,var(--g1),var(--g3));
-  color:#fff;font-size:13px;font-weight:700;
-  border:none;cursor:pointer;font-family:inherit;
-  box-shadow:0 2px 12px rgba(58,158,16,.3);
-  transition:all .18s;align-self:center;margin-right:0;
-}
-.ribbon-ia:hover{transform:translateY(-1px);box-shadow:0 4px 18px rgba(58,158,16,.4);}
-
-/* ── RIBBON PANELS ───────────────────────────────────────── */
-.ribbon-panels{background:rgba(255,255,255,.85);backdrop-filter:blur(16px);border-bottom:1.5px solid var(--border);}
-.ribbon-panel{display:none;padding:12px 32px;gap:6px;flex-wrap:wrap;align-items:center;}
-.ribbon-panel.active{display:flex;}
-.rpanel-group{display:flex;align-items:center;gap:4px;padding:0 10px;border-right:1px solid var(--border);position:relative;}
-.rpanel-group:last-child{border-right:none;}
-.rpanel-group-label{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px;position:absolute;bottom:-18px;left:50%;transform:translateX(-50%);white-space:nowrap;}
-.rb{display:flex;align-items:center;gap:5px;padding:7px 13px;border-radius:9px;border:none;background:transparent;color:var(--text2);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s;white-space:nowrap;}
-.rb:hover{background:var(--bg2);color:var(--g2);}
-.rb.primary{background:linear-gradient(135deg,var(--g1),var(--g2));color:#fff;box-shadow:0 2px 10px rgba(58,158,16,.25);}
-.rb.primary:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(58,158,16,.35);}
-.rb svg{width:15px;height:15px;flex-shrink:0;}
-.rb-sep{width:1px;height:28px;background:var(--border);margin:0 4px;}
-
-/* ── MAIN CANVAS AREA ────────────────────────────────────── */
-.workspace{min-height:calc(100vh - 180px);padding:28px 32px;background:var(--white);}
-#canvas{
-  min-height:340px;
-  background:var(--off);
-  border:1.5px dashed var(--border2);
-  border-radius:var(--radius2);
-  padding:24px;
+.menubar::-webkit-scrollbar{height:0;}
+.mb-tab{
+  flex-shrink:0;
+  padding:7px 12px;border-radius:var(--r1) var(--r1) 0 0;
+  font-size:12px;font-weight:700;color:rgba(255,255,255,.82);
+  border:none;background:transparent;
+  white-space:nowrap;transition:all .12s;
   position:relative;
-  transition:all .2s;
 }
-#canvas:hover{border-color:var(--g2);}
-#canvas-placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;height:280px;gap:12px;color:var(--text3);}
-#canvas-placeholder svg{width:48px;height:48px;opacity:.35;}
-#canvas-placeholder p{font-size:14px;font-weight:600;}
-#canvas-placeholder small{font-size:12px;opacity:.7;}
+.mb-tab:hover{background:rgba(255,255,255,.18);color:#fff;}
+.mb-tab.active{background:#fff;color:var(--g3);}
 
-/* ── STATUS BAR ──────────────────────────────────────────── */
+/* ═══ DROPDOWN MENUS ════════════════════════════════ */
+.dd-overlay{display:none;position:fixed;inset:0;z-index:600;}
+.dd-overlay.open{display:block;}
+
+.dd-menu{
+  position:fixed;z-index:700;
+  background:#fff;
+  border:1.5px solid var(--border);
+  border-radius:var(--r2);
+  box-shadow:var(--sh2);
+  min-width:220px;
+  max-height:80vh;
+  overflow-y:auto;
+  padding:6px 0;
+  display:none;
+}
+.dd-menu.open{display:block;}
+
+.dd-section-title{
+  font-size:10px;font-weight:800;color:var(--text3);
+  text-transform:uppercase;letter-spacing:.9px;
+  padding:8px 14px 3px;
+}
+.dd-sep{height:1px;background:var(--border);margin:4px 0;}
+.dd-item{
+  display:flex;align-items:center;gap:9px;
+  padding:8px 14px;color:var(--text2);
+  transition:background .1s;white-space:nowrap;
+  font-size:13px;font-weight:500;
+}
+.dd-item:hover{background:var(--bg2);color:var(--g2);}
+.dd-item .di{font-size:15px;width:20px;text-align:center;flex-shrink:0;}
+.dd-item .dk{margin-left:auto;font-size:10px;color:var(--text3);background:var(--bg2);padding:1px 5px;border-radius:4px;}
+
+/* ═══ MAIN LAYOUT ════════════════════════════════════ */
+.app-body{
+  display:flex;
+  height:calc(100vh - 96px); /* titlebar height */
+}
+
+/* ═══ SIDEBAR ════════════════════════════════════════ */
+.sidebar{
+  width:240px;flex-shrink:0;
+  background:#fff;border-right:1.5px solid var(--border);
+  display:flex;flex-direction:column;overflow-y:auto;
+  transition:transform .25s;
+}
+.sb-sec{padding:10px 10px 6px;}
+.sb-title{font-size:10px;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:1px;padding:0 4px;margin-bottom:5px;}
+.sb-btn{
+  display:flex;align-items:center;gap:8px;width:100%;
+  padding:7px 10px;border-radius:var(--r1);border:none;background:transparent;
+  color:var(--text2);text-align:left;transition:all .12s;
+  font-size:12.5px;font-weight:500;
+}
+.sb-btn:hover{background:var(--bg2);color:var(--g2);}
+.sb-btn .si{font-size:14px;width:18px;text-align:center;flex-shrink:0;}
+.sb-div{height:1px;background:var(--border);margin:5px 10px;}
+
+/* ═══ SIBÖ SIDEBAR WIDGET ════════════════════════════ */
+.sibo-widget{
+  margin:10px;border-radius:var(--r3);overflow:hidden;
+  background:linear-gradient(155deg,var(--g3),var(--g4));
+  box-shadow:0 4px 20px rgba(45,122,12,.22);
+  flex-shrink:0;
+}
+.sw-head{padding:10px 12px 6px;display:flex;align-items:center;justify-content:space-between;}
+.sw-head-l{display:flex;align-items:center;gap:7px;color:#fff;}
+.sw-head-l strong{font-size:14px;font-weight:800;}
+.sw-badge{background:rgba(255,255,255,.2);border-radius:4px;padding:1px 6px;font-size:9px;font-weight:800;letter-spacing:1px;color:#fff;}
+.sw-clr{background:rgba(255,255,255,.14);border:none;border-radius:6px;color:rgba(255,255,255,.8);width:26px;height:26px;font-size:13px;}
+.sw-chips{display:flex;flex-wrap:wrap;gap:4px;padding:0 10px 6px;}
+.sw-chip{background:rgba(255,255,255,.14);border:none;border-radius:20px;padding:3px 9px;font-size:10.5px;font-weight:600;color:rgba(255,255,255,.9);}
+.sw-chip:hover{background:rgba(255,255,255,.26);}
+.sw-msgs{background:rgba(0,0,0,.14);padding:8px;max-height:150px;overflow-y:auto;display:flex;flex-direction:column;gap:5px;}
+.sw-msgs::-webkit-scrollbar{width:3px}
+.sw-msgs::-webkit-scrollbar-thumb{background:rgba(255,255,255,.2);border-radius:10px}
+.msg-b{background:rgba(255,255,255,.12);color:rgba(255,255,255,.92);padding:6px 9px;border-radius:8px;border-bottom-left-radius:2px;font-size:11.5px;line-height:1.45;}
+.msg-u{background:rgba(255,255,255,.22);color:#fff;padding:6px 9px;border-radius:8px;border-bottom-right-radius:2px;font-size:11.5px;line-height:1.45;align-self:flex-end;max-width:88%;}
+.sw-typing{font-size:10px;color:rgba(255,255,255,.5);padding:3px 10px;display:none;}
+.sw-inp{display:flex;gap:5px;padding:7px 8px;background:rgba(0,0,0,.1);}
+.sw-inp input{flex:1;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.24);border-radius:7px;padding:6px 9px;font-size:11.5px;color:#fff;outline:none;}
+.sw-inp input::placeholder{color:rgba(255,255,255,.44);}
+.sw-inp input:focus{border-color:rgba(255,255,255,.5);}
+.sw-send{background:rgba(255,255,255,.22);border:none;border-radius:7px;color:#fff;width:30px;height:30px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.sw-send:hover{background:rgba(255,255,255,.38);}
+
+/* ═══ CANVAS ══════════════════════════════════════════ */
+.canvas-wrap{flex:1;padding:14px;overflow-y:auto;background:#e6f0e6;min-width:0;}
+.canvas-card{background:#fff;border-radius:var(--r3);border:1.5px solid var(--border);min-height:400px;box-shadow:var(--sh1);}
+.canvas-bar{
+  display:flex;align-items:center;gap:6px;flex-wrap:wrap;
+  padding:9px 14px;border-bottom:1px solid var(--border);background:var(--off);
+  border-radius:var(--r3) var(--r3) 0 0;
+}
+.canvas-bar span{font-size:10.5px;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;}
+.cb-btn{padding:4px 10px;border-radius:6px;border:none;background:transparent;color:var(--text2);font-size:12px;font-weight:600;}
+.cb-btn:hover{background:var(--bg2);color:var(--g2);}
+.cb-btn.prim{background:var(--g2);color:#fff;margin-left:auto;}
+#canvas{
+  padding:16px;min-height:360px;
+  background-image:
+    linear-gradient(rgba(90,191,42,.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(90,191,42,.08) 1px, transparent 1px),
+    linear-gradient(rgba(90,191,42,.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(90,191,42,.04) 1px, transparent 1px);
+  background-size: 80px 80px, 80px 80px, 20px 20px, 20px 20px;
+  background-position: -1px -1px, -1px -1px, -1px -1px, -1px -1px;
+}
+#canvas:empty::before{content:"Usá el menú para insertar plantillas, tablas o fórmulas";display:block;text-align:center;padding:60px 20px;color:var(--text3);font-size:13px;}
+
+/* ═══ TABLES ══════════════════════════════════════════ */
+.tbl{width:100%;border-collapse:collapse;font-size:12.5px;margin-bottom:12px;}
+.tbl th{background:var(--bg3);padding:7px 10px;text-align:left;font-weight:700;color:var(--g3);font-size:11px;border-bottom:2px solid var(--border2);}
+.tbl td{padding:6px 10px;border-bottom:1px solid var(--border);}
+.tbl td[contenteditable]:focus{outline:2px solid var(--g1);border-radius:3px;}
+.tbl tbody tr:hover td{background:var(--off);}
+.total-row{font-weight:700!important;background:var(--bg2)!important;}
+.pl-bar{display:flex;gap:5px;margin-bottom:10px;flex-wrap:wrap;}
+.pl-btn{padding:4px 10px;border-radius:6px;font-size:12px;font-weight:700;border:none;}
+
+/* ═══ STATUS BAR ══════════════════════════════════════ */
 .statusbar{
-  position:fixed;bottom:0;left:0;right:0;
-  background:linear-gradient(90deg,var(--g2),var(--g3));
-  color:rgba(255,255,255,.9);
-  padding:5px 32px;font-size:11px;font-weight:600;
-  display:flex;align-items:center;justify-content:space-between;
-  z-index:100;letter-spacing:.3px;
+  height:24px;background:linear-gradient(90deg,var(--g3),var(--g2));
+  display:flex;align-items:center;padding:0 14px;gap:12px;
+  position:fixed;bottom:0;left:0;right:0;z-index:100;
 }
+.st-it{font-size:10.5px;font-weight:600;color:rgba(255,255,255,.85);display:flex;align-items:center;gap:4px;}
+.st-dot{width:6px;height:6px;border-radius:50%;background:#7fff4a;}
 
-/* ── MODALS ──────────────────────────────────────────────── */
-.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);backdrop-filter:blur(4px);z-index:1000;align-items:center;justify-content:center;padding:16px;}
+/* ═══ MODALS ══════════════════════════════════════════ */
+.modal{display:none;position:fixed;inset:0;background:rgba(10,30,5,.5);backdrop-filter:blur(5px);z-index:2000;align-items:center;justify-content:center;padding:12px;}
 .modal.active{display:flex;}
-.modal-box{background:#fff;border-radius:20px;box-shadow:0 24px 80px rgba(0,0,0,.18);width:100%;max-width:760px;max-height:90vh;overflow:hidden;display:flex;flex-direction:column;}
-.modal-box.narrow{max-width:480px;}
-.modal-head{display:flex;align-items:center;justify-content:space-between;padding:18px 24px 14px;border-bottom:1.5px solid var(--border);}
-.modal-head h3{font-size:16px;font-weight:800;color:var(--g3);}
-.modal-close{background:var(--bg2);border:none;border-radius:8px;width:30px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text2);transition:all .15s;}
-.modal-close:hover{background:var(--bg3);color:var(--g3);}
-.modal-body{overflow-y:auto;flex:1;}
-.modal-footer{padding:14px 24px;border-top:1.5px solid var(--border);display:flex;gap:8px;justify-content:flex-end;}
+.mbox{background:#fff;border-radius:var(--r3);box-shadow:0 20px 60px rgba(0,0,0,.22);width:100%;max-width:820px;max-height:92vh;overflow:hidden;display:flex;flex-direction:column;}
+.mbox.sm{max-width:500px;}
+.mhead{display:flex;align-items:center;justify-content:space-between;padding:13px 18px;border-bottom:1px solid var(--border);background:var(--off);}
+.mhead h3{font-size:14px;font-weight:800;color:var(--g3);}
+.mcls{background:var(--bg2);border:none;border-radius:6px;width:26px;height:26px;font-size:16px;color:var(--text2);}
+.mcls:hover{background:var(--bg3);}
+.mbody{overflow-y:auto;flex:1;}
+.mfoot{padding:11px 18px;border-top:1px solid var(--border);display:flex;gap:7px;justify-content:flex-end;background:var(--off);}
+.mb-btn{padding:7px 14px;border-radius:var(--r1);border:none;font-size:13px;font-weight:600;}
+.mb-btn.p{background:linear-gradient(135deg,var(--g1),var(--g2));color:#fff;}
+.mb-btn.s{background:var(--bg2);color:var(--text2);}
 
-/* ── TABLES ──────────────────────────────────────────────── */
-.tbl{width:100%;border-collapse:collapse;font-size:13px;}
-.tbl th{background:var(--bg3);padding:9px 12px;text-align:left;font-weight:700;color:var(--g3);font-size:12px;border-bottom:2px solid var(--border2);}
-.tbl td{padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text);}
-.tbl td[contenteditable="true"]:focus{outline:2px solid var(--g1);border-radius:4px;background:rgba(90,191,42,.04);}
-
-/* ── INPUT ───────────────────────────────────────────────── */
-.inp{width:100%;background:var(--bg2);border:1.5px solid var(--border2);border-radius:9px;padding:8px 12px;font-size:13px;color:var(--text);font-family:inherit;outline:none;transition:border-color .15s;}
-.inp:focus{border-color:var(--g1);background:#fff;}
-label.lbl{font-size:12px;font-weight:700;color:var(--text2);display:block;margin-bottom:4px;}
-.field{margin-bottom:12px;}
-
-/* ── SIBÖ PANEL ──────────────────────────────────────────── */
-.sibo-panel{
-  position:fixed;right:20px;bottom:48px;
-  width:360px;background:#fff;
-  border-radius:20px;box-shadow:0 8px 48px rgba(58,158,16,.22);
-  border:1.5px solid var(--border2);
-  display:none;flex-direction:column;z-index:900;
-  overflow:hidden;max-height:520px;
-}
-.sibo-panel.open{display:flex;}
-.sibo-head{
-  background:linear-gradient(135deg,var(--g1),var(--g3));
-  padding:14px 16px;display:flex;align-items:center;justify-content:space-between;
-}
-.sibo-head-left{display:flex;align-items:center;gap:8px;color:#fff;}
-.sibo-head-left strong{font-size:15px;font-weight:800;}
-.sibo-badge{background:rgba(255,255,255,.25);border-radius:6px;padding:2px 7px;font-size:10px;font-weight:800;letter-spacing:1px;}
-.sibo-close{background:rgba(255,255,255,.2);border:none;border-radius:8px;color:#fff;width:28px;height:28px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;}
-.sibo-shortcuts{padding:8px 12px;display:flex;gap:5px;flex-wrap:wrap;border-bottom:1px solid var(--border);}
-.sibo-chip{background:var(--bg2);border:1.5px solid var(--border);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;color:var(--g2);cursor:pointer;border:none;font-family:inherit;transition:all .15s;}
-.sibo-chip:hover{background:var(--bg3);color:var(--g3);}
-.sibo-msgs{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px;min-height:200px;}
-.msg-bot,.msg-user{padding:9px 13px;border-radius:12px;font-size:13px;line-height:1.5;max-width:90%;}
-.msg-bot{background:var(--bg2);border:1px solid var(--border);color:var(--text);align-self:flex-start;border-bottom-left-radius:4px;}
-.msg-user{background:linear-gradient(135deg,var(--g1),var(--g2));color:#fff;align-self:flex-end;border-bottom-right-radius:4px;}
-.sibo-typing{padding:4px 12px;font-size:11px;color:var(--text3);display:none;}
-.sibo-input-row{display:flex;gap:6px;padding:10px 12px;border-top:1px solid var(--border);}
-.sibo-input-row input{flex:1;background:var(--bg2);border:1.5px solid var(--border2);border-radius:10px;padding:8px 12px;font-size:13px;color:var(--text);outline:none;font-family:inherit;}
-.sibo-input-row input:focus{border-color:var(--g1);}
-.sibo-send{background:linear-gradient(135deg,var(--g1),var(--g2));border:none;border-radius:10px;color:#fff;width:36px;height:36px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-
-/* ── APPS GRID ───────────────────────────────────────────── */
-.apps-filters{display:flex;gap:6px;flex-wrap:wrap;padding:16px 24px 0;}
-.af{padding:5px 14px;border-radius:20px;border:1.5px solid var(--border2);background:var(--bg2);font-size:12px;font-weight:700;color:var(--text2);cursor:pointer;font-family:inherit;transition:all .15s;}
-.af.on{background:var(--g2);color:#fff;border-color:var(--g2);}
-.apps-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;padding:16px 24px;max-height:460px;overflow-y:auto;}
-.app-card{background:var(--off);border:1.5px solid var(--border);border-radius:14px;padding:14px;transition:all .18s;cursor:default;}
-.app-card:hover{border-color:var(--g1);transform:translateY(-2px);box-shadow:0 4px 16px rgba(90,191,42,.12);}
-.app-icon{font-size:20px;margin-bottom:6px;}
-.app-name{font-weight:800;font-size:14px;color:var(--g3);margin-bottom:3px;}
-.app-desc{font-size:11px;color:var(--text3);line-height:1.4;margin-bottom:8px;}
-.app-bottom{display:flex;justify-content:space-between;align-items:center;}
-.app-price{font-size:11px;font-weight:700;color:var(--g2);}
-.app-badge{font-size:10px;background:var(--bg3);border-radius:999px;padding:2px 8px;font-weight:600;color:var(--text2);}
-
-/* ── FN LIBRARY ──────────────────────────────────────────── */
-.fn-layout{display:grid;grid-template-columns:220px 1fr;height:500px;}
-.fn-sidebar{background:var(--off);border-right:1.5px solid var(--border);overflow-y:auto;padding:10px;}
-.fn-cat{padding:7px 12px;border-radius:9px;font-size:12px;font-weight:700;cursor:pointer;color:var(--text2);transition:all .12s;display:flex;justify-content:space-between;align-items:center;}
-.fn-cat:hover{background:var(--bg2);color:var(--g2);}
-.fn-cat.on{background:var(--g2);color:#fff;}
-.fn-cat span{font-size:10px;opacity:.7;}
-.fn-main{display:flex;flex-direction:column;overflow:hidden;}
-.fn-search-box{padding:12px 16px;border-bottom:1px solid var(--border);}
-.fn-list{flex:1;overflow-y:auto;padding:10px 14px;display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:7px;align-content:start;}
-.fn-card{background:var(--off);border:1.5px solid var(--border);border-radius:10px;padding:9px 11px;cursor:pointer;transition:all .12s;}
-.fn-card:hover{border-color:var(--g1);background:rgba(90,191,42,.05);}
-.fn-card-name{font-weight:700;font-size:13px;color:var(--g3);}
-.fn-card-en{font-size:10px;color:var(--g1);font-family:'JetBrains Mono',monospace;}
-.fn-card-desc{font-size:11px;color:var(--text3);line-height:1.35;margin-top:2px;}
-.fn-detail{padding:14px 16px;border-top:1.5px solid var(--border);background:#fff;display:none;}
-.fn-detail-name{font-size:15px;font-weight:800;color:var(--g3);margin-bottom:4px;}
-.fn-detail-syntax{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--g2);background:var(--bg3);padding:6px 10px;border-radius:8px;margin-bottom:6px;}
-.fn-detail-desc{font-size:13px;color:var(--text2);margin-bottom:6px;}
-.fn-detail-ex{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text3);background:var(--off);padding:5px 8px;border-radius:6px;}
-
-/* ── FACTURA ─────────────────────────────────────────────── */
-.factura-section{padding:16px 24px;display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-.factura-section.full{grid-column:1/-1;}
-.fe-table{width:100%;border-collapse:collapse;font-size:13px;}
-.fe-table th{background:var(--bg3);padding:7px 10px;text-align:left;font-weight:700;color:var(--g3);font-size:11px;border-bottom:2px solid var(--border2);}
-.fe-table td{padding:5px 8px;border-bottom:1px solid var(--border);}
-.fe-inp{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:4px 8px;font-size:12px;font-family:inherit;color:var(--text);outline:none;}
+/* ═══ INPUTS ══════════════════════════════════════════ */
+.inp{width:100%;background:var(--bg2);border:1.5px solid var(--border2);border-radius:var(--r1);padding:6px 10px;color:var(--text);outline:none;}
+.inp:focus{border-color:var(--g1);background:#fff;box-shadow:0 0 0 3px rgba(90,191,42,.1);}
+.lbl{font-size:11px;font-weight:700;color:var(--text2);display:block;margin-bottom:3px;}
+.field{margin-bottom:8px;}
+.fe-inp{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:5px;padding:4px 7px;color:var(--text);outline:none;font-family:inherit;}
 .fe-inp:focus{border-color:var(--g1);}
 
-/* ── PLANTILLA TOOLBAR ───────────────────────────────────── */
-.pl-bar{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;}
-.pl-btn{padding:5px 12px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s;}
+/* ═══ FACTURA ══════════════════════════════════════════ */
+.fe-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px;padding:12px 16px;}
+.fe-card{background:var(--off);border:1.5px solid var(--border);border-radius:var(--r2);padding:11px;}
+.fe-ct{font-size:10px;font-weight:800;color:var(--g3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:7px;}
+.fe-table{width:100%;border-collapse:collapse;font-size:12px;}
+.fe-table th{background:var(--bg3);padding:6px 7px;text-align:left;font-weight:700;color:var(--g3);font-size:10.5px;border-bottom:2px solid var(--border2);}
+.fe-table td{padding:4px 6px;border-bottom:1px solid var(--border);}
 
-/* ── TOTAL ROW ───────────────────────────────────────────── */
-.total-row{font-weight:700;background:var(--bg3) !important;}
+/* ═══ FN LIBRARY ══════════════════════════════════════ */
+.fn-wrap{display:grid;grid-template-columns:195px 1fr;height:500px;}
+.fn-sb{background:var(--off);border-right:1px solid var(--border);overflow-y:auto;padding:7px;}
+.fn-cat{padding:6px 9px;border-radius:var(--r1);font-size:12px;font-weight:600;cursor:pointer;color:var(--text2);display:flex;justify-content:space-between;transition:all .1s;}
+.fn-cat:hover{background:var(--bg2);color:var(--g2);}
+.fn-cat.on{background:var(--g2);color:#fff;}
+.fn-cat span{font-size:10px;opacity:.75;}
+.fn-main{display:flex;flex-direction:column;overflow:hidden;}
+.fn-srch{padding:10px 12px;border-bottom:1px solid var(--border);}
+.fn-grid{flex:1;overflow-y:auto;padding:8px 10px;display:grid;grid-template-columns:repeat(auto-fill,minmax(165px,1fr));gap:5px;align-content:start;}
+.fn-card{background:var(--off);border:1.5px solid var(--border);border-radius:var(--r2);padding:8px 10px;cursor:pointer;transition:all .1s;}
+.fn-card:hover{border-color:var(--g1);background:rgba(90,191,42,.04);}
+.fn-nm{font-weight:700;font-size:12.5px;color:var(--g3);}
+.fn-en{font-size:10px;color:var(--g1);font-family:monospace;}
+.fn-dc{font-size:11px;color:var(--text3);line-height:1.35;margin-top:2px;}
+.fn-det{padding:11px 13px;border-top:1.5px solid var(--border);display:none;}
+.fn-det-nm{font-size:14px;font-weight:800;color:var(--g3);margin-bottom:4px;}
+.fn-det-syn{font-family:monospace;font-size:12px;color:var(--g2);background:var(--bg3);padding:5px 9px;border-radius:var(--r1);margin-bottom:5px;}
+.fn-det-dc{font-size:12.5px;color:var(--text2);margin-bottom:5px;}
+.fn-det-ex{font-family:monospace;font-size:11px;color:var(--text3);background:var(--off);padding:4px 8px;border-radius:5px;}
 
-/* ── SCROLLBAR ───────────────────────────────────────────── */
+/* ═══ APPS ══════════════════════════════════════════ */
+.app-filters{display:flex;gap:5px;flex-wrap:wrap;padding:11px 16px 0;}
+.af{padding:4px 11px;border-radius:20px;border:1.5px solid var(--border2);background:var(--bg2);font-size:12px;font-weight:700;color:var(--text2);}
+.af.on{background:var(--g2);color:#fff;border-color:var(--g2);}
+.app-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:9px;padding:11px 16px;max-height:480px;overflow-y:auto;}
+.app-card{background:var(--off);border:1.5px solid var(--border);border-radius:var(--r2);padding:12px;transition:all .15s;}
+.app-card:hover{border-color:var(--g1);transform:translateY(-2px);box-shadow:var(--sh2);}
+.app-ico{font-size:19px;margin-bottom:5px;}
+.app-nm{font-weight:800;font-size:13px;color:var(--g3);margin-bottom:2px;}
+.app-dc{font-size:11px;color:var(--text3);line-height:1.4;margin-bottom:7px;}
+.app-bot{display:flex;justify-content:space-between;align-items:center;}
+.app-pr{font-size:11px;font-weight:700;color:var(--g2);}
+.app-bg{font-size:10px;background:var(--bg3);border-radius:999px;padding:2px 7px;font-weight:600;color:var(--text2);}
+
+/* ═══ SCROLLBAR ══════════════════════════════════════ */
 ::-webkit-scrollbar{width:5px;height:5px}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:10px}
 
-/* ── SIBO FAB ────────────────────────────────────────────── */
-.sibo-fab{
-  position:fixed;right:20px;bottom:58px;
-  width:50px;height:50px;border-radius:50%;
-  background:linear-gradient(135deg,var(--g1),var(--g3));
-  border:none;cursor:pointer;
-  box-shadow:0 4px 20px rgba(58,158,16,.4);
-  display:flex;align-items:center;justify-content:center;
-  font-size:22px;z-index:901;
-  transition:all .18s;
-}
-.sibo-fab:hover{transform:scale(1.08);box-shadow:0 6px 28px rgba(58,158,16,.5);}
+/* ═══ MOBILE DRAWER ══════════════════════════════════ */
+.mobile-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:500;}
+.mobile-overlay.open{display:block;}
+.sidebar-drawer{transform:translateX(-100%);transition:transform .25s;position:fixed;top:0;left:0;bottom:0;z-index:600;width:280px;}
 
-/* ── CREDIT ──────────────────────────────────────────────── */
-.credit{font-size:11px;color:rgba(255,255,255,.75);}
+/* ═══ SIBÖ MOBILE PANEL ══════════════════════════════ */
+.sibo-mobile-panel{
+  display:none;position:fixed;inset:0;z-index:900;
+  flex-direction:column;
+  background:linear-gradient(155deg,var(--g3),var(--g4));
+}
+.sibo-mobile-panel.open{display:flex;}
+.smp-head{padding:12px 14px;display:flex;align-items:center;justify-content:space-between;padding-top:max(12px,env(safe-area-inset-top));}
+.smp-close{background:rgba(255,255,255,.18);border:none;border-radius:8px;color:#fff;width:32px;height:32px;font-size:18px;}
+.smp-chips{display:flex;gap:5px;flex-wrap:wrap;padding:0 12px 8px;border-bottom:1px solid rgba(255,255,255,.1);}
+.smp-chip{background:rgba(255,255,255,.14);border:none;border-radius:20px;padding:5px 11px;font-size:12px;font-weight:600;color:rgba(255,255,255,.9);}
+.smp-msgs{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:7px;}
+.smp-inp{display:flex;gap:7px;padding:10px 12px;background:rgba(0,0,0,.18);padding-bottom:max(10px,env(safe-area-inset-bottom));}
+.smp-inp input{flex:1;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);border-radius:10px;padding:10px 12px;font-size:14px;color:#fff;outline:none;}
+.smp-send{background:var(--g1);border:none;border-radius:10px;color:#fff;width:42px;height:42px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;}
+
+/* ═══ SIBÖ FAB ════════════════════════════════════════ */
+.sibo-fab{
+  display:none;position:fixed;right:14px;bottom:38px;
+  width:52px;height:52px;border-radius:50%;
+  background:linear-gradient(135deg,var(--g1),var(--g3));
+  border:none;z-index:300;
+  box-shadow:0 4px 20px rgba(45,122,12,.42);
+  align-items:center;justify-content:center;font-size:22px;
+}
+
+/* ═══ HAMBURGER ═══════════════════════════════════════ */
+.hamburger{display:none;background:rgba(255,255,255,.18);border:1.5px solid rgba(255,255,255,.3);border-radius:var(--r1);color:#fff;width:34px;height:34px;flex-direction:column;align-items:center;justify-content:center;gap:4px;flex-shrink:0;}
+.hamburger span{width:16px;height:2px;background:#fff;border-radius:2px;display:block;}
+
+/* ═══ RESPONSIVE ═══════════════════════════════════════ */
+@media(max-width:768px){
+  .app-body{height:calc(100vh - 96px - 24px);}
+  .sidebar{display:none;}
+  .sidebar.drawer-open{display:flex;transform:translateX(0);}
+  .sidebar-drawer{width:280px;}
+  .canvas-wrap{padding:8px;}
+  .canvas-bar span{display:none;}
+  .hamburger{display:flex;}
+  .tb-btn:not(.tb-sibo-btn):not(.tb-menu-btn){display:none;}
+  .sibo-fab{display:flex;}
+  .fe-grid{grid-template-columns:1fr;}
+  .fn-wrap{grid-template-columns:1fr;height:auto;}
+  .fn-sb{display:none;}
+  .app-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));}
+  .menubar{padding:0 4px;}
+  .mb-tab{padding:6px 9px;font-size:11.5px;}
+  .mbox{max-height:94vh;}
+}
+@media(max-width:400px){
+  .mb-tab{padding:5px 7px;font-size:11px;}
+  .tb-name{font-size:13px;}
+}
 </style>
 </head>
 <body>
 
-<!-- ═══════════════════════════════════════════════════════
-     HERO HEADER
-════════════════════════════════════════════════════════ -->
-<header class="hero-header">
-  <div class="hero-top">
-    <div class="hero-logo">
-      <div class="hero-logo-icon">🌿</div>
-      <div class="hero-title-block">
-        <h1 data-i18n="logo.name">Matriz Contable CR</h1>
-        <p>ULTIMATE PRO · v12 · COSTA RICA</p>
+<!-- TITLEBAR -->
+<div class="titlebar">
+  <div class="tb-top">
+    <button class="hamburger" id="btnHamburger">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="tb-logo">
+      <div class="tb-logo-icon" style="width:34px;height:34px;padding:0;overflow:hidden;">
+<svg width="34" height="34" viewBox="0 0 34 34" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="lg1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#5abf2a"/>
+      <stop offset="100%" stop-color="#2d7a0c"/>
+    </linearGradient>
+  </defs>
+  <!-- Hexágono -->
+  <polygon points="17,2 30,9.5 30,24.5 17,32 4,24.5 4,9.5" fill="url(#lg1)"/>
+  <!-- Anillo interior -->
+  <polygon points="17,6 27,11.5 27,22.5 17,28 7,22.5 7,11.5" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="1"/>
+  <!-- Hoja izquierda -->
+  <path d="M13,14 C10,9 15,6 17,7.5 C15.5,10 14.5,12 13,14Z" fill="rgba(255,255,255,0.9)"/>
+  <!-- Hoja derecha -->
+  <path d="M21,14 C24,9 19,6 17,7.5 C18.5,10 19.5,12 21,14Z" fill="rgba(255,255,255,0.65)"/>
+  <!-- Tallo -->
+  <line x1="17" y1="7.5" x2="17" y2="12" stroke="rgba(255,255,255,0.6)" stroke-width="1" stroke-linecap="round"/>
+  <!-- ₡ símbolo -->
+  <text x="17" y="26" text-anchor="middle" font-family="Georgia,serif" font-size="11" font-weight="700" fill="white">₡</text>
+</svg>
+</div>
+      <div>
+        <div class="tb-name" style="letter-spacing:-.4px;">Matriz Contable <span style="color:#7fff4a;">CR</span></div>
+        <div class="tb-ver">v13 · Pro</div>
       </div>
     </div>
-    <div class="hero-actions">
-      <select class="lang-select" id="langSelect">
-        <option value="es">🇨🇷 Español</option>
-        <option value="en">🇺🇸 English</option>
+    <div class="tb-spacer"></div>
+    <div class="tb-actions">
+      <select class="lang-sel" id="langSelect">
+        <option value="es">🇨🇷 ES</option>
+        <option value="en">🇺🇸 EN</option>
         <option value="bri">🌿 Bribri</option>
         <option value="cab">🌱 Cabécar</option>
         <option value="ngb">🌾 Ngäbere</option>
@@ -271,304 +377,347 @@ label.lbl{font-size:12px;font-weight:700;color:var(--text2);display:block;margin
         <option value="mal">🌼 Maléku</option>
         <option value="cho">🌸 Chorotega</option>
       </select>
-      <button class="btn-hero btn-hero-ghost" id="btnShare">
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>
-        Compartir
+      <button class="tb-btn" onclick="shareApp()" data-i18n-title="btn.share.title" title="Compartir">📤</button>
+      <button class="tb-btn tb-sibo-btn" onclick="openSiboMobile()">
+        <span class="sibo-dot"></span>✦ Sibö
       </button>
-      <span class="credit" id="credit">Keny Chinchilla Navarro</span>
     </div>
   </div>
 
-  <!-- RIBBON TABS -->
-  <nav class="ribbon" id="ribbonTabs">
-    <button class="ribbon-tab active" data-tab="inicio">
-      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-      Inicio
-    </button>
-    <button class="ribbon-tab" data-tab="archivo">
-      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-      Archivo
-    </button>
-    <button class="ribbon-tab" data-tab="insertar">
-      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-      Insertar
-    </button>
-    <button class="ribbon-tab" data-tab="plantillas">
-      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-      Plantillas
-    </button>
-    <button class="ribbon-tab" data-tab="factura">
-      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 14H3V3h18v11h-6"/><polyline points="9 14 12 17 15 14"/><line x1="12" y1="17" x2="12" y2="3"/></svg>
-      Factura E.
-    </button>
-    <button class="ribbon-tab" data-tab="funciones">
-      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M4 7c0-1.1.9-2 2-2h12a2 2 0 012 2v1H4V7z"/><path d="M4 8h16v13H4z"/><path d="M8 13h8M8 17h5"/></svg>
-      Funciones
-    </button>
-    <button class="ribbon-tab" data-tab="apps">
-      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="6" height="6" rx="1"/><rect x="9" y="3" width="6" height="6" rx="1"/><rect x="16" y="3" width="6" height="6" rx="1"/><rect x="2" y="10" width="6" height="6" rx="1"/><rect x="9" y="10" width="6" height="6" rx="1"/><rect x="16" y="10" width="6" height="6" rx="1"/><rect x="2" y="17" width="6" height="6" rx="1"/><rect x="9" y="17" width="6" height="6" rx="1"/></svg>
-      Apps CR
-    </button>
-    <button class="ribbon-ia" id="btnSibo">✦ Sibö IA</button>
+  <!-- MENUBAR TABS (dropdown triggers) -->
+  <nav class="menubar" id="menubar">
+    <button class="mb-tab active" onclick="toggleMenu('m-archivo')" data-i18n="menu.archivo">📁 Archivo</button>
+    <button class="mb-tab" onclick="toggleMenu('m-inicio')" data-i18n="menu.inicio">🏠 Inicio</button>
+    <button class="mb-tab" onclick="toggleMenu('m-insertar')" data-i18n="menu.insertar">➕ Insertar</button>
+    <button class="mb-tab" onclick="toggleMenu('m-plantillas')" data-i18n="menu.plantillas">📋 Plantillas</button>
+    <button class="mb-tab" onclick="toggleMenu('m-formulas')" data-i18n="menu.formulas">fx Fórmulas</button>
+    <button class="mb-tab" onclick="toggleMenu('m-factura')" data-i18n="menu.factura">🧾 Factura</button>
+    <button class="mb-tab" onclick="toggleMenu('m-apps')" data-i18n="menu.apps">📱 Apps CR</button>
+    <button class="mb-tab" onclick="toggleMenu('m-lenguajes')" data-i18n="menu.lenguajes">🌐 Lenguajes</button>
+    <button class="mb-tab" onclick="toggleMenu('m-ia')" data-i18n="menu.ia">🦙 IA</button>
   </nav>
-</header>
-
-<!-- ═══════════════════════════════════════════════════════
-     RIBBON PANELS (content under tabs)
-════════════════════════════════════════════════════════ -->
-<div class="ribbon-panels">
-
-  <!-- INICIO -->
-  <div class="ribbon-panel active" id="panel-inicio">
-    <div class="rpanel-group">
-      <button class="rb primary" id="btnNuevo">
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/></svg>
-        Nuevo
-      </button>
-      <button class="rb" id="btnGuardar">
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-        Guardar
-      </button>
-      <span class="rpanel-group-label">Archivo</span>
-    </div>
-    <div class="rpanel-group">
-      <button class="rb" id="btnDeshacer">↩ Deshacer</button>
-      <button class="rb" id="btnRehacer">↪ Rehacer</button>
-      <span class="rpanel-group-label">Editar</span>
-    </div>
-    <div class="rpanel-group">
-      <button class="rb" id="btnBtnTabla">
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="14" height="14"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg>
-        Tabla
-      </button>
-      <button class="rb" id="btnBtnNota">
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-        Nota
-      </button>
-      <button class="rb" id="btnBtnGrafico">
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-        Gráfico
-      </button>
-      <span class="rpanel-group-label">Insertar</span>
-    </div>
-    <div class="rpanel-group">
-      <button class="rb" id="btnExportarXML">
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        XML
-      </button>
-      <button class="rb" id="btnExportarPDF">
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        PDF
-      </button>
-      <span class="rpanel-group-label">Exportar</span>
-    </div>
-  </div>
-
-  <!-- PLANTILLAS -->
-  <div class="ribbon-panel" id="panel-plantillas">
-    <button class="rb primary" onclick="loadTemplate('diario')">📘 Libro Diario</button>
-    <button class="rb" onclick="loadTemplate('mayor')">📗 Libro Mayor</button>
-    <button class="rb" onclick="loadTemplate('balance')">📊 Balance Comprobación</button>
-    <button class="rb" onclick="loadTemplate('conciliacion')">🏦 Conciliación Bancaria</button>
-    <button class="rb" onclick="loadTemplate('compras')">🛒 D-151 Compras/Ventas</button>
-    <button class="rb" onclick="openModal('modalFactura')">🧾 Factura Electrónica</button>
-  </div>
-
-  <!-- INSERTAR -->
-  <div class="ribbon-panel" id="panel-insertar">
-    <button class="rb primary" id="btnTabla2">📋 Tabla contable</button>
-    <button class="rb" id="btnNota2">📝 Nota de texto</button>
-    <button class="rb" id="btnGrafico2">📊 Gráfico de barras</button>
-    <div class="rb-sep"></div>
-    <button class="rb" id="btnLimpiar">🗑 Limpiar área</button>
-    <button class="rb" id="btnRestaurar">♻ Restaurar guardado</button>
-  </div>
-
-  <!-- FACTURA -->
-  <div class="ribbon-panel" id="panel-factura">
-    <button class="rb primary" onclick="openModal('modalFactura')">🧾 Abrir Factura Electrónica</button>
-    <button class="rb" onclick="agregarLineaFactura()">+ Línea</button>
-    <button class="rb" onclick="recalcularFactura()">∑ Calcular</button>
-    <button class="rb" onclick="exportarXML()">↓ XML</button>
-    <button class="rb" onclick="exportarPDF()">↓ PDF</button>
-    <button class="rb" onclick="limpiarFactura()">🗑 Limpiar</button>
-  </div>
-
-  <!-- FUNCIONES -->
-  <div class="ribbon-panel" id="panel-funciones">
-    <button class="rb primary" id="btnAbrirFunciones">fx Biblioteca de Funciones</button>
-    <button class="rb" id="btnInsertarFn">↓ Insertar función</button>
-    <span style="font-size:12px;color:var(--text3);padding:0 8px;" id="fnCountBadge">923 funciones disponibles</span>
-  </div>
-
-  <!-- APPS -->
-  <div class="ribbon-panel" id="panel-apps">
-    <button class="rb primary" onclick="openModal('modalApps');renderApps();filtrarApps('todos')">📱 Ver todas las Apps</button>
-    <button class="rb" onclick="openModal('modalApps');renderApps();filtrarApps('cr')">🇨🇷 Apps para CR</button>
-    <button class="rb" onclick="openModal('modalApps');renderApps();filtrarApps('gratis')">🆓 Apps gratis</button>
-    <button class="rb" onclick="openModal('modalApps');renderApps();filtrarApps('erp')">🏢 ERP</button>
-    <button class="rb" onclick="openModal('modalApps');renderApps();filtrarApps('nube')">☁️ Nube</button>
-  </div>
-
 </div>
-<!-- end ribbon panels -->
 
-<!-- ═══════════════════════════════════════════════════════
-     WORKSPACE
-════════════════════════════════════════════════════════ -->
-<main class="workspace">
-  <div id="canvas">
-    <div id="canvas-placeholder">
-      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"/></svg>
-      <p>Área de trabajo contable</p>
-      <small>Usá las pestañas arriba para insertar tablas, plantillas o funciones</small>
+<!-- DROPDOWN OVERLAY (closes menus) -->
+<div class="dd-overlay" id="ddOverlay" onclick="closeAllMenus()"></div>
+
+<!-- DROPDOWN MENUS -->
+<div class="dd-menu" id="m-archivo">
+  <div class="dd-section-title">Archivo</div>
+  <div class="dd-item" data-i18n="dd.nuevo" onclick="closeMenu();canvasNuevo()"><span class="di">📄</span>Nuevo<span class="dk">Ctrl+N</span></div>
+  <div class="dd-item" data-i18n="dd.guardar" onclick="closeMenu();canvasGuardar()"><span class="di">💾</span>Guardar<span class="dk">Ctrl+S</span></div>
+  <div class="dd-item" onclick="closeMenu();canvasRestaurar()"><span class="di">♻️</span>Restaurar guardado</div>
+  <div class="dd-item" data-i18n="dd.limpiar" onclick="closeMenu();canvasLimpiar()"><span class="di">🗑</span>Limpiar área</div>
+  <div class="dd-sep"></div>
+  <div class="dd-section-title">Exportar</div>
+  <div class="dd-item" onclick="closeMenu();exportarCSV()"><span class="di">📊</span>Exportar CSV</div>
+  <div class="dd-item" onclick="closeMenu();exportarXML()"><span class="di">📑</span>Exportar XML (Hacienda)</div>
+  <div class="dd-item" onclick="closeMenu();exportarPDF()"><span class="di">📕</span>Imprimir / PDF</div>
+  <div class="dd-sep"></div>
+  <div class="dd-item" onclick="closeMenu();shareApp()"><span class="di">🔗</span>Compartir enlace</div>
+</div>
+
+<div class="dd-menu" id="m-inicio">
+  <div class="dd-section-title">Portapapeles</div>
+  <div class="dd-item" onclick="closeMenu();canvasGuardar()"><span class="di">💾</span>Guardar</div>
+  <div class="dd-item" onclick="closeMenu();canvasNuevo()"><span class="di">📄</span>Nuevo</div>
+  <div class="dd-sep"></div>
+  <div class="dd-section-title">Edición</div>
+  <div class="dd-item" onclick="closeMenu();document.execCommand('bold')"><span class="di">𝐁</span>Negrita<span class="dk">Ctrl+B</span></div>
+  <div class="dd-item" onclick="closeMenu();document.execCommand('italic')"><span class="di">𝐼</span>Cursiva<span class="dk">Ctrl+I</span></div>
+  <div class="dd-item" onclick="closeMenu();document.execCommand('underline')"><span class="di">U̲</span>Subrayado<span class="dk">Ctrl+U</span></div>
+  <div class="dd-sep"></div>
+  <div class="dd-section-title">Celdas</div>
+  <div class="dd-item" data-i18n="dd.agregar.fila" onclick="closeMenu();agregarFilaPlantilla()"><span class="di">➕</span>Agregar fila</div>
+  <div class="dd-item" data-i18n="dd.quitar.fila" onclick="closeMenu();eliminarFilaPlantilla()"><span class="di">➖</span>Eliminar fila</div>
+  <div class="dd-item" data-i18n="dd.autosuma" onclick="closeMenu();calcularTotales()"><span class="di">∑</span>Autosuma / Calcular</div>
+</div>
+
+<div class="dd-menu" id="m-insertar">
+  <div class="dd-section-title">Elementos</div>
+  <div class="dd-item" data-i18n="dd.tabla" onclick="closeMenu();insertarTabla()"><span class="di">📋</span>Tabla contable</div>
+  <div class="dd-item" data-i18n="dd.nota" onclick="closeMenu();insertarNota()"><span class="di">📝</span>Nota de texto</div>
+  <div class="dd-item" data-i18n="dd.grafico" onclick="closeMenu();insertarGrafico()"><span class="di">📊</span>Gráfico de barras</div>
+  <div class="dd-sep"></div>
+  <div class="dd-section-title">Plantillas rápidas</div>
+  <div class="dd-item" data-i18n="dd.diario" onclick="closeMenu();loadTemplate('diario')"><span class="di">📘</span>Libro Diario</div>
+  <div class="dd-item" onclick="closeMenu();loadTemplate('balance')"><span class="di">📊</span>Balance Comprobación</div>
+  <div class="dd-item" onclick="closeMenu();openModal('modalFactura')"><span class="di">🧾</span>Factura Electrónica</div>
+</div>
+
+<div class="dd-menu" id="m-plantillas">
+  <div class="dd-section-title">Libros contables</div>
+  <div class="dd-item" onclick="closeMenu();loadTemplate('diario')"><span class="di">📘</span>Libro Diario</div>
+  <div class="dd-item" data-i18n="dd.mayor" onclick="closeMenu();loadTemplate('mayor')"><span class="di">📗</span>Libro Mayor</div>
+  <div class="dd-item" data-i18n="dd.balance" onclick="closeMenu();loadTemplate('balance')"><span class="di">📊</span>Balance de Comprobación</div>
+  <div class="dd-sep"></div>
+  <div class="dd-section-title">Reportes CR</div>
+  <div class="dd-item" data-i18n="dd.conciliacion" onclick="closeMenu();loadTemplate('conciliacion')"><span class="di">🏦</span>Conciliación Bancaria</div>
+  <div class="dd-item" onclick="closeMenu();loadTemplate('compras')"><span class="di">🛒</span>D-151 Compras/Ventas</div>
+  <div class="dd-item" onclick="closeMenu();openModal('modalFactura')"><span class="di">🧾</span>Factura Electrónica</div>
+  <div class="dd-sep"></div>
+  <div class="dd-section-title">Herramientas de plantilla</div>
+  <div class="dd-item" onclick="closeMenu();agregarFilaPlantilla()"><span class="di">➕</span>Agregar fila</div>
+  <div class="dd-item" onclick="closeMenu();eliminarFilaPlantilla()"><span class="di">➖</span>Eliminar fila</div>
+  <div class="dd-item" onclick="closeMenu();calcularTotales()"><span class="di">∑</span>Calcular totales</div>
+  <div class="dd-item" onclick="closeMenu();exportarCSV()"><span class="di">↓</span>Exportar CSV</div>
+</div>
+
+<div class="dd-menu" id="m-formulas" style="min-width:260px;">
+  <div class="dd-section-title">Función</div>
+  <div class="dd-item" data-i18n="dd.insertar.fn" onclick="closeMenu();abrirFunciones()"><span class="di">fx</span>Insertar función...</div>
+  <div class="dd-item" onclick="closeMenu();calcularTotales()"><span class="di">∑</span>Autosuma</div>
+  <div class="dd-sep"></div>
+  <div class="dd-section-title">Categorías recientes</div>
+  <div class="dd-item" onclick="closeMenu();abrirFuncionesCat('Financieras')"><span class="di">💰</span>Financieras</div>
+  <div class="dd-item" onclick="closeMenu();abrirFuncionesCat('Lógicas')"><span class="di">⚡</span>Lógicas</div>
+  <div class="dd-item" onclick="closeMenu();abrirFuncionesCat('Texto')"><span class="di">A</span>Texto</div>
+  <div class="dd-item" onclick="closeMenu();abrirFuncionesCat('Fecha y Hora')"><span class="di">🕐</span>Fecha y Hora</div>
+  <div class="dd-item" onclick="closeMenu();abrirFuncionesCat('Búsqueda y Referencia')"><span class="di">🔍</span>Búsqueda y Referencia</div>
+  <div class="dd-item" onclick="closeMenu();abrirFuncionesCat('Estadísticas')"><span class="di">📈</span>Estadísticas</div>
+  <div class="dd-item" onclick="closeMenu();abrirFuncionesCat('Matemáticas')"><span class="di">🔢</span>Matemáticas</div>
+  <div class="dd-item" onclick="closeMenu();abrirFuncionesCat('Ingeniería')"><span class="di">⚙️</span>Ingeniería</div>
+  <div class="dd-sep"></div>
+  <div class="dd-section-title">Especiales</div>
+  <div class="dd-item" onclick="closeMenu();abrirFuncionesCat('Google Sheets')"><span class="di">🟢</span>Google Sheets</div>
+  <div class="dd-item" onclick="closeMenu();abrirFuncionesCat('Duración')"><span class="di">⏱</span>Duración (Apple)</div>
+  <div class="dd-item" onclick="closeMenu();abrirFuncionesCat('Trigonométricas')"><span class="di">📐</span>Trigonométricas</div>
+  <div class="dd-item" onclick="closeMenu();abrirFuncionesCat('Cubo')"><span class="di">🧊</span>Cubo (OLAP)</div>
+</div>
+
+<div class="dd-menu" id="m-factura">
+  <div class="dd-section-title">Factura Electrónica 4.3 CR</div>
+  <div class="dd-item" onclick="closeMenu();openModal('modalFactura')"><span class="di">🧾</span>Abrir Factura</div>
+  <div class="dd-item" onclick="closeMenu();agregarLineaFactura()"><span class="di">➕</span>Agregar línea</div>
+  <div class="dd-item" onclick="closeMenu();recalcularFactura()"><span class="di">∑</span>Recalcular</div>
+  <div class="dd-item" onclick="closeMenu();limpiarFactura()"><span class="di">🗑</span>Limpiar factura</div>
+  <div class="dd-sep"></div>
+  <div class="dd-section-title">Exportar</div>
+  <div class="dd-item" onclick="closeMenu();exportarXML()"><span class="di">📑</span>Exportar XML (Hacienda CR)</div>
+  <div class="dd-item" onclick="closeMenu();exportarPDF()"><span class="di">📕</span>Imprimir / PDF</div>
+</div>
+
+<div class="dd-menu" id="m-apps">
+  <div class="dd-section-title">Apps de Contabilidad CR 2026</div>
+  <div class="dd-item" data-i18n="dd.apps.todas" onclick="closeMenu();openModal('modalApps');renderApps();filtrarApps('todos')"><span class="di">📱</span>Ver todas las apps</div>
+  <div class="dd-item" onclick="closeMenu();openModal('modalApps');renderApps();filtrarApps('cr')"><span class="di">🇨🇷</span>Apps para Costa Rica</div>
+  <div class="dd-item" onclick="closeMenu();openModal('modalApps');renderApps();filtrarApps('gratis')"><span class="di">🆓</span>Apps gratuitas</div>
+  <div class="dd-item" onclick="closeMenu();openModal('modalApps');renderApps();filtrarApps('erp')"><span class="di">🏢</span>ERP empresarial</div>
+  <div class="dd-item" onclick="closeMenu();openModal('modalApps');renderApps();filtrarApps('pyme')"><span class="di">🏪</span>PyME</div>
+  <div class="dd-item" onclick="closeMenu();openModal('modalApps');renderApps();filtrarApps('nube')"><span class="di">☁️</span>Apps en la nube</div>
+</div>
+
+<div class="dd-menu" id="m-lenguajes">
+  <div class="dd-section-title">Lenguas de Costa Rica</div>
+  <div class="dd-item" onclick="closeMenu();setLang('es')"><span class="di">🇨🇷</span>Español (Costa Rica)</div>
+  <div class="dd-item" onclick="closeMenu();setLang('en')"><span class="di">🇺🇸</span>English</div>
+  <div class="dd-sep"></div>
+  <div class="dd-section-title">Lenguas indígenas CR</div>
+  <div class="dd-item" onclick="closeMenu();setLang('bri')"><span class="di">🌿</span>Bribri</div>
+  <div class="dd-item" onclick="closeMenu();setLang('cab')"><span class="di">🌱</span>Cabécar</div>
+  <div class="dd-item" onclick="closeMenu();setLang('ngb')"><span class="di">🌾</span>Ngäbere</div>
+  <div class="dd-item" onclick="closeMenu();setLang('mek')"><span class="di">🍃</span>Mekatelyu</div>
+  <div class="dd-item" onclick="closeMenu();setLang('bor')"><span class="di">🌺</span>Boruca</div>
+  <div class="dd-item" onclick="closeMenu();setLang('ter')"><span class="di">🌻</span>Teribe</div>
+  <div class="dd-item" onclick="closeMenu();setLang('mal')"><span class="di">🌼</span>Maléku</div>
+  <div class="dd-item" onclick="closeMenu();setLang('cho')"><span class="di">🌸</span>Chorotega</div>
+</div>
+
+<div class="dd-menu" id="m-ia">
+  <div class="dd-section-title">Sibö ✦ Asistente IA</div>
+  <div class="dd-item" onclick="closeMenu();openSiboMobile()"><span class="di">✦</span>Abrir Sibö IA</div>
+  <div class="dd-item" onclick="closeMenu();clearSibo()"><span class="di">🗑</span>Limpiar chat</div>
+  <div class="dd-sep"></div>
+  <div class="dd-section-title">Capacidades IA</div>
+  <div class="dd-item" onclick="closeMenu();siboPregunta('Generar fórmula para calcular IVA en CR')"><span class="di">fx</span>Generar fórmulas</div>
+  <div class="dd-item" onclick="closeMenu();siboPregunta('Analizá los datos contables y dame un resumen')"><span class="di">📈</span>Análisis de datos</div>
+  <div class="dd-item" onclick="closeMenu();siboPregunta('Explicame el resultado contable actual')"><span class="di">💡</span>Explicar resultados</div>
+  <div class="dd-item" onclick="closeMenu();siboPregunta('Sugerencias para mejorar este libro contable')"><span class="di">⭐</span>Sugerencias inteligentes</div>
+  <div class="dd-item" onclick="closeMenu();siboPregunta('¿Cómo automatizar estas tareas contables?')"><span class="di">⚙️</span>Automatización</div>
+  <div class="dd-item" onclick="closeMenu();siboPregunta('Predicciones contables basadas en datos actuales')"><span class="di">🔮</span>Predicciones contables</div>
+  <div class="dd-sep"></div>
+  <div class="dd-section-title">Atajos frecuentes</div>
+  <div class="dd-item" onclick="closeMenu();siboPregunta('IVA Costa Rica 2026')"><span class="di">💰</span>IVA CR</div>
+  <div class="dd-item" onclick="closeMenu();siboPregunta('Factura Electrónica 4.4 Costa Rica')"><span class="di">🧾</span>Factura Electrónica 4.4</div>
+  <div class="dd-item" onclick="closeMenu();siboPregunta('NIIF y PCGA en Costa Rica')"><span class="di">📚</span>NIIF / PCGA</div>
+  <div class="dd-item" onclick="closeMenu();siboPregunta('Conciliación bancaria paso a paso')"><span class="di">🏦</span>Conciliación bancaria</div>
+</div>
+
+<!-- MOBILE DRAWER OVERLAY -->
+<div class="mobile-overlay" id="mobileOverlay" onclick="closeSidebar()"></div>
+
+<!-- MAIN LAYOUT -->
+<div class="app-body">
+
+  <!-- SIDEBAR (desktop + mobile drawer) -->
+  <aside class="sidebar sidebar-drawer" id="sidebar">
+    <div class="sb-sec">
+      <div class="sb-title" data-i18n="sidebar.plantillas">Plantillas</div>
+      <button class="sb-btn" onclick="loadTemplate('diario');closeSidebar()"><span class="si">📘</span>Libro Diario</button>
+      <button class="sb-btn" onclick="loadTemplate('mayor');closeSidebar()"><span class="si">📗</span>Libro Mayor</button>
+      <button class="sb-btn" onclick="loadTemplate('balance');closeSidebar()"><span class="si">📊</span>Balance Comprobación</button>
+      <button class="sb-btn" onclick="loadTemplate('conciliacion');closeSidebar()"><span class="si">🏦</span>Conciliación Bancaria</button>
+      <button class="sb-btn" onclick="loadTemplate('compras');closeSidebar()"><span class="si">🛒</span>D-151 Compras/Ventas</button>
+      <button class="sb-btn" onclick="openModal('modalFactura');closeSidebar()"><span class="si">🧾</span>Factura Electrónica</button>
+    </div>
+    <div class="sb-div"></div>
+    <div class="sb-sec">
+      <div class="sb-title" data-i18n="sidebar.formulas">Fórmulas</div>
+      <button class="sb-btn" onclick="abrirFunciones();closeSidebar()"><span class="si">fx</span>Biblioteca (452 fns)</button>
+      <button class="sb-btn" onclick="abrirFuncionesCat('Financieras');closeSidebar()"><span class="si">💰</span>Financieras</button>
+      <button class="sb-btn" onclick="abrirFuncionesCat('Estadísticas');closeSidebar()"><span class="si">📈</span>Estadísticas</button>
+    </div>
+    <div class="sb-div"></div>
+    <div class="sb-sec">
+      <div class="sb-title" data-i18n="sidebar.apps">Apps</div>
+      <button class="sb-btn" onclick="openModal('modalApps');renderApps();filtrarApps('todos');closeSidebar()"><span class="si">📱</span>Apps de Contabilidad CR</button>
+    </div>
+    <div class="sb-div"></div>
+
+    <!-- SIBÖ WIDGET -->
+    <div class="sibo-widget">
+      <div class="sw-head">
+        <div class="sw-head-l"><span style="font-size:16px">✦</span><strong data-i18n="sibo.name">Sibö</strong><span class="sw-badge">IA</span></div>
+        <button class="sw-clr" onclick="clearSibo()">🗑</button>
+      </div>
+      <div class="sw-chips">
+        <button class="sw-chip" onclick="siboPregunta('IVA CR')">IVA CR</button>
+        <button class="sw-chip" onclick="siboPregunta('Libro Diario')">Diario</button>
+        <button class="sw-chip" onclick="siboPregunta('Factura 4.4')">Factura</button>
+        <button class="sw-chip" onclick="siboPregunta('Apps CR')">Apps</button>
+        <button class="sw-chip" onclick="siboPregunta('NIIF')">NIIF</button>
+      </div>
+      <div class="sw-msgs" id="siboMessages">
+        <div class="msg-b">¡Pura vida! Soy Sibö ✦ tu asistente contable con IA. Preguntame sobre CR, Hacienda, IVA y más. 🇨🇷</div>
+      </div>
+      <div class="sw-typing" id="siboTyping">Sibö está escribiendo...</div>
+      <div class="sw-inp">
+        <input type="text" id="siboInput" placeholder="Preguntame...">
+        <button class="sw-send" onclick="sendSibo()">➤</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- CANVAS -->
+  <div class="canvas-wrap">
+    <div class="canvas-card">
+      <div class="canvas-bar">
+        <span data-i18n="canvas.label">ÁREA DE TRABAJO</span>
+        <button class="cb-btn" onclick="insertarTabla()">📋</button>
+        <button class="cb-btn" onclick="insertarNota()">📝</button>
+        <button class="cb-btn" onclick="insertarGrafico()">📊</button>
+        <button class="cb-btn" onclick="calcularTotales()">∑</button>
+        <button class="cb-btn prim" onclick="canvasGuardar()">💾</button>
+      </div>
+      <div id="canvas"></div>
     </div>
   </div>
-</main>
+</div>
 
-<!-- ═══════════════════════════════════════════════════════
-     STATUS BAR
-════════════════════════════════════════════════════════ -->
+<!-- STATUS BAR -->
 <div class="statusbar">
-  <span id="statusLeft">Matriz Contable CR v12 · Listo</span>
-  <span>Keny Chinchilla Navarro · Costa Rica 🇨🇷</span>
-  <span id="statusRight">923 funciones</span>
+  <div class="st-it"><span class="st-dot"></span><span id="statusLeft" data-i18n="status.listo">Listo</span></div>
+  <div class="st-it" style="display:none;" id="statusMid">Keny Chinchilla · CR 🇨🇷</div>
+  <div class="st-it" style="margin-left:auto;"><span id="statusRight">452 funciones</span></div>
 </div>
 
-<!-- ═══════════════════════════════════════════════════════
-     SIBÖ PANEL
-════════════════════════════════════════════════════════ -->
-<div class="sibo-panel" id="siboPanel">
-  <div class="sibo-head">
-    <div class="sibo-head-left">
-      <span style="font-size:18px;">✦</span>
-      <strong>Sibö</strong>
-      <span class="sibo-badge">IA</span>
-    </div>
-    <button class="sibo-close" onclick="toggleSibo()">×</button>
+<!-- MOBILE SIBÖ FAB -->
+<button class="sibo-fab" id="siboFab" onclick="openSiboMobile()">✦</button>
+
+<!-- MOBILE SIBÖ PANEL -->
+<div class="sibo-mobile-panel" id="siboMobilePanel">
+  <div class="smp-head">
+    <div style="display:flex;align-items:center;gap:8px;color:#fff;"><span style="font-size:20px">✦</span><strong style="font-size:16px" data-i18n="sibo.name">Sibö</strong> <span style="font-size:13px;color:rgba(255,255,255,.7)">IA</span><span class="sw-badge">IA</span></div>
+    <button class="smp-close" onclick="closeSiboMobile()">×</button>
   </div>
-  <div class="sibo-shortcuts">
-    <button class="sibo-chip" onclick="siboPregunta('IVA en Costa Rica')">IVA CR</button>
-    <button class="sibo-chip" onclick="siboPregunta('Libro Diario')">Diario</button>
-    <button class="sibo-chip" onclick="siboPregunta('Factura Electrónica 4.4')">Factura</button>
-    <button class="sibo-chip" onclick="siboPregunta('Apps de contabilidad CR')">Apps</button>
-    <button class="sibo-chip" onclick="siboPregunta('Conciliación bancaria')">Conciliación</button>
-    <button class="sibo-chip" onclick="clearSibo()">🗑</button>
+  <div class="smp-chips">
+    <button class="smp-chip" onclick="siboPreguntaMobile('IVA en Costa Rica')">IVA CR</button>
+    <button class="smp-chip" onclick="siboPreguntaMobile('Factura Electrónica 4.4')">Factura</button>
+    <button class="smp-chip" onclick="siboPreguntaMobile('Libro Diario contable')">Diario</button>
+    <button class="smp-chip" onclick="siboPreguntaMobile('Apps contabilidad CR')">Apps</button>
+    <button class="smp-chip" onclick="siboPreguntaMobile('Conciliación bancaria')">Bancaria</button>
+    <button class="smp-chip" onclick="siboPreguntaMobile('NIIF Costa Rica')">NIIF</button>
   </div>
-  <div class="sibo-msgs" id="siboMessages">
-    <div class="msg-bot">¡Pura vida! Soy Sibö ✦, tu asistente contable tico con IA. Preguntame lo que necesités sobre contabilidad, Hacienda CR, IVA, facturas y más. 🇨🇷</div>
+  <div class="smp-msgs" id="siboMobileMessages">
+    <div class="msg-b">¡Pura vida! Soy Sibö ✦. Preguntame sobre contabilidad CR. 🇨🇷</div>
   </div>
-  <div class="sibo-typing" id="siboTyping">Sibö está escribiendo...</div>
-  <div class="sibo-input-row">
-    <input type="text" id="siboInput" placeholder="Preguntame sobre contabilidad CR...">
-    <button class="sibo-send" id="btnSiboSend" onclick="sendSibo()">
-      <svg fill="white" viewBox="0 0 24 24" width="16" height="16"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
-    </button>
+  <div id="siboMobileTyping" style="font-size:10.5px;color:rgba(255,255,255,.5);padding:3px 12px;display:none;">Sibö está escribiendo...</div>
+  <div class="smp-inp">
+    <input type="text" id="siboMobileInput" placeholder="Preguntame sobre contabilidad CR...">
+    <button class="smp-send" onclick="sendSiboMobile()">➤</button>
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════════════════
-     MODAL: FUNCIONES
-════════════════════════════════════════════════════════ -->
+<!-- MODAL: FUNCIONES -->
 <div class="modal" id="modalFunciones">
-  <div class="modal-box" style="max-width:900px;">
-    <div class="modal-head">
-      <h3>fx Biblioteca de Funciones</h3>
-      <button class="modal-close" onclick="closeModal('modalFunciones')">
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
-    </div>
-    <div class="fn-layout">
-      <div class="fn-sidebar" id="fnSidebar"></div>
+  <div class="mbox" style="max-width:900px;">
+    <div class="mhead"><h3 data-i18n-prefix="modal.fn.title"> fx Biblioteca · <span id="fnTotalBadge">452</span> <span data-i18n="modal.fn.fns">funciones</span></h3><button class="mcls" onclick="closeModal('modalFunciones')">×</button></div>
+    <div class="fn-wrap">
+      <div class="fn-sb" id="fnSidebar"></div>
       <div class="fn-main">
-        <div class="fn-search-box">
-          <input class="inp" id="fnSearch" placeholder="Buscar función... (ej: BUSCARV, SUMA, IF)">
-        </div>
-        <div class="fn-list" id="fnList"></div>
-        <div class="fn-detail" id="fnDetail">
-          <div class="fn-detail-name" id="fnDetailName"></div>
-          <div class="fn-detail-syntax" id="fnDetailSyntax"></div>
-          <div class="fn-detail-desc" id="fnDetailDesc"></div>
-          <div class="fn-detail-ex" id="fnDetailEx"></div>
-          <div style="margin-top:10px;">
-            <button onclick="insertarFuncion()" class="rb primary" style="font-size:12px;">↓ Insertar en área</button>
-          </div>
+        <div class="fn-srch"><input class="inp" id="fnSearch" placeholder="Buscar... ej: BUSCARV, SUMA, VAN, FILTER"></div>
+        <div class="fn-grid" id="fnList"></div>
+        <div class="fn-det" id="fnDetail">
+          <div class="fn-det-nm" id="fnDetailName"></div>
+          <div class="fn-det-syn" id="fnDetailSyntax"></div>
+          <div class="fn-det-dc" id="fnDetailDesc"></div>
+          <div class="fn-det-ex" id="fnDetailEx"></div>
+          <div style="margin-top:9px;"><button onclick="insertarFuncion()" class="mb-btn p" style="font-size:12px;padding:5px 12px;">↓ Insertar en área</button></div>
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════════════════
-     MODAL: FACTURA ELECTRÓNICA
-════════════════════════════════════════════════════════ -->
+<!-- MODAL: FACTURA -->
 <div class="modal" id="modalFactura">
-  <div class="modal-box">
-    <div class="modal-head">
-      <h3>🧾 Factura Electrónica 4.3 — Costa Rica</h3>
-      <button class="modal-close" onclick="closeModal('modalFactura')">
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
-    </div>
-    <div class="modal-body">
-      <div class="factura-section">
-        <div>
-          <div class="field"><label class="lbl">N° Consecutivo</label><input class="inp" id="fe-num" value="001-001-00000001"></div>
-          <div class="field"><label class="lbl">Fecha</label><input class="inp" type="date" id="fe-fecha"></div>
-          <div class="field"><label class="lbl">Condición venta</label>
-            <select class="inp" id="fe-condicion">
-              <option>Contado</option><option>Crédito</option><option>Consignación</option><option>Apartado</option>
-            </select>
-          </div>
-        </div>
-        <div>
-          <div class="field"><label class="lbl">IVA</label>
-            <select class="inp" id="fe-iva-rate" onchange="recalcularFactura()">
-              <option value="0.13">13% — General</option>
-              <option value="0.04">4% — Canasta básica</option>
-              <option value="0.02">2% — Medicamentos</option>
-              <option value="0.01">1% — Equipo médico</option>
-              <option value="0">0% — Exento</option>
-            </select>
-          </div>
-          <div class="field"><label class="lbl">Moneda</label>
-            <select class="inp" id="fe-moneda"><option>CRC — Colón</option><option>USD — Dólar</option></select>
-          </div>
+  <div class="mbox">
+    <div class="mhead"><h3><span data-i18n="modal.factura.title">🧾 Factura Electrónica 4.3 · CR</span></h3><button class="mcls" onclick="closeModal('modalFactura')">×</button></div>
+    <div class="mbody">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;padding:11px 16px 0;">
+        <div class="field"><label class="lbl">N° Consecutivo</label><input class="inp" id="fe-num" value="001-001-00000001"></div>
+        <div class="field"><label class="lbl">Fecha</label><input class="inp" type="date" id="fe-fecha"></div>
+        <div class="field"><label class="lbl">IVA</label>
+          <select class="inp" id="fe-iva-rate" onchange="recalcularFactura()">
+            <option value="0.13">13% — General</option>
+            <option value="0.04">4% — Canasta básica</option>
+            <option value="0.02">2% — Medicamentos</option>
+            <option value="0.01">1% — Equipo médico</option>
+            <option value="0">0% — Exento</option>
+          </select>
         </div>
       </div>
-      <div style="padding:0 24px 12px;display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-        <div style="background:var(--off);border:1.5px solid var(--border);border-radius:12px;padding:12px;">
-          <p style="font-size:11px;font-weight:700;color:var(--g3);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px;">Emisor</p>
-          <div class="field"><label class="lbl">Nombre / Razón Social</label><input class="inp" id="fe-emisor-nombre" placeholder="Mi Empresa S.A."></div>
+      <div class="fe-grid">
+        <div class="fe-card">
+          <div class="fe-ct">Emisor</div>
+          <div class="field"><label class="lbl">Nombre/Razón Social</label><input class="inp" id="fe-emisor-nombre" placeholder="Mi Empresa S.A."></div>
           <div class="field"><label class="lbl">Cédula Jurídica</label><input class="inp" id="fe-emisor-cedula" placeholder="3-101-000000"></div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;">
             <div class="field"><label class="lbl">Teléfono</label><input class="inp" id="fe-emisor-telefono" placeholder="2200-0000"></div>
             <div class="field"><label class="lbl">Email</label><input class="inp" id="fe-emisor-email" placeholder="correo@empresa.cr"></div>
           </div>
         </div>
-        <div style="background:var(--off);border:1.5px solid var(--border);border-radius:12px;padding:12px;">
-          <p style="font-size:11px;font-weight:700;color:var(--g3);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px;">Receptor</p>
+        <div class="fe-card">
+          <div class="fe-ct">Receptor</div>
           <div class="field"><label class="lbl">Nombre</label><input class="inp" id="fe-receptor-nombre" placeholder="Cliente S.A."></div>
           <div class="field"><label class="lbl">Cédula</label><input class="inp" id="fe-receptor-cedula" placeholder="1-000-000000"></div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;">
             <div class="field"><label class="lbl">Teléfono</label><input class="inp" id="fe-receptor-telefono" placeholder="8000-0000"></div>
             <div class="field"><label class="lbl">Email</label><input class="inp" id="fe-receptor-email" placeholder="cliente@correo.cr"></div>
           </div>
         </div>
       </div>
-      <div style="padding:0 24px 12px;">
-        <div style="display:flex;gap:8px;margin-bottom:8px;align-items:center;">
-          <p style="font-size:12px;font-weight:700;color:var(--g3);">Líneas de detalle</p>
-          <button onclick="agregarLineaFactura()" class="rb" style="font-size:11px;padding:4px 10px;">+ Línea</button>
+      <div style="padding:0 16px 11px;">
+        <div style="display:flex;gap:7px;align-items:center;margin-bottom:7px;">
+          <span style="font-size:12px;font-weight:700;color:var(--g3);">Líneas de detalle</span>
+          <button onclick="agregarLineaFactura()" class="mb-btn s" style="font-size:11px;padding:3px 9px;">+ Línea</button>
         </div>
         <div style="overflow-x:auto;">
-          <table class="fe-table">
-            <thead><tr><th>Cant.</th><th>Descripción</th><th>Precio Unit.</th><th>Total</th><th></th></tr></thead>
-            <tbody id="fe-lineas-body"></tbody>
-          </table>
+          <table class="fe-table"><thead><tr><th>Cant.</th><th>Descripción</th><th>Precio Unit.</th><th>Total</th><th></th></tr></thead>
+          <tbody id="fe-lineas-body"></tbody></table>
         </div>
-        <div style="display:flex;justify-content:flex-end;margin-top:12px;">
-          <div style="background:var(--bg3);border-radius:12px;padding:12px 20px;font-size:13px;min-width:200px;">
+        <div style="display:flex;justify-content:flex-end;margin-top:10px;">
+          <div style="background:var(--bg3);border-radius:var(--r2);padding:11px 15px;font-size:13px;min-width:195px;">
             <div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="color:var(--text2);">Subtotal:</span><span style="font-weight:600;" id="fe-subtotal">₡0.00</span></div>
             <div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="color:var(--text2);" id="factura-iva-lbl">IVA 13%:</span><span style="font-weight:600;" id="fe-iva-amount">₡0.00</span></div>
             <div style="display:flex;justify-content:space-between;font-size:15px;font-weight:800;color:var(--g3);border-top:1.5px solid var(--border2);padding-top:6px;margin-top:6px;"><span>TOTAL:</span><span id="fe-total">₡0.00</span></div>
@@ -577,45 +726,39 @@ label.lbl{font-size:12px;font-weight:700;color:var(--text2);display:block;margin
         <div class="field" style="margin-top:8px;"><label class="lbl">Observaciones</label><input class="inp" id="fe-observaciones" placeholder="Notas adicionales..."></div>
       </div>
     </div>
-    <div class="modal-footer">
-      <button onclick="limpiarFactura()" class="rb">🗑 Limpiar</button>
-      <button onclick="exportarXML()" class="rb">↓ XML</button>
-      <button onclick="exportarPDF()" class="rb">↓ PDF</button>
-      <button onclick="closeModal('modalFactura')" class="rb primary">✓ Cerrar</button>
+    <div class="mfoot">
+      <button onclick="limpiarFactura()" class="mb-btn s">🗑 Limpiar</button>
+      <button onclick="exportarXML()" class="mb-btn s">↓ XML</button>
+      <button onclick="exportarPDF()" class="mb-btn s">↓ PDF</button>
+      <button onclick="closeModal('modalFactura')" class="mb-btn p">✓ Cerrar</button>
     </div>
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════════════════
-     MODAL: APPS
-════════════════════════════════════════════════════════ -->
+<!-- MODAL: APPS -->
 <div class="modal" id="modalApps">
-  <div class="modal-box">
-    <div class="modal-head">
-      <h3>📱 Apps de Contabilidad — Costa Rica 2026</h3>
-      <button class="modal-close" onclick="closeModal('modalApps')">
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
-    </div>
-    <div class="modal-body">
-      <div class="apps-filters">
+  <div class="mbox">
+    <div class="mhead"><h3><span data-i18n="modal.apps.title">📱 Apps de Contabilidad · CR 2026</span></h3><button class="mcls" onclick="closeModal('modalApps')">×</button></div>
+    <div class="mbody">
+      <div class="app-filters">
         <button class="af on" id="appFilter-todos" onclick="filtrarApps('todos')">Todas</button>
-        <button class="af" id="appFilter-cr" onclick="filtrarApps('cr')">🇨🇷 Para CR</button>
+        <button class="af" id="appFilter-cr" onclick="filtrarApps('cr')">🇨🇷 CR</button>
         <button class="af" id="appFilter-erp" onclick="filtrarApps('erp')">ERP</button>
         <button class="af" id="appFilter-pyme" onclick="filtrarApps('pyme')">PyME</button>
         <button class="af" id="appFilter-gratis" onclick="filtrarApps('gratis')">🆓 Gratis</button>
         <button class="af" id="appFilter-nube" onclick="filtrarApps('nube')">☁️ Nube</button>
       </div>
-      <div class="apps-grid" id="appsGrid"></div>
+      <div class="app-grid" id="appsGrid"></div>
     </div>
   </div>
 </div>
-<script>
-// ============================================================
-// MATRIZ CONTABLE CR v12 — JS LIMPIO (sin template literals)
-// ============================================================
 
-const translations = {
+<script>
+// ════════════════════════════════════════════════════
+// MATRIZ CONTABLE CR v13 — JS LIMPIO Y FUNCIONAL
+// ════════════════════════════════════════════════════
+
+var translations = {
   es: {
     // Header
     'logo.name': 'Matriz Contable CR',
@@ -697,7 +840,51 @@ const translations = {
     'alert.hacienda': '✓ Factura enviada a Hacienda CR\nNo. 001-00001-00000001\nXML 4.3 generado\nClave: 50603062600310100000000100001010000000001',
     'alert.pdf': 'Generando PDF...\n(Demo) En producción usa jsPDF.\nFactura guardada como: factura-001.pdf',
     // Credit
-    'credit': 'Diseño y programación: Keny Chinchilla Navarro'
+    'credit': 'Diseño y programación: Keny Chinchilla Navarro',
+  
+    'menu.archivo': '📁 Archivo',
+    'menu.inicio': '🏠 Inicio',
+    'menu.insertar': '➕ Insertar',
+    'menu.plantillas': '📋 Plantillas',
+    'menu.formulas': 'fx Fórmulas',
+    'menu.factura': '🧾 Factura',
+    'menu.apps': '📱 Apps CR',
+    'menu.lenguajes': '🌐 Lenguajes',
+    'menu.ia': '🦙 IA',
+    'sidebar.plantillas': 'Plantillas',
+    'sidebar.formulas': 'Fórmulas',
+    'sidebar.apps': 'Apps',
+    'status.listo': 'Listo',
+    'sibo.name': 'Sibö',
+    'tb.ver': 'v13 · Pro',
+    'modal.fn.fns': 'funciones',
+    'modal.apps.title': '📱 Apps de Contabilidad · CR 2026',
+    'modal.factura.title': '🧾 Factura Electrónica 4.3 · CR',
+    'dd.nuevo': 'Nuevo',
+    'dd.guardar': 'Guardar',
+    'dd.restaurar': 'Restaurar guardado',
+    'dd.limpiar': 'Limpiar área',
+    'dd.exportar': 'Exportar',
+    'dd.compartir': 'Compartir enlace',
+    'dd.negrita': 'Negrita',
+    'dd.cursiva': 'Cursiva',
+    'dd.tabla': 'Tabla contable',
+    'dd.nota': 'Nota de texto',
+    'dd.grafico': 'Gráfico de barras',
+    'dd.diario': 'Libro Diario',
+    'dd.mayor': 'Libro Mayor',
+    'dd.balance': 'Balance de Comprobación',
+    'dd.conciliacion': 'Conciliación Bancaria',
+    'dd.d151': 'D-151 Compras/Ventas',
+    'dd.factura': 'Factura Electrónica',
+    'dd.insertar.fn': 'Insertar función...',
+    'dd.autosuma': 'Autosuma',
+    'dd.agregar.fila': 'Agregar fila',
+    'dd.quitar.fila': 'Eliminar fila',
+    'dd.calcular': 'Calcular totales',
+    'dd.apps.todas': 'Ver todas las apps',
+    'sibo.input.placeholder': 'Preguntame...',
+    'canvas.toolbar': 'ÁREA DE TRABAJO',
   },
 
   en: {
@@ -771,7 +958,51 @@ const translations = {
     'alert.copiado': 'Link copied to clipboard.',
     'alert.hacienda': '✓ Invoice sent to Hacienda CR\nNo. 001-00001-00000001\nXML 4.3 generated\nKey: 50603062600310100000000100001010000000001',
     'alert.pdf': 'Generating PDF...\n(Demo) In production use jsPDF.\nInvoice saved as: invoice-001.pdf',
-    'credit': 'Design and programming: Keny Chinchilla Navarro'
+    'credit': 'Design and programming: Keny Chinchilla Navarro',
+  
+    'menu.archivo': '📁 File',
+    'menu.inicio': '🏠 Home',
+    'menu.insertar': '➕ Insert',
+    'menu.plantillas': '📋 Templates',
+    'menu.formulas': 'fx Formulas',
+    'menu.factura': '🧾 Invoice',
+    'menu.apps': '📱 Apps CR',
+    'menu.lenguajes': '🌐 Languages',
+    'menu.ia': '🦙 AI',
+    'sidebar.plantillas': 'Templates',
+    'sidebar.formulas': 'Formulas',
+    'sidebar.apps': 'Apps',
+    'status.listo': 'Ready',
+    'sibo.name': 'Sibö',
+    'tb.ver': 'v13 · Pro',
+    'modal.fn.fns': 'functions',
+    'modal.apps.title': '📱 Accounting Apps · CR 2026',
+    'modal.factura.title': '🧾 Electronic Invoice 4.3 · CR',
+    'dd.nuevo': 'New',
+    'dd.guardar': 'Save',
+    'dd.restaurar': 'Restore saved',
+    'dd.limpiar': 'Clear area',
+    'dd.exportar': 'Export',
+    'dd.compartir': 'Share link',
+    'dd.negrita': 'Bold',
+    'dd.cursiva': 'Italic',
+    'dd.tabla': 'Accounting table',
+    'dd.nota': 'Text note',
+    'dd.grafico': 'Bar chart',
+    'dd.diario': 'Journal',
+    'dd.mayor': 'General Ledger',
+    'dd.balance': 'Trial Balance',
+    'dd.conciliacion': 'Bank Reconciliation',
+    'dd.d151': 'D-151 Purchases/Sales',
+    'dd.factura': 'Electronic Invoice',
+    'dd.insertar.fn': 'Insert function...',
+    'dd.autosuma': 'AutoSum',
+    'dd.agregar.fila': 'Add row',
+    'dd.quitar.fila': 'Remove row',
+    'dd.calcular': 'Calculate totals',
+    'dd.apps.todas': 'View all apps',
+    'sibo.input.placeholder': 'Ask me anything...',
+    'canvas.toolbar': 'WORK AREA',
   },
 
   bribri: {
@@ -844,7 +1075,51 @@ const translations = {
     'alert.copiado': 'Ù tsá portapapeles.',
     'alert.hacienda': '✓ Factura Hacienda CR\nNo. 001-00001-00000001',
     'alert.pdf': 'Ù PDF...',
-    'credit': 'Wéshke tö kàl: Keny Chinchilla Navarro'
+    'credit': 'Wéshke tö kàl: Keny Chinchilla Navarro',
+  
+    'menu.archivo': '📁 Ù Tök',
+    'menu.inicio': '🏠 Tsá',
+    'menu.insertar': '➕ Ù',
+    'menu.plantillas': '📋 Ù Tök',
+    'menu.formulas': 'fx Ù',
+    'menu.factura': '🧾 Ù',
+    'menu.apps': '📱 Apps CR',
+    'menu.lenguajes': '🌐 Tsuru',
+    'menu.ia': '🦙 IA',
+    'sidebar.plantillas': 'Ù Tök',
+    'sidebar.formulas': 'Ù',
+    'sidebar.apps': 'Apps',
+    'status.listo': 'Tsá',
+    'sibo.name': 'Sibö',
+    'tb.ver': 'v13',
+    'modal.fn.fns': 'ù',
+    'modal.apps.title': '📱 Apps CR',
+    'modal.factura.title': '🧾 Factura Ù CR',
+    'dd.nuevo': 'Ù Tök',
+    'dd.guardar': 'Ù',
+    'dd.restaurar': 'Ù Tök',
+    'dd.limpiar': 'Ù',
+    'dd.exportar': 'Ù',
+    'dd.compartir': 'Tsuru',
+    'dd.negrita': 'Ù',
+    'dd.cursiva': 'Ù',
+    'dd.tabla': 'Ù Tök',
+    'dd.nota': 'Tsá ù',
+    'dd.grafico': 'Ù',
+    'dd.diario': 'Libro Diario',
+    'dd.mayor': 'Libro Mayor',
+    'dd.balance': 'Balance',
+    'dd.conciliacion': 'Conciliación',
+    'dd.d151': 'D-151',
+    'dd.factura': 'Factura',
+    'dd.insertar.fn': 'Ù fx...',
+    'dd.autosuma': '∑ Ù',
+    'dd.agregar.fila': '+ Ù',
+    'dd.quitar.fila': '- Ù',
+    'dd.calcular': '∑',
+    'dd.apps.todas': 'Apps CR',
+    'sibo.input.placeholder': 'Tsuru...',
+    'canvas.toolbar': 'Ù TÖK',
   },
 
   cabecar: {
@@ -1422,59 +1697,351 @@ const i18nMap = {
 
 
 
-var currentLang = (function(){ try{ return localStorage.getItem('lang')||'es'; }catch(e){ return 'es'; } })();
 
-function t(key) {
-  var lang = translations[currentLang] || translations['es'];
-  return (lang && lang[key]) || (translations['es'] && translations['es'][key]) || key;
+
+
+var currentLang = (function(){ try{ return localStorage.getItem('lang')||'es'; }catch(e){ return 'es'; }})();
+function t(k){ var d=translations[currentLang]||translations['es']; return (d&&d[k])||(translations['es']&&translations['es'][k])||k; }
+function setLang(lang){
+  currentLang = lang;
+  try{ localStorage.setItem('lang', lang); }catch(e){}
+  var s = document.getElementById('langSelect');
+  if(s) s.value = lang;
+  var d = translations[lang] || translations['es'];
+  var fb = translations['es'] || {};
+
+  // Translate all data-i18n elements
+  document.querySelectorAll('[data-i18n]').forEach(function(el){
+    var key = el.getAttribute('data-i18n');
+    var val = (d && d[key]) || (fb && fb[key]);
+    if(val) el.textContent = val;
+  });
+
+  // Translate all data-i18n-title elements
+  document.querySelectorAll('[data-i18n-title]').forEach(function(el){
+    var key = el.getAttribute('data-i18n-title');
+    var val = (d && d[key]) || (fb && fb[key]);
+    if(val) el.title = val;
+  });
+
+  // Update Sibö placeholder
+  var si = document.getElementById('siboInput');
+  if(si) si.placeholder = (d && d['sibo.input.placeholder']) || (fb && fb['sibo.input.placeholder']) || 'Preguntame...';
+  var smi = document.getElementById('siboMobileInput');
+  if(smi) smi.placeholder = (d && d['sibo.input.placeholder']) || (fb && fb['sibo.input.placeholder']) || 'Preguntame...';
+
+  // Update Sibö welcome
+  var msgs = document.getElementById('siboMessages');
+  if(msgs && msgs.querySelectorAll('.msg-u').length === 0){
+    var welcome = (d && d['sibo.welcome']) || (fb && fb['sibo.welcome']) || '';
+    if(welcome) msgs.innerHTML = '<div class="msg-b">' + welcome + '</div>';
+  }
+
+  // Translate dropdown menu items that have data-i18n
+  document.querySelectorAll('.dd-item[data-i18n]').forEach(function(el){
+    var key = el.getAttribute('data-i18n');
+    var val = (d && d[key]) || (fb && fb[key]);
+    if(val){
+      var icon = el.querySelector('.di');
+      var iconTxt = icon ? icon.textContent : '';
+      var kbd = el.querySelector('.dk');
+      var kbdTxt = kbd ? kbd.outerHTML : '';
+      el.textContent = (iconTxt ? iconTxt + ' ' : '') + val;
+      if(kbd) el.innerHTML = el.innerHTML + kbdTxt;
+    }
+  });
+
+  // Translate section titles
+  document.querySelectorAll('.dd-section-title[data-i18n]').forEach(function(el){
+    var key = el.getAttribute('data-i18n');
+    var val = (d && d[key]) || (fb && fb[key]);
+    if(val) el.textContent = val;
+  });
+
+  // Credit
+  var cred = document.getElementById('credit');
+  if(cred){ var cv = (d && d['credit']) || (fb && fb['credit']); if(cv) cred.textContent = cv; }
 }
 
-function setLang(lang) {
-  currentLang = lang;
-  try { localStorage.setItem('lang', lang); } catch(e) {}
-  var sel = document.getElementById('langSelect');
-  if (sel) sel.value = lang;
-  document.querySelectorAll('[data-i18n]').forEach(function(el) {
-    var v = t(el.getAttribute('data-i18n'));
-    if (v) el.textContent = v;
+// ── Modals ────────────────────────────────────────
+function openModal(id){ var e=document.getElementById(id); if(e) e.classList.add('active'); }
+function closeModal(id){ var e=document.getElementById(id); if(e) e.classList.remove('active'); }
+
+// ── Dropdown menus ────────────────────────────────
+var currentMenu = null;
+
+function toggleMenu(id) {
+  if(currentMenu && currentMenu !== id) {
+    var old = document.getElementById(currentMenu);
+    if(old) old.classList.remove('open');
+  }
+  var menu = document.getElementById(id);
+  var overlay = document.getElementById('ddOverlay');
+  if(!menu) return;
+  var isOpen = menu.classList.contains('open');
+  closeAllMenus();
+  if(!isOpen) {
+    // Position menu under the clicked tab
+    var tabs = document.querySelectorAll('.mb-tab');
+    var tabIdx = ['m-archivo','m-inicio','m-insertar','m-plantillas','m-formulas','m-factura','m-apps','m-lenguajes','m-ia'].indexOf(id);
+    if(tabIdx >= 0 && tabs[tabIdx]) {
+      var rect = tabs[tabIdx].getBoundingClientRect();
+      menu.style.top = rect.bottom + 'px';
+      menu.style.left = Math.min(rect.left, window.innerWidth - 240) + 'px';
+    }
+    menu.classList.add('open');
+    overlay.classList.add('open');
+    currentMenu = id;
+    // Update active tab
+    tabs.forEach(function(b){ b.classList.remove('active'); });
+    if(tabs[tabIdx]) tabs[tabIdx].classList.add('active');
+  }
+}
+function closeAllMenus() {
+  document.querySelectorAll('.dd-menu').forEach(function(m){ m.classList.remove('open'); });
+  var ov = document.getElementById('ddOverlay');
+  if(ov) ov.classList.remove('open');
+  currentMenu = null;
+}
+function closeMenu() { closeAllMenus(); }
+
+// ── Sidebar (mobile drawer) ───────────────────────
+function openSidebar() {
+  var sb = document.getElementById('sidebar');
+  var ov = document.getElementById('mobileOverlay');
+  if(sb) sb.classList.add('drawer-open');
+  if(ov) ov.classList.add('open');
+  if(sb) sb.style.transform = 'translateX(0)';
+}
+function closeSidebar() {
+  var sb = document.getElementById('sidebar');
+  var ov = document.getElementById('mobileOverlay');
+  if(sb) { sb.classList.remove('drawer-open'); sb.style.transform = ''; }
+  if(ov) ov.classList.remove('open');
+}
+
+// ── Sibö mobile ────────────────────────────────────
+function openSiboMobile() {
+  var p = document.getElementById('siboMobilePanel');
+  if(p) p.classList.add('open');
+}
+function closeSiboMobile() {
+  var p = document.getElementById('siboMobilePanel');
+  if(p) p.classList.remove('open');
+}
+
+// ── Share ──────────────────────────────────────────
+function shareApp() {
+  try{
+    if(navigator.clipboard) navigator.clipboard.writeText(window.location.href);
+    var sl = document.getElementById('statusLeft');
+    if(sl) sl.textContent = 'URL copiada ✓';
+    setTimeout(function(){ if(sl) sl.textContent='Listo'; }, 2000);
+  }catch(e){ alert(window.location.href); }
+}
+
+// ── Canvas ─────────────────────────────────────────
+function canvasNuevo() {
+  if(confirm('Crear nueva área? Se perderá el contenido actual.'))
+    document.getElementById('canvas').innerHTML='';
+}
+function canvasGuardar() {
+  var cv=document.getElementById('canvas');
+  try{ localStorage.setItem('canvasData_v13',cv.innerHTML); }catch(e){}
+  var sl=document.getElementById('statusLeft'); if(sl) sl.textContent='Guardado: '+new Date().toLocaleTimeString('es-CR');
+}
+function canvasRestaurar() {
+  try{
+    var s=localStorage.getItem('canvasData_v13');
+    if(s){ document.getElementById('canvas').innerHTML=s; document.getElementById('statusLeft').textContent='Restaurado OK'; }
+    else alert('No hay datos guardados.');
+  }catch(e){}
+}
+function canvasLimpiar() { document.getElementById('canvas').innerHTML=''; }
+function exportarCSV() {
+  var table=document.querySelector('#canvas table');
+  if(!table){ alert('No hay tabla en el área de trabajo.'); return; }
+  var csv='';
+  table.querySelectorAll('tr').forEach(function(row){
+    csv+=Array.from(row.cells).map(function(c){ return '"'+c.textContent.replace(/"/g,'""')+'"'; }).join(',')+String.fromCharCode(10);
+  });
+  var blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  var a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download='matriz-cr-'+new Date().toISOString().split('T')[0]+'.csv'; a.click();
+}
+function exportarPDF(){ alert('Para PDF: Ctrl+P (Cmd+P) → Imprimir como PDF'); }
+function insertarTabla() {
+  var cv=document.getElementById('canvas');
+  var hoy=new Date().toISOString().split('T')[0];
+  cv.innerHTML+='<table class="tbl"><thead><tr><th>Fecha</th><th>Cuenta</th><th>Debe (CRC)</th><th>Haber (CRC)</th></tr></thead><tbody><tr><td contenteditable="true">'+hoy+'</td><td contenteditable="true">Nueva Cuenta</td><td contenteditable="true">0</td><td contenteditable="true">0</td></tr></tbody></table>';
+}
+function insertarNota() {
+  var cv=document.getElementById('canvas');
+  cv.innerHTML+='<div style="background:var(--bg2);border:1.5px solid var(--border2);border-radius:10px;padding:13px;margin:8px 0;font-size:13px;" contenteditable="true">Nota nueva...</div>';
+}
+function insertarGrafico() {
+  var cv=document.getElementById('canvas');
+  var id='ch_'+Date.now();
+  cv.innerHTML+='<div style="background:var(--off);border:1.5px solid var(--border);border-radius:12px;padding:14px;margin:8px 0;"><p style="font-size:11px;color:var(--text3);margin-bottom:9px;font-weight:600;">Gráfico de Barras</p><canvas id="'+id+'" height="80"></canvas></div>';
+  var ctx=document.getElementById(id).getContext('2d');
+  [['Debe','#5abf2a',56500],['Haber','#3a9e10',50000]].forEach(function(b,i){
+    ctx.fillStyle=b[1]; var h=(b[2]/60000)*70; ctx.fillRect(40+i*70,75-h,40,h);
+    ctx.fillStyle='#4a6b2a'; ctx.font='11px sans-serif'; ctx.fillText(b[0],40+i*70,80);
   });
 }
 
-// ── MODALS ────────────────────────────────────────────────
-function openModal(id) {
-  var el = document.getElementById(id);
-  if (el) el.classList.add('active');
+// ── Plantillas ─────────────────────────────────────
+function plantillaBar(tipo) {
+  return '<div class="pl-bar">'+
+    '<button onclick="agregarFilaPlantilla()" class="pl-btn" style="background:var(--bg2);border:1.5px dashed var(--border2);color:var(--g2);">+ Fila</button>'+
+    '<button onclick="eliminarFilaPlantilla()" class="pl-btn" style="background:var(--bg2);border:1px solid var(--border);color:var(--danger);">- Fila</button>'+
+    '<button onclick="calcularTotales()" class="pl-btn" style="background:var(--bg2);border:1px solid var(--border);color:var(--g3);">∑ Calcular</button>'+
+    '<button onclick="exportarCSV()" class="pl-btn" style="background:var(--g2);color:#fff;">↓ CSV</button>'+
+    '</div>';
 }
-function closeModal(id) {
-  var el = document.getElementById(id);
-  if (el) el.classList.remove('active');
+function agregarFilaPlantilla() {
+  var tbody=document.querySelector('#canvas tbody'); if(!tbody) return;
+  var cols=tbody.closest('table').querySelector('thead tr').cells.length;
+  var tr=document.createElement('tr');
+  for(var i=0;i<cols;i++){
+    var td=document.createElement('td'); td.contentEditable='true'; td.style.minWidth='70px';
+    td.textContent=i===0?new Date().toISOString().split('T')[0]:''; tr.appendChild(td);
+  }
+  tbody.appendChild(tr);
+}
+function eliminarFilaPlantilla() {
+  var tbody=document.querySelector('#canvas tbody');
+  if(tbody&&tbody.lastElementChild&&!tbody.lastElementChild.classList.contains('total-row')) tbody.lastElementChild.remove();
+}
+function calcularTotales() {
+  document.querySelectorAll('#canvas table').forEach(function(table){
+    var rows=table.querySelectorAll('tbody tr:not(.total-row)'); var sums={};
+    rows.forEach(function(row){ Array.from(row.cells).forEach(function(cell,i){ var v=parseFloat(cell.textContent.replace(/[^0-9.-]/g,'')); if(!isNaN(v)) sums[i]=(sums[i]||0)+v; }); });
+    var tr=table.querySelector('tr.total-row');
+    if(!tr){ tr=table.tBodies[0].insertRow(); tr.className='total-row'; }
+    var cols=table.querySelector('thead tr').cells.length;
+    while(tr.cells.length<cols) tr.insertCell();
+    Array.from(tr.cells).forEach(function(cell,i){ cell.textContent=i===0?'TOTAL':(sums[i]?fmt(sums[i]):''); });
+  });
+}
+function loadTemplate(tipo) {
+  var cv=document.getElementById('canvas'); if(!cv) return;
+  var hoy=new Date().toISOString().split('T')[0];
+  var ce=' contenteditable="true" style="min-width:80px;"';
+  var bar=plantillaBar(tipo);
+  if(tipo==='diario'){
+    cv.innerHTML=bar+'<h3 style="margin-bottom:10px;color:var(--g3);">📘 Libro Diario</h3>'+
+      '<div style="overflow-x:auto;"><table class="tbl"><thead><tr><th>Fecha</th><th>N Asiento</th><th>Cod.</th><th>Cuenta</th><th>Debe (CRC)</th><th>Haber (CRC)</th><th>Ref.</th></tr></thead><tbody>'+
+      '<tr><td'+ce+'>'+hoy+'</td><td'+ce+'>001</td><td'+ce+'>1.1.01</td><td'+ce+'>Caja y Bancos</td><td'+ce+'>56500</td><td'+ce+'></td><td'+ce+'>F-001</td></tr>'+
+      '<tr><td'+ce+'>'+hoy+'</td><td'+ce+'>001</td><td'+ce+'>4.1.01</td><td'+ce+'>Ventas</td><td'+ce+'></td><td'+ce+'>50000</td><td'+ce+'>F-001</td></tr>'+
+      '<tr><td'+ce+'>'+hoy+'</td><td'+ce+'>001</td><td'+ce+'>2.1.05</td><td'+ce+'>IVA por Pagar</td><td'+ce+'></td><td'+ce+'>6500</td><td'+ce+'>13%</td></tr>'+
+      '</tbody></table></div>';
+  } else if(tipo==='mayor'){
+    cv.innerHTML=bar+'<h3 style="margin-bottom:10px;color:var(--g3);">📗 Libro Mayor</h3>'+
+      '<div style="overflow-x:auto;"><table class="tbl"><thead><tr><th>Fecha</th><th>Descripcion</th><th>Ref.</th><th>Debe</th><th>Haber</th><th>Saldo</th></tr></thead><tbody>'+
+      '<tr><td'+ce+'>'+hoy+'</td><td'+ce+'>Saldo inicial</td><td'+ce+'></td><td'+ce+'></td><td'+ce+'></td><td'+ce+'>0</td></tr>'+
+      '<tr><td'+ce+'>'+hoy+'</td><td'+ce+'>Venta F-001</td><td'+ce+'>F-001</td><td'+ce+'>56500</td><td'+ce+'></td><td'+ce+'>56500</td></tr>'+
+      '</tbody></table></div>';
+  } else if(tipo==='balance'){
+    cv.innerHTML=bar+'<h3 style="margin-bottom:10px;color:var(--g3);">📊 Balance de Comprobacion</h3>'+
+      '<div style="overflow-x:auto;"><table class="tbl"><thead><tr><th>Codigo</th><th>Cuenta</th><th>Nat.</th><th>Debitos</th><th>Creditos</th><th>Saldo D</th><th>Saldo A</th></tr></thead><tbody>'+
+      '<tr><td'+ce+'>1.1.01</td><td'+ce+'>Caja</td><td'+ce+'>D</td><td'+ce+'>56500</td><td'+ce+'></td><td'+ce+'>56500</td><td'+ce+'></td></tr>'+
+      '<tr><td'+ce+'>4.1.01</td><td'+ce+'>Ventas</td><td'+ce+'>A</td><td'+ce+'></td><td'+ce+'>50000</td><td'+ce+'></td><td'+ce+'>50000</td></tr>'+
+      '<tr><td'+ce+'>2.1.05</td><td'+ce+'>IVA x Pagar</td><td'+ce+'>A</td><td'+ce+'></td><td'+ce+'>6500</td><td'+ce+'></td><td'+ce+'>6500</td></tr>'+
+      '</tbody></table></div>';
+  } else if(tipo==='conciliacion'){
+    cv.innerHTML=bar+'<h3 style="margin-bottom:10px;color:var(--g3);">🏦 Conciliacion Bancaria</h3>'+
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:11px;">'+
+      '<div style="background:var(--off);border:1.5px solid var(--border);border-radius:10px;padding:11px;">'+
+      '<p style="font-weight:700;font-size:12px;color:var(--g3);margin-bottom:7px;">Segun Banco</p>'+
+      '<table class="tbl"><thead><tr><th>Concepto</th><th>Monto (CRC)</th></tr></thead><tbody>'+
+      '<tr><td'+ce+'>Saldo estado cuenta</td><td'+ce+'>95000</td></tr>'+
+      '<tr><td'+ce+'>(+) Depositos transito</td><td'+ce+'>20000</td></tr>'+
+      '<tr><td'+ce+'>(-) Cheques pendientes</td><td'+ce+'>-5000</td></tr>'+
+      '</tbody></table></div>'+
+      '<div style="background:var(--off);border:1.5px solid var(--border);border-radius:10px;padding:11px;">'+
+      '<p style="font-weight:700;font-size:12px;color:var(--g3);margin-bottom:7px;">Segun Libros</p>'+
+      '<table class="tbl"><thead><tr><th>Concepto</th><th>Monto (CRC)</th></tr></thead><tbody>'+
+      '<tr><td'+ce+'>Saldo segun libros</td><td'+ce+'>108000</td></tr>'+
+      '<tr><td'+ce+'>(+) Notas credito</td><td'+ce+'>5000</td></tr>'+
+      '<tr><td'+ce+'>(-) Notas debito</td><td'+ce+'>-3000</td></tr>'+
+      '</tbody></table></div></div>';
+  } else if(tipo==='compras'){
+    cv.innerHTML=bar+'<h3 style="margin-bottom:10px;color:var(--g3);">🛒 D-151 Compras/Ventas</h3>'+
+      '<div style="overflow-x:auto;"><table class="tbl"><thead><tr><th>Fecha</th><th>Tipo</th><th>N Doc.</th><th>Cedula</th><th>Nombre</th><th>Condicion</th><th>Subtotal</th><th>IVA</th><th>Total</th></tr></thead><tbody>'+
+      '<tr><td'+ce+'>'+hoy+'</td><td'+ce+'>FE</td><td'+ce+'>001-001-000001</td><td'+ce+'>3-101-000000</td><td'+ce+'>Cliente A</td><td'+ce+'>Contado</td><td'+ce+'>50000</td><td'+ce+'>6500</td><td'+ce+'>56500</td></tr>'+
+      '</tbody></table></div>';
+  } else if(tipo==='factura'){
+    openModal('modalFactura');
+  }
 }
 
-// ── RIBBON TABS ───────────────────────────────────────────
-function switchTab(tab) {
-  document.querySelectorAll('.ribbon-tab').forEach(function(b){ b.classList.remove('active'); });
-  document.querySelectorAll('.ribbon-panel').forEach(function(p){ p.classList.remove('active'); });
-  var btn = document.querySelector('[data-tab="'+tab+'"]');
-  var pnl = document.getElementById('panel-'+tab);
-  if (btn) btn.classList.add('active');
-  if (pnl) pnl.classList.add('active');
+// ── Factura ────────────────────────────────────────
+function fmt(n){ return '\u20a1'+Number(n).toLocaleString('es-CR',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function recalcularFactura() {
+  var rows=document.querySelectorAll('#fe-lineas-body tr'); var sub=0;
+  rows.forEach(function(row){
+    var q=parseFloat((row.querySelector('.fe-qty')||{}).value)||0;
+    var p=parseFloat((row.querySelector('.fe-price')||{}).value)||0;
+    var tot=q*p; sub+=tot;
+    var td=row.querySelector('.fe-line-total'); if(td) td.textContent=fmt(tot);
+  });
+  var rateEl=document.getElementById('fe-iva-rate');
+  var rate=rateEl?parseFloat(rateEl.value):0.13;
+  var iva=sub*rate; var total=sub+iva; var pct=Math.round(rate*100);
+  function g(id){ return document.getElementById(id); }
+  if(g('fe-subtotal')) g('fe-subtotal').textContent=fmt(sub);
+  if(g('fe-iva-amount')) g('fe-iva-amount').textContent=fmt(iva);
+  if(g('fe-total')) g('fe-total').textContent=fmt(total);
+  if(g('factura-iva-lbl')) g('factura-iva-lbl').textContent='IVA '+pct+'%:';
+}
+function agregarLineaFactura() {
+  var tbody=document.getElementById('fe-lineas-body'); if(!tbody) return;
+  var tr=document.createElement('tr');
+  tr.innerHTML='<td><input type="number" value="1" min="0" step="0.01" class="fe-inp fe-qty" style="width:48px;" oninput="recalcularFactura()"></td>'+
+    '<td><input type="text" value="Servicio" class="fe-inp fe-desc" style="width:100%;"></td>'+
+    '<td><input type="number" value="0" min="0" step="0.01" class="fe-inp fe-price" style="width:80px;" oninput="recalcularFactura()"></td>'+
+    '<td class="fe-line-total" style="font-weight:600;white-space:nowrap;">'+fmt(0)+'</td>'+
+    '<td><button onclick="eliminarLineaFactura(this)" style="background:none;border:none;cursor:pointer;color:var(--danger);font-size:15px;">×</button></td>';
+  tbody.appendChild(tr); recalcularFactura();
+}
+function eliminarLineaFactura(btn) {
+  var row=btn.closest('tr');
+  if(document.querySelectorAll('#fe-lineas-body tr').length>1){ row.remove(); recalcularFactura(); }
+}
+function limpiarFactura() {
+  ['fe-emisor-nombre','fe-emisor-cedula','fe-emisor-telefono','fe-emisor-email',
+   'fe-receptor-nombre','fe-receptor-cedula','fe-receptor-telefono','fe-receptor-email','fe-observaciones'
+  ].forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; });
+  var tbody=document.getElementById('fe-lineas-body');
+  if(tbody){ tbody.innerHTML=''; agregarLineaFactura(); }
+}
+function exportarXML() {
+  function gv(id){ var e=document.getElementById(id); return e?(e.value||e.textContent||''):''; }
+  var fecha=gv('fe-fecha')||new Date().toISOString().split('T')[0];
+  var sub=(gv('fe-subtotal')||'0').replace(/[^\d.]/g,'');
+  var iva=(gv('fe-iva-amount')||'0').replace(/[^\d.]/g,'');
+  var tot=(gv('fe-total')||'0').replace(/[^\d.]/g,'');
+  var lineas='';
+  document.querySelectorAll('#fe-lineas-body tr').forEach(function(row,i){
+    var qty=(row.querySelector('.fe-qty')||{}).value||'1';
+    var desc=(row.querySelector('.fe-desc')||{}).value||'';
+    var price=(row.querySelector('.fe-price')||{}).value||'0';
+    var lt=((row.querySelector('.fe-line-total')||{}).textContent||'0').replace(/[^\d.]/g,'');
+    lineas+='  <LineaDetalle><NumeroLinea>'+(i+1)+'</NumeroLinea><Cantidad>'+qty+'</Cantidad><Descripcion>'+desc+'</Descripcion><PrecioUnitario>'+price+'</PrecioUnitario><MontoTotal>'+lt+'</MontoTotal></LineaDetalle>\n';
+  });
+  var xml='<?xml version="1.0" encoding="UTF-8"?>\n<FacturaElectronica xmlns="https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.3/facturaElectronica">\n'+
+    '  <FechaEmision>'+fecha+'T09:00:00-06:00</FechaEmision>\n'+
+    '  <Emisor><Nombre>'+gv('fe-emisor-nombre')+'</Nombre><Identificacion><Numero>'+gv('fe-emisor-cedula')+'</Numero></Identificacion></Emisor>\n'+
+    '  <Receptor><Nombre>'+gv('fe-receptor-nombre')+'</Nombre><Identificacion><Numero>'+gv('fe-receptor-cedula')+'</Numero></Identificacion></Receptor>\n'+
+    lineas+'  <ResumenFactura><TotalVenta>'+sub+'</TotalVenta><TotalImpuesto>'+iva+'</TotalImpuesto><TotalComprobante>'+tot+'</TotalComprobante></ResumenFactura>\n</FacturaElectronica>';
+  var blob=new Blob([xml],{type:'application/xml'});
+  var a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download='factura-'+fecha+'.xml'; a.click(); URL.revokeObjectURL(a.href);
 }
 
-// ── SIBÖ ──────────────────────────────────────────────────
-function toggleSibo() {
-  var p = document.getElementById('siboPanel');
-  if (p) p.classList.toggle('open');
-}
-function clearSibo() {
-  siboHistory = [];
-  var msgs = document.getElementById('siboMessages');
-  if (msgs) msgs.innerHTML = '<div class="msg-bot">Chat limpio. Preguntame lo que necesités 🇨🇷</div>';
-}
-function siboPregunta(txt) {
-  var inp = document.getElementById('siboInput');
-  if (inp) { inp.value = txt; sendSibo(); }
-}
-const SIBO_SYSTEM = `Eres Sibö ✦, el asistente contable inteligente de Matriz Contable CR v12. 
+// ── Sibö ────────────────────────────────────────────
+var SIBO_SYSTEM = `Eres Sibö ✦, el asistente contable inteligente de Matriz Contable CR v12. 
 Eres experto en:
 - Contabilidad costarricense: NIIF, PCGA, Código de Comercio de CR
 - Hacienda CR: Factura Electrónica 4.3 y 4.4, D-151, D-152, declaraciones de renta
@@ -1490,234 +2057,74 @@ Responde siempre en el idioma del usuario (español CR, inglés, o lengua indíg
 Sé conciso pero completo. Usa emojis con moderación. Si hay cálculos, muéstralos paso a paso.
 Si preguntan por apps, recomienda según el tamaño de empresa y necesidades específicas de CR.`;
 
-var siboHistory = [];
+var siboHistory=[];
+var siboMobileHistory=[];
 
-function localFallback(msg) {
-  var m = msg.toLowerCase();
-  if (m.indexOf('iva') >= 0) return 'El IVA general en CR es 13%. Hay tasas reducidas: 4% canasta básica, 2% medicamentos, 1% equipo médico, 0% exentos. Se declara mensualmente ante Hacienda.';
-  if (m.indexOf('factura') >= 0) return 'La Factura Electrónica en CR es obligatoria desde 2018. La versión vigente es 4.3/4.4. Se envía al ATV de Hacienda en XML. Incluye clave única de 50 dígitos.';
-  if (m.indexOf('diario') >= 0 || m.indexOf('asiento') >= 0) return 'El Libro Diario registra cada transacción por fecha con partida doble: Débito = Crédito. Es obligatorio por el Código de Comercio CR.';
-  if (m.indexOf('balance') >= 0) return 'El Balance de Comprobación verifica que la suma de débitos = suma de créditos en todos los libros. Es paso previo a los estados financieros.';
-  if (m.indexOf('conciliacion') >= 0 || m.indexOf('banco') >= 0) return 'La conciliación bancaria reconcilia el saldo del extracto bancario con el saldo en libros. Identifica cheques en tránsito, depósitos no acreditados y errores.';
-  if (m.indexOf('app') >= 0 || m.indexOf('software') >= 0) return 'Apps recomendadas para CR: Alegra (PyME, cloud), e-Cont (multi-empresa), Softland (ERP grande), QuickBooks (internacional), Wave (gratis). Andá a la pestaña Apps CR para ver todas.';
-  return 'Soy Sibö, tu asistente contable tico. Preguntame sobre contabilidad, Hacienda CR, IVA, facturas electrónicas, libros contables o apps de contabilidad.';
+function clearSibo() {
+  siboHistory=[];
+  var m=document.getElementById('siboMessages');
+  if(m) m.innerHTML='<div class="msg-b">Chat limpio ✓ ¿En qué te ayudo? 🇨🇷</div>';
+}
+function siboPregunta(txt) {
+  openSiboMobile();
+  var inp=document.getElementById('siboMobileInput');
+  if(inp){ inp.value=txt; sendSiboMobile(); }
+}
+function siboPreguntaMobile(txt) {
+  var inp=document.getElementById('siboMobileInput');
+  if(inp){ inp.value=txt; sendSiboMobile(); }
 }
 
-async function sendSibo() {
-  var input = document.getElementById('siboInput');
-  var msg   = input ? input.value.trim() : '';
-  if (!msg) return;
-  var msgs  = document.getElementById('siboMessages');
-  var type  = document.getElementById('siboTyping');
-  var sBtn  = document.getElementById('btnSiboSend');
-  if (!msgs) return;
-  msgs.innerHTML += '<div class="msg-user">' + msg.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</div>';
-  if (input) input.value = '';
-  msgs.scrollTop = msgs.scrollHeight;
-  if (type) type.style.display = 'block';
-  if (sBtn) { sBtn.disabled = true; sBtn.style.opacity = '0.5'; }
-  siboHistory.push({role:'user', content:msg});
-  try {
-    var resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:SIBO_SYSTEM,messages:siboHistory})
+function fallback(msg) {
+  var m=msg.toLowerCase();
+  if(m.indexOf('iva')>=0) return 'El IVA general en CR es <b>13%</b>. Tasas reducidas: 4% canasta básica, 2% medicamentos, 1% equipo médico, 0% exentos. Se declara mensualmente ante Hacienda.';
+  if(m.indexOf('factura')>=0) return 'La Factura Electrónica en CR es obligatoria desde 2018. Versión vigente: <b>4.3/4.4</b>. Se envía al ATV de Hacienda en XML con clave de 50 dígitos.';
+  if(m.indexOf('diario')>=0||m.indexOf('asiento')>=0) return 'El <b>Libro Diario</b> registra cada transacción con partida doble: Débito = Crédito. Obligatorio por el Código de Comercio CR.';
+  if(m.indexOf('niif')>=0||m.indexOf('ifrs')>=0) return 'Las <b>NIIF</b> son adoptadas en CR por el CONASSIF. Incluyen NIIF completas para empresas grandes y NIIF para PyMEs.';
+  if(m.indexOf('conciliacion')>=0||m.indexOf('banco')>=0) return 'La <b>conciliación bancaria</b> reconcilia el saldo del extracto con el saldo en libros. Identifica cheques en tránsito, depósitos no acreditados y errores.';
+  if(m.indexOf('app')>=0||m.indexOf('software')>=0) return 'Apps para CR: <b>Alegra</b> (PyME), <b>e-Cont</b> (multi-empresa), <b>Softland</b> (ERP), <b>QuickBooks</b>, <b>Wave</b> (gratis). Usá el menú Apps CR.';
+  return 'Soy Sibö ✦, tu asistente contable con IA. Preguntame sobre contabilidad CR, Hacienda, IVA, facturas, libros y más.';
+}
+
+async function siboCall(msg, hist, msgsId, typingId) {
+  var msgs=document.getElementById(msgsId);
+  var typing=typingId?document.getElementById(typingId):null;
+  if(!msgs) return;
+  msgs.innerHTML+='<div class="msg-u">'+msg.replace(/</g,'&lt;')+'</div>';
+  msgs.scrollTop=msgs.scrollHeight;
+  if(typing) typing.style.display='block';
+  hist.push({role:'user',content:msg});
+  var reply='';
+  try{
+    var resp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:SIBO_SYSTEM,messages:hist})
     });
-    var data = await resp.json();
-    var reply = (data.content && data.content[0] && data.content[0].text) || localFallback(msg);
-    siboHistory.push({role:'assistant',content:reply});
-    if (siboHistory.length > 20) siboHistory = siboHistory.slice(-20);
-    var rendered = reply.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/\n/g,'<br>');
-    msgs.innerHTML += '<div class="msg-bot">' + rendered + '</div>';
-  } catch(e) {
-    msgs.innerHTML += '<div class="msg-bot">' + localFallback(msg) + '</div>';
-  }
-  if (type) type.style.display = 'none';
-  if (sBtn) { sBtn.disabled = false; sBtn.style.opacity = '1'; }
-  msgs.scrollTop = msgs.scrollHeight;
+    var data=await resp.json();
+    reply=(data.content&&data.content[0]&&data.content[0].text)||fallback(msg);
+    hist.push({role:'assistant',content:reply});
+    if(hist.length>20) hist.splice(0,hist.length-20);
+  }catch(e){ reply=fallback(msg); }
+  if(typing) typing.style.display='none';
+  var rendered=reply.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/&lt;b&gt;/g,'<b>').replace(/&lt;\/b&gt;/g,'</b>').replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/\n/g,'<br>');
+  msgs.innerHTML+='<div class="msg-b">'+rendered+'</div>';
+  msgs.scrollTop=msgs.scrollHeight;
+}
+async function sendSibo() {
+  var inp=document.getElementById('siboInput');
+  var msg=inp?inp.value.trim():''; if(!msg) return;
+  if(inp) inp.value='';
+  await siboCall(msg,siboHistory,'siboMessages','siboTyping');
+}
+async function sendSiboMobile() {
+  var inp=document.getElementById('siboMobileInput');
+  var msg=inp?inp.value.trim():''; if(!msg) return;
+  if(inp) inp.value='';
+  await siboCall(msg,siboMobileHistory,'siboMobileMessages','siboMobileTyping');
 }
 
-// ── FACTURA ───────────────────────────────────────────────
-function fmt(n) { return '\u20a1' + Number(n).toLocaleString('es-CR',{minimumFractionDigits:2,maximumFractionDigits:2}); }
-
-function recalcularFactura() {
-  var rows = document.querySelectorAll('#fe-lineas-body tr');
-  var sub = 0;
-  rows.forEach(function(row) {
-    var q = parseFloat((row.querySelector('.fe-qty') || {}).value) || 0;
-    var p = parseFloat((row.querySelector('.fe-price') || {}).value) || 0;
-    var tot = q * p; sub += tot;
-    var td = row.querySelector('.fe-line-total');
-    if (td) td.textContent = fmt(tot);
-  });
-  var rateEl = document.getElementById('fe-iva-rate');
-  var rate   = rateEl ? parseFloat(rateEl.value) : 0.13;
-  var iva    = sub * rate; var total = sub + iva;
-  var pct    = Math.round(rate * 100);
-  var e = function(id){ return document.getElementById(id); };
-  if (e('fe-subtotal'))   e('fe-subtotal').textContent = fmt(sub);
-  if (e('fe-iva-amount')) e('fe-iva-amount').textContent = fmt(iva);
-  if (e('fe-total'))      e('fe-total').textContent = fmt(total);
-  if (e('factura-iva-lbl')) e('factura-iva-lbl').textContent = 'IVA ' + pct + '%:';
-}
-
-function agregarLineaFactura() {
-  var tbody = document.getElementById('fe-lineas-body');
-  if (!tbody) return;
-  var tr = document.createElement('tr');
-  var X  = '\u00d7';
-  tr.innerHTML =
-    '<td><input type="number" value="1" min="0" step="0.01" class="fe-inp fe-qty" style="width:55px;" oninput="recalcularFactura()"></td>' +
-    '<td><input type="text" value="Servicio" class="fe-inp fe-desc" style="width:100%;"></td>' +
-    '<td><input type="number" value="0" min="0" step="0.01" class="fe-inp fe-price" style="width:90px;" oninput="recalcularFactura()"></td>' +
-    '<td class="fe-line-total" style="font-weight:600;font-size:13px;white-space:nowrap;">' + fmt(0) + '</td>' +
-    '<td><button onclick="eliminarLineaFactura(this)" style="background:none;border:none;cursor:pointer;color:var(--danger);font-size:16px;">' + X + '</button></td>';
-  tbody.appendChild(tr);
-  recalcularFactura();
-}
-
-function eliminarLineaFactura(btn) {
-  var row = btn.closest('tr');
-  if (document.querySelectorAll('#fe-lineas-body tr').length > 1) { row.remove(); recalcularFactura(); }
-}
-
-function limpiarFactura() {
-  ['fe-emisor-nombre','fe-emisor-cedula','fe-emisor-telefono','fe-emisor-email',
-   'fe-receptor-nombre','fe-receptor-cedula','fe-receptor-telefono','fe-receptor-email','fe-observaciones'
-  ].forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; });
-  var tbody = document.getElementById('fe-lineas-body');
-  if (tbody) { tbody.innerHTML = ''; agregarLineaFactura(); }
-}
-
-function exportarPDF() { alert('Para PDF: usá Ctrl+P / imprimir como PDF en el navegador.'); }
-
-function exportarXML() {
-  var g = function(id){ var el=document.getElementById(id); return el?(el.value||el.textContent||''):''; };
-  var fecha    = g('fe-fecha') || new Date().toISOString().split('T')[0];
-  var subtotal = (g('fe-subtotal')||'0').replace(/[^\d.]/g,'');
-  var iva      = (g('fe-iva-amount')||'0').replace(/[^\d.]/g,'');
-  var total    = (g('fe-total')||'0').replace(/[^\d.]/g,'');
-  var lineas   = '';
-  document.querySelectorAll('#fe-lineas-body tr').forEach(function(row,i){
-    var qty   = (row.querySelector('.fe-qty')   ||{}).value||'1';
-    var desc  = (row.querySelector('.fe-desc')  ||{}).value||'';
-    var price = (row.querySelector('.fe-price') ||{}).value||'0';
-    var lt    = ((row.querySelector('.fe-line-total')||{}).textContent||'0').replace(/[^\d.]/g,'');
-    lineas += '  <LineaDetalle><NumeroLinea>'+(i+1)+'</NumeroLinea><Cantidad>'+qty+'</Cantidad><Descripcion>'+desc+'</Descripcion><PrecioUnitario>'+price+'</PrecioUnitario><MontoTotal>'+lt+'</MontoTotal></LineaDetalle>\n';
-  });
-  var xml = '<?xml version="1.0" encoding="UTF-8"?>\n<FacturaElectronica xmlns="https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.3/facturaElectronica">\n' +
-    '  <Clave>50603062600310100000000100001010000000001</Clave>\n' +
-    '  <FechaEmision>'+fecha+'T09:00:00-06:00</FechaEmision>\n' +
-    '  <Emisor><Nombre>'+g('fe-emisor-nombre')+'</Nombre><Identificacion><Numero>'+g('fe-emisor-cedula')+'</Numero></Identificacion></Emisor>\n' +
-    '  <Receptor><Nombre>'+g('fe-receptor-nombre')+'</Nombre><Identificacion><Numero>'+g('fe-receptor-cedula')+'</Numero></Identificacion></Receptor>\n' +
-    lineas +
-    '  <ResumenFactura><TotalVenta>'+subtotal+'</TotalVenta><TotalImpuesto>'+iva+'</TotalImpuesto><TotalComprobante>'+total+'</TotalComprobante></ResumenFactura>\n' +
-    '</FacturaElectronica>';
-  var blob = new Blob([xml],{type:'application/xml'});
-  var a = document.createElement('a'); a.href=URL.createObjectURL(blob);
-  a.download='factura-'+fecha+'.xml'; a.click(); URL.revokeObjectURL(a.href);
-}
-
-// ── PLANTILLAS ────────────────────────────────────────────
-function plantillaBar(tipo) {
-  return '<div class="pl-bar">' +
-    '<button onclick="agregarFilaPlantilla()" class="pl-btn" style="background:var(--bg2);border:1.5px dashed var(--border2);color:var(--g2);">+ Fila</button>' +
-    '<button onclick="eliminarFilaPlantilla()" class="pl-btn" style="background:var(--bg2);border:1.5px solid var(--border);color:var(--danger);">− Fila</button>' +
-    '<button onclick="calcularTotales()" class="pl-btn" style="background:var(--bg2);border:1.5px solid var(--border);color:var(--g3);">∑ Calcular</button>' +
-    '<button onclick="exportarPlantilla(\''+tipo+'\')" class="pl-btn" style="background:var(--g2);border:none;color:#fff;">↓ CSV</button>' +
-    '</div>';
-}
-function agregarFilaPlantilla() {
-  var tbody = document.querySelector('#canvas tbody'); if(!tbody) return;
-  var cols = tbody.closest('table').querySelector('thead tr').cells.length;
-  var tr = document.createElement('tr');
-  for (var i=0;i<cols;i++) {
-    var td=document.createElement('td'); td.contentEditable='true'; td.style.minWidth='70px';
-    td.textContent = i===0 ? new Date().toISOString().split('T')[0] : '';
-    tr.appendChild(td);
-  }
-  tbody.appendChild(tr);
-}
-function eliminarFilaPlantilla() {
-  var tbody=document.querySelector('#canvas tbody');
-  if (tbody&&tbody.lastElementChild) tbody.lastElementChild.remove();
-}
-function calcularTotales() {
-  document.querySelectorAll('#canvas table').forEach(function(table){
-    var rows=table.querySelectorAll('tbody tr:not(.total-row)'); var sums={};
-    rows.forEach(function(row){ Array.from(row.cells).forEach(function(cell,i){ var v=parseFloat(cell.textContent.replace(/[^0-9.-]/g,'')); if(!isNaN(v)) sums[i]=(sums[i]||0)+v; }); });
-    var tr=table.querySelector('tr.total-row');
-    if (!tr) { tr=table.tBodies[0].insertRow(); tr.className='total-row'; }
-    var cols=table.querySelector('thead tr').cells.length;
-    while (tr.cells.length<cols) tr.insertCell();
-    Array.from(tr.cells).forEach(function(cell,i){ cell.textContent = i===0?'TOTAL':(sums[i]?fmt(sums[i]):''); });
-  });
-}
-function exportarPlantilla(tipo) {
-  var table=document.querySelector('#canvas table'); if(!table) return;
-  var csv='';
-  table.querySelectorAll('tr').forEach(function(row){ csv+=Array.from(row.cells).map(function(c){ return '"'+c.textContent.replace(/"/g,'""')+'"'; }).join(',')+'\\n'; });
-  var blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
-  var a=document.createElement('a'); a.href=URL.createObjectURL(blob);
-  a.download=(tipo||'plantilla')+'-'+new Date().toISOString().split('T')[0]+'.csv'; a.click();
-}
-
-function loadTemplate(tipo) {
-  var canvas = document.getElementById('canvas'); if(!canvas) return;
-  var hoy = new Date().toISOString().split('T')[0];
-  var ce  = ' contenteditable="true" style="min-width:80px;"';
-  var bar = plantillaBar(tipo);
-  switchTab('plantillas');
-  if (tipo==='diario') {
-    canvas.innerHTML = bar+'<h3 style="margin-bottom:10px;color:var(--g3);">Libro Diario</h3>'+
-      '<div style="overflow-x:auto;"><table class="tbl"><thead><tr><th>Fecha</th><th>N Asiento</th><th>Cod.</th><th>Cuenta</th><th>Debe (CRC)</th><th>Haber (CRC)</th><th>Ref.</th></tr></thead><tbody>'+
-      '<tr><td'+ce+'>'+hoy+'</td><td'+ce+'>001</td><td'+ce+'>1.1.01</td><td'+ce+'>Caja y Bancos</td><td'+ce+'>56500</td><td'+ce+'></td><td'+ce+'>F-001</td></tr>'+
-      '<tr><td'+ce+'>'+hoy+'</td><td'+ce+'>001</td><td'+ce+'>4.1.01</td><td'+ce+'>Ventas</td><td'+ce+'></td><td'+ce+'>50000</td><td'+ce+'>F-001</td></tr>'+
-      '<tr><td'+ce+'>'+hoy+'</td><td'+ce+'>001</td><td'+ce+'>2.1.05</td><td'+ce+'>IVA por Pagar</td><td'+ce+'></td><td'+ce+'>6500</td><td'+ce+'>13%</td></tr>'+
-      '</tbody></table></div>';
-  } else if (tipo==='mayor') {
-    canvas.innerHTML = bar+'<h3 style="margin-bottom:10px;color:var(--g3);">Libro Mayor</h3>'+
-      '<div style="overflow-x:auto;"><table class="tbl"><thead><tr><th>Fecha</th><th>Descripcion</th><th>Ref.</th><th>Debe</th><th>Haber</th><th>Saldo</th></tr></thead><tbody>'+
-      '<tr><td'+ce+'>'+hoy+'</td><td'+ce+'>Saldo inicial</td><td'+ce+'></td><td'+ce+'></td><td'+ce+'></td><td'+ce+'>0</td></tr>'+
-      '<tr><td'+ce+'>'+hoy+'</td><td'+ce+'>Venta F-001</td><td'+ce+'>F-001</td><td'+ce+'>56500</td><td'+ce+'></td><td'+ce+'>56500</td></tr>'+
-      '</tbody></table></div>';
-  } else if (tipo==='balance') {
-    canvas.innerHTML = bar+'<h3 style="margin-bottom:10px;color:var(--g3);">Balance de Comprobacion</h3>'+
-      '<div style="overflow-x:auto;"><table class="tbl"><thead><tr><th>Codigo</th><th>Cuenta</th><th>Nat.</th><th>Debitos</th><th>Creditos</th><th>Saldo D</th><th>Saldo A</th></tr></thead><tbody>'+
-      '<tr><td'+ce+'>1.1.01</td><td'+ce+'>Caja y Bancos</td><td'+ce+'>D</td><td'+ce+'>56500</td><td'+ce+'></td><td'+ce+'>56500</td><td'+ce+'></td></tr>'+
-      '<tr><td'+ce+'>4.1.01</td><td'+ce+'>Ventas</td><td'+ce+'>A</td><td'+ce+'></td><td'+ce+'>50000</td><td'+ce+'></td><td'+ce+'>50000</td></tr>'+
-      '<tr><td'+ce+'>2.1.05</td><td'+ce+'>IVA por Pagar</td><td'+ce+'>A</td><td'+ce+'></td><td'+ce+'>6500</td><td'+ce+'></td><td'+ce+'>6500</td></tr>'+
-      '</tbody></table></div>';
-  } else if (tipo==='conciliacion') {
-    canvas.innerHTML = bar+'<h3 style="margin-bottom:10px;color:var(--g3);">Conciliacion Bancaria</h3>'+
-      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">'+
-      '<div style="background:var(--off);border:1.5px solid var(--border);border-radius:12px;padding:12px;">'+
-      '<p style="font-weight:700;font-size:12px;color:var(--g3);margin-bottom:8px;">Segun Banco</p>'+
-      '<table class="tbl"><thead><tr><th>Concepto</th><th>Monto (CRC)</th></tr></thead><tbody>'+
-      '<tr><td'+ce+'>Saldo estado de cuenta</td><td'+ce+'>95000</td></tr>'+
-      '<tr><td'+ce+'>(+) Depositos en transito</td><td'+ce+'>20000</td></tr>'+
-      '<tr><td'+ce+'>(-) Cheques pendientes</td><td'+ce+'>-5000</td></tr>'+
-      '</tbody></table></div>'+
-      '<div style="background:var(--off);border:1.5px solid var(--border);border-radius:12px;padding:12px;">'+
-      '<p style="font-weight:700;font-size:12px;color:var(--g3);margin-bottom:8px;">Segun Libros</p>'+
-      '<table class="tbl"><thead><tr><th>Concepto</th><th>Monto (CRC)</th></tr></thead><tbody>'+
-      '<tr><td'+ce+'>Saldo segun libros</td><td'+ce+'>108000</td></tr>'+
-      '<tr><td'+ce+'>(+) Notas de credito</td><td'+ce+'>5000</td></tr>'+
-      '<tr><td'+ce+'>(-) Notas de debito</td><td'+ce+'>-3000</td></tr>'+
-      '</tbody></table></div></div>';
-  } else if (tipo==='compras') {
-    canvas.innerHTML = bar+'<h3 style="margin-bottom:10px;color:var(--g3);">Reporte D-151 Compras/Ventas</h3>'+
-      '<div style="overflow-x:auto;"><table class="tbl"><thead><tr><th>Fecha</th><th>Tipo</th><th>N Doc.</th><th>Cedula</th><th>Nombre</th><th>Condicion</th><th>Subtotal</th><th>IVA</th><th>Total</th></tr></thead><tbody>'+
-      '<tr><td'+ce+'>'+hoy+'</td><td'+ce+'>FE</td><td'+ce+'>001-001-000001</td><td'+ce+'>3-101-000000</td><td'+ce+'>Cliente A</td><td'+ce+'>Contado</td><td'+ce+'>50000</td><td'+ce+'>6500</td><td'+ce+'>56500</td></tr>'+
-      '<tr><td'+ce+'>'+hoy+'</td><td'+ce+'>FC</td><td'+ce+'>001-001-000002</td><td'+ce+'>3-101-111111</td><td'+ce+'>Proveedor B</td><td'+ce+'>Credito 30d</td><td'+ce+'>30000</td><td'+ce+'>3900</td><td'+ce+'>33900</td></tr>'+
-      '</tbody></table></div>';
-  } else if (tipo==='factura') {
-    openModal('modalFactura');
-  }
-}
-
-// ── FUNCIONES LIBRARY ─────────────────────────────────────
-const fnData = {
+// ── Funciones ────────────────────────────────────────
+var fnData = {
   'Búsqueda y Referencia': [
     {n:'AGRUPARPOR',e:'GROUPBY',d:'Agrupa, agrega, ordena y filtra datos según los campos especificados.',s:'AGRUPARPOR(campo_filas; campo_valores; función)',x:'=AGRUPARPOR(A2:A10,B2:B10,SUMA)'},
     {n:'AJUSTARCOLS',e:'WRAPCOLS',d:'Envuelve un vector de fila o columna después de un número especificado de valores.',s:'AJUSTARCOLS(vector; nº_wrap; [relleno])',x:'=AJUSTARCOLS(A1:A12,3)'},
@@ -2053,7 +2460,7 @@ const fnData = {
     {n:'XMLFILTRO',e:'FILTERXML',d:'Extrae datos XML usando XPath.',s:'XMLFILTRO(xml; xpath)',x:'=XMLFILTRO(SERVICIOWEB("https://api.ejemplo.cr/datos"),"//precio")'},
   ],
 }
-const fnColors = {
+var fnColors = {
   'Búsqueda y Referencia':'#3a9e10','Texto':'#0e7490','Lógicas':'#7c3aed',
   'Fecha y Hora':'#d97706','Base de Datos':'#dc2626','Matemáticas':'#059669',
   'Financieras':'#1d4ed8','Estadísticas':'#9333ea','Información':'#64748b',
@@ -2061,82 +2468,249 @@ const fnColors = {
   'Duración':'#0891b2','Trigonométricas':'#be185d','Google Sheets':'#34a853'};
 
 
-// Google Sheets category
-if (!fnColors['Google Sheets']) fnColors['Google Sheets'] = '#34a853';
-if (!fnData['Google Sheets']) fnData['Google Sheets'] = [
-  {n:'ARRAYFORMULA',e:'ARRAYFORMULA',d:'Fórmula de arreglo en múltiples filas/columnas.',s:'ARRAYFORMULA(formula_matriz)',x:'=ARRAYFORMULA(A2:A10*B2:B10)'},
-  {n:'GOOGLEFINANCE',e:'GOOGLEFINANCE',d:'Datos financieros de Google Finance.',s:'GOOGLEFINANCE(cotizacion;[atributo])',x:'=GOOGLEFINANCE("GOOG","price")'},
-  {n:'GOOGLETRANSLATE',e:'GOOGLETRANSLATE',d:'Traduce texto con Google Translate.',s:'GOOGLETRANSLATE(texto;origen;destino)',x:'=GOOGLETRANSLATE("Hola","es","en")'},
-  {n:'QUERY',e:'QUERY',d:'Consultas SQL-like sobre los datos.',s:'QUERY(datos;consulta;[encabezados])',x:'=QUERY(A1:C100,"SELECT A,B WHERE C>100",1)'},
-  {n:'IMPORTRANGE',e:'IMPORTRANGE',d:'Importa rango desde otra hoja de Google.',s:'IMPORTRANGE(url;rango)',x:'=IMPORTRANGE("URL","Hoja1!A1:C10")'},
-  {n:'IMPORTDATA',e:'IMPORTDATA',d:'Importa datos desde URL en CSV o TSV.',s:'IMPORTDATA(url)',x:'=IMPORTDATA("https://datos.ejemplo.com/csv")'},
-  {n:'IMPORTHTML',e:'IMPORTHTML',d:'Importa tabla o lista de página HTML.',s:'IMPORTHTML(url;consulta;indice)',x:'=IMPORTHTML("https://es.wikipedia.org/wiki/CR","table",1)'},
-  {n:'IMPORTXML',e:'IMPORTXML',d:'Importa datos XML/HTML via XPath.',s:'IMPORTXML(url;xpath)',x:'=IMPORTXML("https://feeds.ejemplo.com","//item/title")'},
-  {n:'FILTER',e:'FILTER',d:'Filtra rango según condiciones.',s:'FILTER(rango;condicion1;[condicion2])',x:'=FILTER(A2:C10,B2:B10>100)'},
-  {n:'SORT',e:'SORT',d:'Ordena filas de un rango.',s:'SORT(rango;columna;ascendente)',x:'=SORT(A2:C10,2,VERDADERO)'},
-  {n:'SPARKLINE',e:'SPARKLINE',d:'Gráfico en miniatura dentro de una celda.',s:'SPARKLINE(datos;[opciones])',x:'=SPARKLINE(A1:A10,{"charttype","bar"})'},
-  {n:'EPOCHTODATE',e:'EPOCHTODATE',d:'Convierte marca de tiempo Unix a fecha UTC.',s:'EPOCHTODATE(marca_tiempo;[unidad])',x:'=EPOCHTODATE(1717401600)'},
-];
+if(!fnColors['Google Sheets']) fnColors['Google Sheets']='#34a853';
+if(!fnColors['Duración']) fnColors['Duración']='#0891b2';
+if(!fnColors['Trigonométricas']) fnColors['Trigonométricas']='#be185d';
 
-var fnCurrentCat = Object.keys(fnData)[0];
-var fnSelected   = null;
+// ===== FUNCIONES ADICIONALES (Excel/Apple/Google) =====
 
+if (!fnData['Estadísticas']) fnData['Estadísticas'] = [];
+fnData['Estadísticas'].push(
+  {n:'DISTR.BETA.N',e:'BETA.DIST',d:'Distribución beta acumulada (moderna).',s:'DISTR.BETA.N(x;alfa;beta;acumulado;[A];[B])',x:'=DISTR.BETA.N(0.5,2,5,VERDADERO)'},
+  {n:'DISTR.BETA.INV.N',e:'BETA.INV',d:'Inversa de la distribución beta acumulada.',s:'DISTR.BETA.INV.N(probabilidad;alfa;beta;[A];[B])',x:'=DISTR.BETA.INV.N(0.685,8,10,1,3)'},
+  {n:'DISTR.BINOM.N',e:'BINOM.DIST',d:'Distribución binomial (moderna).',s:'DISTR.BINOM.N(num_exito;ensayos;prob_exito;acumulado)',x:'=DISTR.BINOM.N(6,10,0.5,FALSO)'},
+  {n:'DISTR.BINOM.SERIE',e:'BINOM.DIST.RANGE',d:'Probabilidad de resultado usando distribución binomial en rango.',s:'DISTR.BINOM.SERIE(ensayos;prob_s;num_s;[num_s2])',x:'=DISTR.BINOM.SERIE(60,0.75,48)'},
+  {n:'BINOM.INV',e:'BINOM.INV',d:'Valor mínimo para que la distribución binomial acumulada sea mayor o igual al criterio.',s:'BINOM.INV(ensayos;prob_exito;alfa)',x:'=BINOM.INV(6,0.5,0.75)'},
+  {n:'DISTR.CHICUAD',e:'CHISQ.DIST',d:'Distribución chi cuadrado acumulada (moderna).',s:'DISTR.CHICUAD(x;grados_libertad;acumulado)',x:'=DISTR.CHICUAD(18.307,10,VERDADERO)'},
+  {n:'DISTR.CHICUAD.CD',e:'CHISQ.DIST.RT',d:'Probabilidad de cola derecha chi cuadrado.',s:'DISTR.CHICUAD.CD(x;grados_libertad)',x:'=DISTR.CHICUAD.CD(18.307,10)'},
+  {n:'INV.CHICUAD',e:'CHISQ.INV',d:'Inversa de la distribución chi cuadrado acumulada.',s:'INV.CHICUAD(probabilidad;grados_libertad)',x:'=INV.CHICUAD(0.05,10)'},
+  {n:'INV.CHICUAD.CD',e:'CHISQ.INV.RT',d:'Inversa de la probabilidad de cola derecha chi cuadrado.',s:'INV.CHICUAD.CD(probabilidad;grados_libertad)',x:'=INV.CHICUAD.CD(0.05,10)'},
+  {n:'PRUEBA.CHICUAD',e:'CHISQ.TEST',d:'Prueba de independencia chi cuadrado.',s:'PRUEBA.CHICUAD(rango_real;rango_esperado)',x:'=PRUEBA.CHICUAD(A1:C3,A5:C7)'},
+  {n:'INTERVALO.CONFIANZA.NORM',e:'CONFIDENCE.NORM',d:'Intervalo de confianza para la media usando distribución normal.',s:'INTERVALO.CONFIANZA.NORM(alfa;desv_estandar;tamano)',x:'=INTERVALO.CONFIANZA.NORM(0.05,2.5,50)'},
+  {n:'INTERVALO.CONFIANZA.T',e:'CONFIDENCE.T',d:'Intervalo de confianza usando distribución t de Student.',s:'INTERVALO.CONFIANZA.T(alfa;desv_estandar;tamano)',x:'=INTERVALO.CONFIANZA.T(0.05,2.5,50)'},
+  {n:'COVARIANZA.P',e:'COVARIANCE.P',d:'Covarianza de la población de dos conjuntos.',s:'COVARIANZA.P(matriz1;matriz2)',x:'=COVARIANZA.P(A1:A10,B1:B10)'},
+  {n:'COVARIANZA.M',e:'COVARIANCE.S',d:'Covarianza muestral de dos conjuntos.',s:'COVARIANZA.M(matriz1;matriz2)',x:'=COVARIANZA.M(A1:A10,B1:B10)'},
+  {n:'DISTR.EXP.N',e:'EXPON.DIST',d:'Distribución exponencial (moderna).',s:'DISTR.EXP.N(x;lambda;acumulado)',x:'=DISTR.EXP.N(0.2,10,VERDADERO)'},
+  {n:'DISTR.F.N',e:'F.DIST',d:'Distribución de probabilidad F (moderna).',s:'DISTR.F.N(x;grados_lib1;grados_lib2;acumulado)',x:'=DISTR.F.N(15.2069,6,4,FALSO)'},
+  {n:'DISTR.F.CD',e:'F.DIST.RT',d:'Distribución F de cola derecha.',s:'DISTR.F.CD(x;grados_lib1;grados_lib2)',x:'=DISTR.F.CD(15.2069,6,4)'},
+  {n:'INV.F',e:'F.INV',d:'Inversa de la distribución F.',s:'INV.F(probabilidad;grados_lib1;grados_lib2)',x:'=INV.F(0.01,6,4)'},
+  {n:'INV.F.CD',e:'F.INV.RT',d:'Inversa de la distribución F de cola derecha.',s:'INV.F.CD(probabilidad;grados_lib1;grados_lib2)',x:'=INV.F.CD(0.01,6,4)'},
+  {n:'PRUEBA.F.N',e:'F.TEST',d:'Resultado de una prueba F (moderna).',s:'PRUEBA.F.N(matriz1;matriz2)',x:'=PRUEBA.F.N(A1:A5,B1:B5)'},
+  {n:'PRUEBA.FISHER',e:'FISHER',d:'Transformación de Fisher.',s:'PRUEBA.FISHER(x)',x:'=PRUEBA.FISHER(0.75)'},
+  {n:'PRUEBA.FISHER.INV',e:'FISHERINV',d:'Inversa de la transformación de Fisher.',s:'PRUEBA.FISHER.INV(y)',x:'=PRUEBA.FISHER.INV(0.9730)'},
+  {n:'DISTR.GAMMA.N',e:'GAMMA.DIST',d:'Distribución gamma (moderna).',s:'DISTR.GAMMA.N(x;alfa;beta;acumulado)',x:'=DISTR.GAMMA.N(10,9,2,VERDADERO)'},
+  {n:'INV.GAMMA',e:'GAMMA.INV',d:'Inversa de la distribución gamma acumulada.',s:'INV.GAMMA(probabilidad;alfa;beta)',x:'=INV.GAMMA(0.068,9,2)'},
+  {n:'GAMMA.LN.EXACTO',e:'GAMMALN.PRECISE',d:'Logaritmo natural de la función gamma (preciso).',s:'GAMMA.LN.EXACTO(x)',x:'=GAMMA.LN.EXACTO(4)'},
+  {n:'FUNCION.GAMMA',e:'GAMMA',d:'Valor de la función gamma.',s:'FUNCION.GAMMA(numero)',x:'=FUNCION.GAMMA(2.5)'},
+  {n:'DISTR.HIPERGEOM.N',e:'HYPGEOM.DIST',d:'Distribución hipergeométrica (moderna).',s:'DISTR.HIPERGEOM.N(muestra_exito;tamano_muestra;pobl_exito;tamano_pobl;acumulado)',x:'=DISTR.HIPERGEOM.N(1,4,8,20,FALSO)'},
+  {n:'DISTR.HIPERGEOM',e:'HYPGEOMDIST',d:'Distribución hipergeométrica (clásica).',s:'DISTR.HIPERGEOM(muestra_exito;tamano_muestra;pobl_exito;tamano_pobl)',x:'=DISTR.HIPERGEOM(1,4,8,20)'},
+  {n:'ESTIMACION.LOGARITMICA',e:'LOGEST',d:'Estadísticas de tendencia exponencial.',s:'ESTIMACION.LOGARITMICA(y_conocidos;[x_conocidos];[constante];[estadistica])',x:'=ESTIMACION.LOGARITMICA(B1:B5,A1:A5,VERDADERO,VERDADERO)'},
+  {n:'DISTR.LOGNORM.N',e:'LOGNORM.DIST',d:'Distribución logarítmica normal (moderna).',s:'DISTR.LOGNORM.N(x;media;desv_estandar;acumulado)',x:'=DISTR.LOGNORM.N(4,3.5,1.2,VERDADERO)'},
+  {n:'INV.LOGNORM',e:'LOGNORM.INV',d:'Inversa de la distribución logarítmica normal.',s:'INV.LOGNORM(probabilidad;media;desv_estandar)',x:'=INV.LOGNORM(0.039,3.5,1.2)'},
+  {n:'MODA.VARIOS',e:'MODE.MULT',d:'Matriz vertical de los valores más frecuentes.',s:'MODA.VARIOS(numero1;[numero2];...)',x:'=MODA.VARIOS(A1:A20)'},
+  {n:'MODA.UNO.N',e:'MODE.SNGL',d:'Valor más frecuente (moderna).',s:'MODA.UNO.N(numero1;[numero2];...)',x:'=MODA.UNO.N(A1:A20)'},
+  {n:'DISTR.BINOM.NEG.N',e:'NEGBINOM.DIST',d:'Distribución binomial negativa (moderna).',s:'DISTR.BINOM.NEG.N(num_fallos;num_exitos;prob_exito;acumulado)',x:'=DISTR.BINOM.NEG.N(10,5,0.25,FALSO)'},
+  {n:'INV.NORM',e:'NORM.INV',d:'Inversa de la distribución normal acumulada.',s:'INV.NORM(probabilidad;media;desv_estandar)',x:'=INV.NORM(0.908789,40,1.5)'},
+  {n:'DISTR.NORM.ESTAND.N',e:'NORM.S.DIST',d:'Distribución normal estándar acumulada (moderna).',s:'DISTR.NORM.ESTAND.N(z;acumulado)',x:'=DISTR.NORM.ESTAND.N(1.96,VERDADERO)'},
+  {n:'INV.NORM.ESTAND',e:'NORM.S.INV',d:'Inversa de la distribución normal estándar.',s:'INV.NORM.ESTAND(probabilidad)',x:'=INV.NORM.ESTAND(0.975)'},
+  {n:'PERCENTIL.EXC',e:'PERCENTILE.EXC',d:'Percentil k-esimo (exclusivo 0 y 1).',s:'PERCENTIL.EXC(matriz;k)',x:'=PERCENTIL.EXC(A1:A100,0.9)'},
+  {n:'RANGO.PERCENTIL.EXC',e:'PERCENTRANK.EXC',d:'Rango percentil excluyendo 0 y 100%.',s:'RANGO.PERCENTIL.EXC(matriz;x;[significado])',x:'=RANGO.PERCENTIL.EXC(A1:A20,A5)'},
+  {n:'RANGO.PERCENTIL.INC',e:'PERCENTRANK.INC',d:'Rango percentil incluyendo 0 y 100%.',s:'RANGO.PERCENTIL.INC(matriz;x;[significado])',x:'=RANGO.PERCENTIL.INC(A1:A20,A5)'},
+  {n:'PERMUTACIONES.A',e:'PERMUTATIONA',d:'Permutaciones con repetición.',s:'PERMUTACIONES.A(numero;tamano)',x:'=PERMUTACIONES.A(3,2)'},
+  {n:'DIST.POISSON',e:'POISSON.DIST',d:'Distribución de Poisson (moderna).',s:'DIST.POISSON(x;media;acumulado)',x:'=DIST.POISSON(2,5,FALSO)'},
+  {n:'CUARTIL.EXC',e:'QUARTILE.EXC',d:'Cuartil excluyendo 0 y 4.',s:'CUARTIL.EXC(matriz;cuartil)',x:'=CUARTIL.EXC(A1:A20,1)'},
+  {n:'CUARTIL.INC',e:'QUARTILE.INC',d:'Cuartil incluyendo 0 y 4.',s:'CUARTIL.INC(matriz;cuartil)',x:'=CUARTIL.INC(A1:A20,1)'},
+  {n:'JERARQUIA.EQV',e:'RANK.EQ',d:'Posición de un número en una lista; igual posición si hay empate.',s:'JERARQUIA.EQV(numero;referencia;[orden])',x:'=JERARQUIA.EQV(A1,A1:A10,0)'},
+  {n:'JERARQUIA.MEDIA',e:'RANK.AVG',d:'Posición promediada si hay empate.',s:'JERARQUIA.MEDIA(numero;referencia;[orden])',x:'=JERARQUIA.MEDIA(A1,A1:A10,0)'},
+  {n:'COEFICIENTE.R2',e:'RSQ',d:'Cuadrado del coeficiente de correlación de Pearson.',s:'COEFICIENTE.R2(y_conocidos;x_conocidos)',x:'=COEFICIENTE.R2(B1:B10,A1:A10)'},
+  {n:'COEFICIENTE.ASIMETRIA',e:'SKEW',d:'Asimetría de una distribución.',s:'COEFICIENTE.ASIMETRIA(numero1;[numero2];...)',x:'=COEFICIENTE.ASIMETRIA(A1:A20)'},
+  {n:'COEFICIENTE.ASIMETRIA.P',e:'SKEW.P',d:'Asimetría basada en la población.',s:'COEFICIENTE.ASIMETRIA.P(numero1;[numero2];...)',x:'=COEFICIENTE.ASIMETRIA.P(A1:A20)'},
+  {n:'ERROR.TIPICO.XY',e:'STEYX',d:'Error estándar del valor y previsto en la regresión.',s:'ERROR.TIPICO.XY(y_conocidos;x_conocidos)',x:'=ERROR.TIPICO.XY(B1:B10,A1:A10)'},
+  {n:'DISTR.T.N',e:'T.DIST',d:'Distribución t de Student de cola izquierda.',s:'DISTR.T.N(x;grados_lib;acumulado)',x:'=DISTR.T.N(-2,6,VERDADERO)'},
+  {n:'DISTR.T.2C',e:'T.DIST.2T',d:'Distribución t de Student de dos colas.',s:'DISTR.T.2C(x;grados_lib)',x:'=DISTR.T.2C(2.92,6)'},
+  {n:'DISTR.T.CD',e:'T.DIST.RT',d:'Distribución t de Student de cola derecha.',s:'DISTR.T.CD(x;grados_lib)',x:'=DISTR.T.CD(2,6)'},
+  {n:'INV.T',e:'T.INV',d:'Inversa de la distribución t de cola izquierda.',s:'INV.T(probabilidad;grados_lib)',x:'=INV.T(0.75,2)'},
+  {n:'INV.T.2C',e:'T.INV.2T',d:'Inversa de la distribución t de dos colas.',s:'INV.T.2C(probabilidad;grados_lib)',x:'=INV.T.2C(0.05,60)'},
+  {n:'PRUEBA.T.N',e:'T.TEST',d:'Probabilidad de la prueba t de Student.',s:'PRUEBA.T.N(matriz1;matriz2;colas;tipo)',x:'=PRUEBA.T.N(A1:A5,B1:B5,2,1)'},
+  {n:'MEDIA.ACOTADA',e:'TRIMMEAN',d:'Media excluyendo valores extremos.',s:'MEDIA.ACOTADA(matriz;porcentaje)',x:'=MEDIA.ACOTADA(A1:A20,0.1)'},
+  {n:'WEIBULL.DIST',e:'WEIBULL.DIST',d:'Distribución de Weibull (moderna).',s:'WEIBULL.DIST(x;alfa;beta;acumulado)',x:'=WEIBULL.DIST(105,20,100,VERDADERO)'},
+  {n:'PRUEBA.Z.N',e:'Z.TEST',d:'Valor p de una prueba z de dos colas.',s:'PRUEBA.Z.N(matriz;x;[sigma])',x:'=PRUEBA.Z.N(A1:A20,4)'},
+  {n:'CRECIMIENTO.N',e:'GROWTH',d:'Tendencia de crecimiento exponencial.',s:'CRECIMIENTO.N(y_conocidos;[x_conocidos];[nuevas_x];[constante])',x:'=CRECIMIENTO.N(B2:B6,A2:A6,A7:A10)'},
+  {n:'CURTOSIS.N',e:'KURT',d:'Curtosis de un conjunto de datos.',s:'CURTOSIS.N(numero1;[numero2];...)',x:'=CURTOSIS.N(A1:A20)'},
+  {n:'PRONOSTICO.ETS',e:'FORECAST.ETS',d:'Valor futuro basado en suavizado exponencial triple.',s:'PRONOSTICO.ETS(fecha_destino;valores;escala_temporal;[estacionalidad])',x:'=PRONOSTICO.ETS(DATE(2026,3,1),B2:B13,A2:A13)'},
+  {n:'PRONOSTICO.LINEAL',e:'FORECAST.LINEAR',d:'Valor futuro mediante regresión lineal.',s:'PRONOSTICO.LINEAL(x;y_conocidos;x_conocidos)',x:'=PRONOSTICO.LINEAL(30,A2:A6,B2:B6)'},
+  {n:'DESVESTA',e:'STDEVA',d:'Desviación estándar incluyendo texto y lógicos.',s:'DESVESTA(valor1;[valor2];...)',x:'=DESVESTA(A1:A30)'},
+  {n:'DESVESTPA',e:'STDEVPA',d:'Desviación estándar de población incluyendo texto y lógicos.',s:'DESVESTPA(valor1;[valor2];...)',x:'=DESVESTPA(A1:A30)'},
+  {n:'VARA',e:'VARA',d:'Varianza de muestra incluyendo texto y lógicos.',s:'VARA(valor1;[valor2];...)',x:'=VARA(A1:A30)'},
+  {n:'VARPA',e:'VARPA',d:'Varianza de población incluyendo texto y lógicos.',s:'VARPA(valor1;[valor2];...)',x:'=VARPA(A1:A30)'}
+);
+if (!fnData['Ingeniería']) fnData['Ingeniería'] = [];
+fnData['Ingeniería'].push(
+  {n:'BESSELI',e:'BESSELI',d:'Función de Bessel modificada In(x).',s:'BESSELI(x;n)',x:'=BESSELI(2.5,1)'},
+  {n:'BESSELK',e:'BESSELK',d:'Función de Bessel modificada Kn(x).',s:'BESSELK(x;n)',x:'=BESSELK(2.5,1)'},
+  {n:'ERF.EXACTO',e:'ERF.PRECISE',d:'Función de error de Gauss integrada (precisa).',s:'ERF.EXACTO(x)',x:'=ERF.EXACTO(1)'},
+  {n:'ERFC.EXACTO',e:'ERFC.PRECISE',d:'Función complementaria ERF (precisa).',s:'ERFC.EXACTO(x)',x:'=ERFC.EXACTO(1)'},
+  {n:'IM.ANGULO',e:'IMARGUMENT',d:'Argumento theta de un número complejo en radianes.',s:'IM.ANGULO(numero_complejo)',x:'=IM.ANGULO("3+4i")'},
+  {n:'IM.CONJUGADA',e:'IMCONJUGATE',d:'Conjugado complejo de un número complejo.',s:'IM.CONJUGADA(numero_complejo)',x:'=IM.CONJUGADA("3+4i")'},
+  {n:'IM.COSH',e:'IMCOSH',d:'Coseno hiperbólico de un número complejo.',s:'IM.COSH(numero_complejo)',x:'=IM.COSH("1+i")'},
+  {n:'IM.COT',e:'IMCOT',d:'Cotangente de un número complejo.',s:'IM.COT(numero_complejo)',x:'=IM.COT("1+i")'},
+  {n:'IM.CSC',e:'IMCSC',d:'Cosecante de un número complejo.',s:'IM.CSC(numero_complejo)',x:'=IM.CSC("1+i")'},
+  {n:'IM.CSCH',e:'IMCSCH',d:'Cosecante hiperbólica de un número complejo.',s:'IM.CSCH(numero_complejo)',x:'=IM.CSCH("1+i")'},
+  {n:'IM.LOG10',e:'IMLOG10',d:'Logaritmo base 10 de un número complejo.',s:'IM.LOG10(numero_complejo)',x:'=IM.LOG10("3+4i")'},
+  {n:'IM.LOG2',e:'IMLOG2',d:'Logaritmo base 2 de un número complejo.',s:'IM.LOG2(numero_complejo)',x:'=IM.LOG2("3+4i")'},
+  {n:'IM.LOG',e:'IMLOG',d:'Logaritmo base personalizada de un número complejo (Google Sheets).',s:'IM.LOG(valor;base)',x:'=IM.LOG("3+4i",10)'},
+  {n:'IM.PRODUCTO',e:'IMPRODUCT',d:'Producto de números complejos.',s:'IM.PRODUCTO(numero1;[numero2];...)',x:'=IM.PRODUCTO("3+4i","5-3i")'},
+  {n:'IM.PRODUCT',e:'IMPRODUCT',d:'Multiplicación de números complejos (Google Sheets).',s:'IM.PRODUCT(factor1;[factor2];...)',x:'=IM.PRODUCT("3+4i","1+2i")'},
+  {n:'IM.REAL',e:'IMREAL',d:'Coeficiente real de un número complejo.',s:'IM.REAL(numero_complejo)',x:'=IM.REAL("3+4i")'},
+  {n:'IM.SEC',e:'IMSEC',d:'Secante de un número complejo.',s:'IM.SEC(numero_complejo)',x:'=IM.SEC("1+i")'},
+  {n:'IM.SECH',e:'IMSECH',d:'Secante hiperbólica de un número complejo.',s:'IM.SECH(numero_complejo)',x:'=IM.SECH("1+i")'},
+  {n:'IM.SENOH',e:'IMSINH',d:'Seno hiperbólico de un número complejo.',s:'IM.SENOH(numero_complejo)',x:'=IM.SENOH("1+i")'},
+  {n:'IM.SUSTR',e:'IMSUB',d:'Diferencia entre dos números complejos.',s:'IM.SUSTR(num1;num2)',x:'=IM.SUSTR("5+3i","2+i")'},
+  {n:'IM.TAN',e:'IMTAN',d:'Tangente de un número complejo.',s:'IM.TAN(numero_complejo)',x:'=IM.TAN("1+i")'},
+  {n:'IMCOTH',e:'IMCOTH',d:'Cotangente hiperbólica de un número complejo.',s:'IMCOTH(numero)',x:'=IMCOTH("1+2i")'},
+  {n:'IMTANH',e:'IMTANH',d:'Tangente hiperbólica de un número complejo.',s:'IMTANH(numero)',x:'=IMTANH("1+2i")'},
+  {n:'BIT.DESPLDCHA',e:'BITRSHIFT',d:'Desplaza bits hacia la derecha.',s:'BIT.DESPLDCHA(valor;posiciones)',x:'=BIT.DESPLDCHA(16,2)'},
+  {n:'BIT.DESPLIZQDA',e:'BITLSHIFT',d:'Desplaza bits hacia la izquierda.',s:'BIT.DESPLIZQDA(valor;posiciones)',x:'=BIT.DESPLIZQDA(4,2)'},
+  {n:'FUN.ERROR.EXACTO',e:'ERF.PRECISE',d:'Función de error de Gauss (versión exacta Google).',s:'FUN.ERROR.EXACTO(limite_inf;[limite_sup])',x:'=FUN.ERROR.EXACTO(0,1)'}
+);
+if (!fnData['Financieras']) fnData['Financieras'] = [];
+fnData['Financieras'].push(
+  {n:'AMORTIZ.PROGRE',e:'AMORDEGRC',d:'Depreciación por período contable con coeficiente de depreciación.',s:'AMORTIZ.PROGRE(costo;fecha_compra;primer_periodo;rescate;periodo;tasa;[base])',x:'=AMORTIZ.PROGRE(2400,"01/01/2023","01/01/2024",300,1,0.15,1)'},
+  {n:'CUPON.FECHA.L1',e:'COUPPCD',d:'Fecha del cupón anterior antes de la fecha de liquidación.',s:'CUPON.FECHA.L1(liquidacion;vencimiento;frecuencia;[base])',x:'=CUPON.FECHA.L1("25/01/2026","15/11/2027",2,1)'},
+  {n:'CUPON.FECHA.L2',e:'COUPNCD',d:'Siguiente fecha de cupón después de la liquidación.',s:'CUPON.FECHA.L2(liquidacion;vencimiento;frecuencia;[base])',x:'=CUPON.FECHA.L2("25/01/2026","15/11/2027",2,1)'},
+  {n:'PRECIO.PER.IRREGULAR.1',e:'ODDFPRICE',d:'Precio por $100 de valor nominal con primer período irregular.',s:'PRECIO.PER.IRREGULAR.1(liquidacion;vencimiento;emision;primer_cupon;tasa;rendimiento;reembolso;frecuencia;[base])',x:'=PRECIO.PER.IRREGULAR.1("11/11/2008","01/03/2021","15/10/2008","01/03/2009",0.0785,0.0625,100,2,1)'},
+  {n:'RENDTO.PER.IRREGULAR.1',e:'ODDFYIELD',d:'Rendimiento con primer período irregular.',s:'RENDTO.PER.IRREGULAR.1(liquidacion;vencimiento;emision;primer_cupon;tasa;precio;reembolso;frecuencia;[base])',x:'=RENDTO.PER.IRREGULAR.1("11/11/2008","01/03/2021","15/10/2008","01/03/2009",0.0785,84.5,100,2,1)'},
+  {n:'PRECIO.PER.IRREGULAR.2',e:'ODDLPRICE',d:'Precio con último período irregular.',s:'PRECIO.PER.IRREGULAR.2(liquidacion;vencimiento;ultimo_interes;tasa;rendimiento;reembolso;frecuencia;[base])',x:'=PRECIO.PER.IRREGULAR.2("20/02/2008","01/06/2008","15/12/2007",0.0375,0.0405,100,2,0)'},
+  {n:'RENDTO.PER.IRREGULAR.2',e:'ODDLYIELD',d:'Rendimiento con último período irregular.',s:'RENDTO.PER.IRREGULAR.2(liquidacion;vencimiento;ultimo_interes;tasa;precio;reembolso;frecuencia;[base])',x:'=RENDTO.PER.IRREGULAR.2("20/04/2008","01/06/2008","15/12/2007",0.0375,99.875,100,2,0)'},
+  {n:'LETRA.DE.TES.EQV.A.BONO',e:'TBILLEQ',d:'Rendimiento equivalente de bono para Letra del Tesoro.',s:'LETRA.DE.TES.EQV.A.BONO(liquidacion;vencimiento;descuento)',x:'=LETRA.DE.TES.EQV.A.BONO("31/03/2008","01/06/2008",0.0914)'},
+  {n:'LETRA.DE.TES.PRECIO',e:'TBILLPRICE',d:'Precio por $100 de valor nominal de Letra del Tesoro.',s:'LETRA.DE.TES.PRECIO(liquidacion;vencimiento;descuento)',x:'=LETRA.DE.TES.PRECIO("31/03/2008","01/06/2008",0.0914)'},
+  {n:'LETRA.DE.TES.RENDTO',e:'TBILLYIELD',d:'Rendimiento de una Letra del Tesoro.',s:'LETRA.DE.TES.RENDTO(liquidacion;vencimiento;precio)',x:'=LETRA.DE.TES.RENDTO("31/03/2008","01/06/2008",98.45)'},
+  {n:'CONV.DECIMAL',e:'DOLLARDE',d:'Convierte precio como fracción a precio decimal.',s:'CONV.DECIMAL(precio_fraccionario;fraccion)',x:'=CONV.DECIMAL(1.02,16)'},
+  {n:'CONV.EN.FRACCION',e:'DOLLARFR',d:'Convierte precio decimal a precio como fracción.',s:'CONV.EN.FRACCION(precio_decimal;fraccion)',x:'=CONV.EN.FRACCION(1.125,16)'},
+  {n:'DVS',e:'VDB',d:'Depreciación durante un período parcial o completo.',s:'DVS(coste;valor_residual;duracion;periodo_inicio;periodo_fin;[factor];[sin_cambios])',x:'=DVS(2400,300,10,0,1)'},
+  {n:'INT.PAGO.DIR',e:'ISPMT',d:'Interés pagado durante un período de una inversión.',s:'INT.PAGO.DIR(tasa;periodo;numero_periodos;valor_actual)',x:'=INT.PAGO.DIR(0.1/12,1,36,-8000)'},
+  {n:'VAN',e:'NPV',d:'Valor actual neto considerando flujos a intervalos regulares.',s:'VAN(tasa;valor1;[valor2];...)',x:'=VAN(0.1,A2:A6)+A1'},
+  {n:'XNPV',e:'XNPV',d:'Valor actual neto con flujos a intervalos irregulares.',s:'XNPV(tasa;valores;fechas)',x:'=XNPV(0.09,A2:A6,B2:B6)'}
+);
+if (!fnData['Matemáticas']) fnData['Matemáticas'] = [];
+fnData['Matemáticas'].push(
+  {n:'ARABIGO',e:'ARABIC',d:'Convierte número romano a arábigo.',s:'ARABIGO(texto)',x:'=ARABIGO("XIV")'},
+  {n:'MULTIPLO.SUPERIOR.MAT',e:'CEILING.MATH',d:'Redondea al alza hasta el múltiplo más cercano.',s:'MULTIPLO.SUPERIOR.MAT(numero;[significancia];[modo])',x:'=MULTIPLO.SUPERIOR.MAT(-6.3,1,-1)'},
+  {n:'MULTIPLO.SUPERIOR.EXACTO',e:'CEILING.PRECISE',d:'Redondea al alza independientemente del signo.',s:'MULTIPLO.SUPERIOR.EXACTO(numero;[significancia])',x:'=MULTIPLO.SUPERIOR.EXACTO(-6.3,1)'},
+  {n:'MULTIPLO.INFERIOR.MAT',e:'FLOOR.MATH',d:'Redondea a la baja hasta el múltiplo más cercano.',s:'MULTIPLO.INFERIOR.MAT(numero;[significancia];[modo])',x:'=MULTIPLO.INFERIOR.MAT(-8.1,2)'},
+  {n:'MULTIPLO.INFERIOR.EXACTO',e:'FLOOR.PRECISE',d:'Redondea a la baja independientemente del signo.',s:'MULTIPLO.INFERIOR.EXACTO(numero;[significancia])',x:'=MULTIPLO.INFERIOR.EXACTO(-6.3,1)'},
+  {n:'MULTIPLO.SUPERIOR.ISO',e:'ISO.CEILING',d:'Redondea al alza al múltiplo de significancia más cercano.',s:'MULTIPLO.SUPERIOR.ISO(numero;[significancia])',x:'=MULTIPLO.SUPERIOR.ISO(-4.5)'},
+  {n:'CSC',e:'CSC',d:'Cosecante de un ángulo.',s:'CSC(numero)',x:'=CSC(15)'},
+  {n:'CSCH',e:'CSCH',d:'Cosecante hiperbólica de un ángulo.',s:'CSCH(numero)',x:'=CSCH(1.5)'},
+  {n:'SEC',e:'SEC',d:'Secante de un ángulo.',s:'SEC(numero)',x:'=SEC(45)'},
+  {n:'SECH',e:'SECH',d:'Secante hiperbólica de un ángulo.',s:'SECH(numero)',x:'=SECH(1)'},
+  {n:'COTH',e:'COTH',d:'Cotangente hiperbólica de un número.',s:'COTH(numero)',x:'=COTH(2)'},
+  {n:'RANDARRAY',e:'RANDARRAY',d:'Matriz de números aleatorios con dimensiones especificadas.',s:'RANDARRAY([filas];[columnas];[min];[max];[entero])',x:'=RANDARRAY(3,3,1,100,VERDADERO)'},
+  {n:'MUNIT',e:'MUNIT',d:'Devuelve la matriz de identidad de la dimensión especificada.',s:'MUNIT(dimension)',x:'=MUNIT(3)'},
+  {n:'PORCENTAJE.DE',e:'PERCENTOF',d:'Suma valores del subconjunto divididos entre el total.',s:'PORCENTAJE.DE(subconjunto;total)',x:'=PORCENTAJE.DE(A2:A5,A2:A10)'},
+  {n:'ALEAT',e:'RAND',d:'Número aleatorio entre 0 y 1.',s:'ALEAT()',x:'=ALEAT()'},
+  {n:'ALEAT.ENTRE',e:'RANDBETWEEN',d:'Número entero aleatorio dentro de un intervalo.',s:'ALEAT.ENTRE(inferior;superior)',x:'=ALEAT.ENTRE(1,100)'}
+);
+if (!fnData['Texto']) fnData['Texto'] = [];
+fnData['Texto'].push(
+  {n:'TEXTO.BAHT',e:'BAHTTEXT',d:'Convierte número a texto tailandés (baht).',s:'TEXTO.BAHT(numero)',x:'=TEXTO.BAHT(1234)'},
+  {n:'CAR',e:'CHAR',d:'Carácter especificado por el código numérico.',s:'CAR(numero)',x:'=CAR(65)'},
+  {n:'TEXTO.DESPUES',e:'TEXTAFTER',d:'Texto que aparece después de un delimitador.',s:'TEXTO.DESPUES(texto;delimitador;[num_instancia])',x:'=TEXTO.DESPUES("Nombre, Apellido",","," ")'},
+  {n:'TEXTO.ANTES',e:'TEXTBEFORE',d:'Texto que aparece antes de un delimitador.',s:'TEXTO.ANTES(texto;delimitador;[num_instancia])',x:'=TEXTO.ANTES("Nombre, Apellido",",")'}
+);
+if (!fnData['Información']) fnData['Información'] = [];
+fnData['Información'].push(
+  {n:'HISTORIAL.COTIZACIONES',e:'STOCKHISTORY',d:'Recupera datos históricos de instrumentos financieros.',s:'HISTORIAL.COTIZACIONES(accion;fecha_inicio;[fecha_fin];[intervalo])',x:'=HISTORIAL.COTIZACIONES("MSFT","01/01/2026")'},
+  {n:'ISDATE',e:'ISDATE',d:'VERDADERO si el valor es una fecha válida (Google Sheets).',s:'ISDATE(valor)',x:'=ISDATE(A1)'}
+);
+if (!fnData['Duración']) fnData['Duración'] = [];
+fnData['Duración'].push(
+  {n:'DUR.A.DIAS',e:'DURATION.TO.DAYS',d:'Convierte duración a días (Apple Numbers).',s:'DUR.A.DIAS(duracion)',x:'=DUR.A.DIAS("1s 2h 30m")'},
+  {n:'DUR.A.HORAS',e:'DURATION.TO.HOURS',d:'Convierte duración a horas (Apple Numbers).',s:'DUR.A.HORAS(duracion)',x:'=DUR.A.HORAS("1s 2h")'},
+  {n:'DUR.A.MILISEGUNDOS',e:'DURATION.TO.MILLISECONDS',d:'Convierte duración a milisegundos (Apple Numbers).',s:'DUR.A.MILISEGUNDOS(duracion)',x:'=DUR.A.MILISEGUNDOS("1m 30s")'},
+  {n:'DUR.A.MINUTOS',e:'DURATION.TO.MINUTES',d:'Convierte duración a minutos (Apple Numbers).',s:'DUR.A.MINUTOS(duracion)',x:'=DUR.A.MINUTOS("1h 30m")'},
+  {n:'DUR.A.SEGUNDOS',e:'DURATION.TO.SECONDS',d:'Convierte duración a segundos (Apple Numbers).',s:'DUR.A.SEGUNDOS(duracion)',x:'=DUR.A.SEGUNDOS("1m 30s")'},
+  {n:'DUR.A.SEMANAS',e:'DURATION.TO.WEEKS',d:'Convierte duración a semanas (Apple Numbers).',s:'DUR.A.SEMANAS(duracion)',x:'=DUR.A.SEMANAS("14s")'},
+  {n:'CONVERTIR.DURACION',e:'DURATION.CONVERT',d:'Convierte duración a otra unidad (Apple Numbers).',s:'CONVERTIR.DURACION(duracion;unidad_destino)',x:'=CONVERTIR.DURACION("1h 30m","s")'}
+);
+if (!fnData['Trigonométricas']) fnData['Trigonométricas'] = [];
+fnData['Trigonométricas'].push(
+  {n:'SEN',e:'SIN',d:'Seno de un ángulo en radianes (alias Apple Numbers).',s:'SEN(numero)',x:'=SEN(PI()/2)'},
+  {n:'ASEN',e:'ASIN',d:'Arcoseno de un número en radianes.',s:'ASEN(numero)',x:'=ASEN(0.5)'},
+  {n:'SENOH',e:'SINH',d:'Seno hiperbólico de un número.',s:'SENOH(numero)',x:'=SENOH(1)'},
+  {n:'TANH',e:'TANH',d:'Tangente hiperbólica de un número.',s:'TANH(numero)',x:'=TANH(0.5)'}
+);
+
+var fnCurrentCat=Object.keys(fnData)[0]||'Búsqueda y Referencia';
+var fnSelected=null;
+
+function abrirFunciones() {
+  openModal('modalFunciones');
+  renderFnSidebar();
+  renderFnList(fnData[fnCurrentCat]||[]);
+}
+function abrirFuncionesCat(cat) {
+  fnCurrentCat=cat;
+  openModal('modalFunciones');
+  renderFnSidebar();
+  renderFnList(fnData[cat]||[]);
+}
 function renderFnSidebar() {
-  var sb = document.getElementById('fnSidebar');
-  if (!sb) return;
-  var html = '';
-  Object.keys(fnData).forEach(function(cat) {
-    var on  = cat === fnCurrentCat ? ' on' : '';
-    var col = fnColors[cat] || '#3a9e10';
-    var cnt = fnData[cat] ? fnData[cat].length : 0;
-    var safe = cat.replace(/'/g,'&#39;');
-    html += '<div class="fn-cat'+on+'" onclick="selectFnCat(\''+safe+'\')" style="border-left:3px solid '+col+';">'+cat+'<span>('+cnt+')</span></div>';
+  var sb=document.getElementById('fnSidebar'); if(!sb) return;
+  var html=''; var total=0;
+  Object.keys(fnData).forEach(function(cat){
+    var on=cat===fnCurrentCat?' on':'';
+    var col=fnColors[cat]||'#3a9e10';
+    var cnt=fnData[cat]?fnData[cat].length:0; total+=cnt;
+    var safeCat = cat.replace(/'/g,'&#39;').replace(/"/g,'&quot;');
+    html+='<div class="fn-cat'+on+'" onclick="selectFnCat(&quot;'+safeCat+'&quot;)" style="border-left:3px solid '+col+';">'+cat+'<span>('+cnt+')</span></div>';
   });
-  sb.innerHTML = html;
+  sb.innerHTML=html;
+  var badge=document.getElementById('fnTotalBadge'); if(badge) badge.textContent=total;
 }
 function selectFnCat(cat) {
-  fnCurrentCat = cat; fnSelected = null;
-  var det = document.getElementById('fnDetail');
-  if (det) det.style.display = 'none';
+  fnCurrentCat=cat; fnSelected=null;
+  var det=document.getElementById('fnDetail'); if(det) det.style.display='none';
   renderFnSidebar();
-  renderFnList(fnData[cat] || []);
+  renderFnList(fnData[cat]||[]);
 }
 function renderFnList(list) {
-  var el = document.getElementById('fnList'); if(!el) return;
-  var col = fnColors[fnCurrentCat] || '#3a9e10';
-  var html = '';
-  (list||[]).forEach(function(fn) {
-    var safeN = (fn.n||'').replace(/'/g,'&#39;');
-    var safeC = fnCurrentCat.replace(/'/g,'&#39;');
-    var desc  = (fn.d||'').length>70 ? (fn.d||'').substring(0,70)+'...' : (fn.d||'');
-    html += '<div class="fn-card" onclick="selectFn(\''+safeN+'\',\''+safeC+'\')">'+
-      '<div class="fn-card-name" style="color:'+col+';">'+(fn.n||'')+'</div>'+
-      '<div class="fn-card-en">'+(fn.e||'')+'</div>'+
-      '<div class="fn-card-desc">'+desc+'</div></div>';
+  var el=document.getElementById('fnList'); if(!el) return;
+  var col=fnColors[fnCurrentCat]||'#3a9e10';
+  var html='';
+  (list||[]).forEach(function(fn){
+    var sN=(fn.n||'').replace(/'/g,'&#39;');
+    var sC=fnCurrentCat.replace(/'/g,'&#39;');
+    var desc=(fn.d||'').length>65?(fn.d||'').substring(0,65)+'...':fn.d||'';
+    html+='<div class="fn-card" onclick="selectFn(&quot;'+sN+'&quot;,&quot;'+sC+'&quot;)">'+
+      '<div class="fn-nm" style="color:'+col+';">'+(fn.n||'')+'</div>'+
+      '<div class="fn-en">'+(fn.e||'')+'</div>'+
+      '<div class="fn-dc">'+desc+'</div></div>';
   });
-  el.innerHTML = html || '<p style="color:var(--text3);font-size:13px;padding:12px;">Sin resultados.</p>';
+  el.innerHTML=html||'<p style="color:var(--text3);font-size:13px;padding:12px;">Sin resultados.</p>';
 }
-function selectFn(name, cat) {
-  var arr = fnData[cat] || []; var fn = null;
-  arr.forEach(function(f){ if(f.n===name) fn=f; });
-  if (!fn) return; fnSelected = fn;
-  var e = function(id){ return document.getElementById(id); };
-  if (e('fnDetailName')) e('fnDetailName').textContent = fn.n + '  ·  ' + fn.e;
-  if (e('fnDetailSyntax')) e('fnDetailSyntax').textContent = '=' + (fn.s||'');
-  if (e('fnDetailDesc')) e('fnDetailDesc').textContent = fn.d||'';
-  if (e('fnDetailEx')) e('fnDetailEx').textContent = fn.x||'';
-  var det = e('fnDetail');
-  if (det) { det.style.display='block'; det.scrollIntoView({behavior:'smooth',block:'nearest'}); }
+function selectFn(name,cat) {
+  var fn=null;
+  (fnData[cat]||[]).forEach(function(f){ if(f.n===name) fn=f; });
+  if(!fn) Object.values(fnData).forEach(function(a){ (a||[]).forEach(function(f){ if(f.n===name) fn=f; }); });
+  if(!fn) return;
+  fnSelected=fn;
+  function g(id){ return document.getElementById(id); }
+  if(g('fnDetailName'))   g('fnDetailName').textContent=fn.n+' · '+fn.e;
+  if(g('fnDetailSyntax')) g('fnDetailSyntax').textContent='='+(fn.s||'');
+  if(g('fnDetailDesc'))   g('fnDetailDesc').textContent=fn.d||'';
+  if(g('fnDetailEx'))     g('fnDetailEx').textContent=fn.x||'';
+  var det=g('fnDetail'); if(det){ det.style.display='block'; det.scrollIntoView({behavior:'smooth',block:'nearest'}); }
 }
 function insertarFuncion() {
-  if (!fnSelected) return;
-  var canvas = document.getElementById('canvas');
-  if (canvas) canvas.innerHTML += '<div style="background:var(--bg3);border:1.5px solid var(--border2);border-radius:10px;padding:10px 14px;margin:6px 0;font-family:monospace;font-size:13px;color:var(--g3);">'+(fnSelected.x||'')+'</div>';
+  if(!fnSelected) return;
+  var cv=document.getElementById('canvas');
+  if(cv) cv.innerHTML+='<div style="background:var(--bg3);border:1.5px solid var(--border2);border-radius:9px;padding:10px 13px;margin:6px 0;font-family:monospace;font-size:13px;color:var(--g3);">'+(fnSelected.x||'')+'</div>';
   closeModal('modalFunciones');
 }
 
-// ── APPS ──────────────────────────────────────────────────
-const appsData = [
+// ── Apps ─────────────────────────────────────────────
+var appsData = [
   // CR Específicas
   { nombre:'Alegra', cat:['cr','pyme','nube'], icon:'🟢', desc:'Factura Electrónica 4.4, contabilidad y nómina en la nube. Estándar para PyME costarricense.', precio:'Desde $8/mes', url:'https://alegra.com', badge:'⭐ Top CR' },
   { nombre:'e-Cont', cat:['cr','pyme'], icon:'🔵', desc:'Sistema contable multiempresas desarrollado en CR. Ideal para contadores con múltiples clientes.', precio:'Licencia única', url:'#', badge:'🇨🇷 CR' },
@@ -2163,178 +2737,78 @@ const appsData = [
   { nombre:'Holded', cat:['pyme','nube'], icon:'🟡', desc:'Contabilidad, facturación y CRM todo en uno. Popular en Latinoamérica. Multimoneda.', precio:'Desde $14/mes', url:'https://holded.com', badge:'🌍 LATAM' },
   { nombre:'Contpaqi Contabilidad', cat:['pyme','cr'], icon:'🟠', desc:'Popular en Centroamérica. Contabilidad electrónica, estados financieros, declaraciones.', precio:'Licencia anual', url:'#', badge:'🌎 CA' },
   { nombre:'Bind ERP', cat:['erp','nube','pyme'], icon:'🔵', desc:'ERP en la nube para PyME. Automatiza movimientos contables. Módulos de ventas e inventario.', precio:'Desde $50/mes', url:'https://bind.com.mx', badge:'☁️ Cloud' },];
-
-var appsFilter = 'todos';
+var appsFilter='todos';
 function filtrarApps(cat) {
-  appsFilter = cat;
+  appsFilter=cat;
   document.querySelectorAll('[id^="appFilter-"]').forEach(function(b){ b.classList.remove('on'); });
-  var a = document.getElementById('appFilter-'+cat);
-  if (a) a.classList.add('on');
+  var a=document.getElementById('appFilter-'+cat); if(a) a.classList.add('on');
   renderApps();
 }
 function renderApps() {
-  var grid = document.getElementById('appsGrid'); if(!grid) return;
-  var list = appsFilter==='todos' ? appsData : appsData.filter(function(a){ return a.cat.indexOf(appsFilter)>=0; });
-  var html = '';
-  list.forEach(function(app) {
-    var link = app.url && app.url!=='#'
-      ? '<a href="'+app.url+'" target="_blank" style="font-size:11px;color:var(--g2);font-weight:700;">Visitar</a>'
-      : '<span style="font-size:11px;color:var(--text3);">En línea</span>';
-    html += '<div class="app-card">'+
-      '<div class="app-icon">'+app.icon+'</div>'+
-      '<div class="app-name">'+app.nombre+'</div>'+
-      '<div class="app-desc">'+app.desc+'</div>'+
-      '<div class="app-bottom"><span class="app-price">'+app.precio+'</span>'+
-      '<span class="app-badge">'+app.badge+'</span>'+link+'</div></div>';
+  var grid=document.getElementById('appsGrid'); if(!grid) return;
+  var list=appsFilter==='todos'?appsData:appsData.filter(function(a){ return a.cat.indexOf(appsFilter)>=0; });
+  var html='';
+  list.forEach(function(app){
+    var link=app.url&&app.url!=='#'?'<a href="'+app.url+'" target="_blank" style="font-size:11px;color:var(--g2);font-weight:700;">Visitar</a>':'<span style="font-size:11px;color:var(--text3);">En línea</span>';
+    html+='<div class="app-card"><div class="app-ico">'+app.icon+'</div><div class="app-nm">'+app.nombre+'</div>'+
+      '<div class="app-dc">'+app.desc+'</div><div class="app-bot">'+
+      '<span class="app-pr">'+app.precio+'</span><span class="app-bg">'+app.badge+'</span>'+link+'</div></div>';
   });
-  grid.innerHTML = html;
+  grid.innerHTML=html;
 }
 
-// ── CANVAS HELPERS ────────────────────────────────────────
-function insertarTabla() {
-  var canvas = document.getElementById('canvas'); if(!canvas) return;
-  var ph = document.getElementById('canvas-placeholder');
-  if (ph) ph.remove();
-  var hoy = new Date().toISOString().split('T')[0];
-  canvas.innerHTML += '<table class="tbl" style="margin-bottom:12px;"><thead><tr><th>Fecha</th><th>Cuenta</th><th>Debe (CRC)</th><th>Haber (CRC)</th></tr></thead><tbody>'+
-    '<tr><td contenteditable="true">'+hoy+'</td><td contenteditable="true">Nueva Cuenta</td><td contenteditable="true">0</td><td contenteditable="true">0</td></tr></tbody></table>';
-}
-function insertarNota() {
-  var canvas = document.getElementById('canvas'); if(!canvas) return;
-  var ph = document.getElementById('canvas-placeholder'); if(ph) ph.remove();
-  canvas.innerHTML += '<div style="background:var(--bg2);border:1.5px solid var(--border2);border-radius:12px;padding:14px;margin:8px 0;font-size:14px;color:var(--text);" contenteditable="true">Nota nueva...</div>';
-}
-function insertarGrafico() {
-  var canvas = document.getElementById('canvas'); if(!canvas) return;
-  var ph = document.getElementById('canvas-placeholder'); if(ph) ph.remove();
-  var id = 'chart_'+Date.now();
-  canvas.innerHTML += '<div style="background:var(--off);border:1.5px solid var(--border);border-radius:14px;padding:16px;margin:8px 0;"><p style="font-size:12px;color:var(--text3);margin-bottom:10px;font-weight:600;">Grafico de Barras</p><canvas id="'+id+'" height="80"></canvas></div>';
-  var ctx = document.getElementById(id).getContext('2d');
-  var bars=[['Debe','#5abf2a',56500],['Haber','#3a9e10',56500]];
-  bars.forEach(function(b,i){ ctx.fillStyle=b[1]; var h=(b[2]/60000)*70; ctx.fillRect(40+i*70,75-h,40,h); ctx.fillStyle='#4a6b2a'; ctx.font='11px sans-serif'; ctx.fillText(b[0],40+i*70,80); });
-}
-
-// ── DOMContentLoaded ──────────────────────────────────────
+// ── DOMContentLoaded ────────────────────────────────
 document.addEventListener('DOMContentLoaded', function() {
 
   // Language
-  var langSel = document.getElementById('langSelect');
-  if (langSel) langSel.addEventListener('change', function(e){ setLang(e.target.value); });
-  setLang(currentLang);
+  var lsel=document.getElementById('langSelect');
+  if(lsel) lsel.addEventListener('change',function(e){ setLang(e.target.value); });
 
-  // Ribbon tabs
-  document.querySelectorAll('.ribbon-tab').forEach(function(tab) {
-    tab.addEventListener('click', function() {
-      var t = this.getAttribute('data-tab');
-      if (t) switchTab(t);
-    });
-  });
-
-  // Sibö toggle
-  document.getElementById('btnSibo').addEventListener('click', toggleSibo);
+  // Hamburger (mobile sidebar)
+  var hbtn=document.getElementById('btnHamburger');
+  if(hbtn) hbtn.addEventListener('click', openSidebar);
 
   // Close modals on backdrop
-  document.querySelectorAll('.modal').forEach(function(m) {
-    m.addEventListener('click', function(e){ if(e.target===m) m.classList.remove('active'); });
+  document.querySelectorAll('.modal').forEach(function(m){
+    m.addEventListener('click',function(e){ if(e.target===m) m.classList.remove('active'); });
   });
 
-  // Share
-  var btnShare = document.getElementById('btnShare');
-  if (btnShare) btnShare.addEventListener('click', async function() {
-    var url = window.location.href;
-    if (navigator.share) { try{ await navigator.share({title:'Matriz Contable CR v12',url:url}); }catch(e){} }
-    else { try{ await navigator.clipboard.writeText(url); }catch(e){} alert('URL copiada'); }
-  });
-
-  // Inicio panel buttons
-  document.getElementById('btnNuevo').addEventListener('click', function(){
-    var canvas = document.getElementById('canvas');
-    if (!confirm('Crear área nueva? Se borrará el contenido actual.')) return;
-    canvas.innerHTML = '<div id="canvas-placeholder" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:280px;gap:12px;color:var(--text3);"><p style="font-size:14px;font-weight:600;">Área de trabajo contable</p></div>';
-    try { localStorage.removeItem('canvasData_v12'); } catch(e){}
-  });
-  document.getElementById('btnGuardar').addEventListener('click', function() {
-    var canvas = document.getElementById('canvas');
-    try { localStorage.setItem('canvasData_v12', canvas.innerHTML); } catch(e){}
-    var btn = this; var orig = btn.textContent;
-    btn.textContent = '✓ Guardado';
-    btn.style.background='var(--bg3)';
-    setTimeout(function(){ btn.textContent=orig; btn.style.background=''; }, 1600);
-    document.getElementById('statusLeft').textContent = 'Guardado: ' + new Date().toLocaleTimeString('es-CR');
-  });
-  document.getElementById('btnDeshacer').addEventListener('click', function(){ document.execCommand('undo'); });
-  document.getElementById('btnRehacer').addEventListener('click', function(){ document.execCommand('redo'); });
-  document.getElementById('btnBtnTabla').addEventListener('click', insertarTabla);
-  document.getElementById('btnBtnNota').addEventListener('click', insertarNota);
-  document.getElementById('btnBtnGrafico').addEventListener('click', insertarGrafico);
-  document.getElementById('btnExportarXML').addEventListener('click', exportarXML);
-  document.getElementById('btnExportarPDF').addEventListener('click', exportarPDF);
-
-  // Insertar panel buttons
-  document.getElementById('btnTabla2').addEventListener('click', insertarTabla);
-  document.getElementById('btnNota2').addEventListener('click', insertarNota);
-  document.getElementById('btnGrafico2').addEventListener('click', insertarGrafico);
-  document.getElementById('btnLimpiar').addEventListener('click', function(){
-    if (confirm('Limpiar el área de trabajo?')) {
-      document.getElementById('canvas').innerHTML = '<div id="canvas-placeholder" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:280px;gap:12px;color:var(--text3);"><p style="font-size:14px;font-weight:600;">Área de trabajo contable</p></div>';
-    }
-  });
-  document.getElementById('btnRestaurar').addEventListener('click', function(){
-    try {
-      var saved = localStorage.getItem('canvasData_v12');
-      if (saved) { document.getElementById('canvas').innerHTML = saved; document.getElementById('statusLeft').textContent = 'Restaurado OK'; }
-      else alert('No hay datos guardados.');
-    } catch(e){}
-  });
-
-  // Funciones panel
-  document.getElementById('btnAbrirFunciones').addEventListener('click', function(){
-    openModal('modalFunciones');
-    renderFnSidebar();
-    renderFnList(fnData[fnCurrentCat] || []);
-  });
-  document.getElementById('btnInsertarFn').addEventListener('click', insertarFuncion);
+  // Sibö inputs enter
+  var si=document.getElementById('siboInput');
+  if(si) si.addEventListener('keypress',function(e){ if(e.key==='Enter') sendSibo(); });
+  var smi=document.getElementById('siboMobileInput');
+  if(smi) smi.addEventListener('keypress',function(e){ if(e.key==='Enter') sendSiboMobile(); });
 
   // Fn search
-  var fnSearch = document.getElementById('fnSearch');
-  if (fnSearch) fnSearch.addEventListener('input', function(){
-    var q = this.value.toLowerCase().trim();
-    if (!q) { renderFnList(fnData[fnCurrentCat]||[]); return; }
-    var res = [];
+  var fnSearch=document.getElementById('fnSearch');
+  if(fnSearch) fnSearch.addEventListener('input',function(){
+    var q=this.value.toLowerCase().trim();
+    if(!q){ renderFnList(fnData[fnCurrentCat]||[]); return; }
+    var res=[];
     Object.values(fnData).forEach(function(arr){ (arr||[]).forEach(function(fn){ if((fn.n||'').toLowerCase().indexOf(q)>=0||(fn.e||'').toLowerCase().indexOf(q)>=0||(fn.d||'').toLowerCase().indexOf(q)>=0) res.push(fn); }); });
     renderFnList(res);
   });
 
-  // Sibö input enter
-  var sinp = document.getElementById('siboInput');
-  if (sinp) sinp.addEventListener('keypress', function(e){ if(e.key==='Enter') sendSibo(); });
-
   // Factura init
-  var ivaSelect = document.getElementById('fe-iva-rate');
-  if (ivaSelect) ivaSelect.addEventListener('change', recalcularFactura);
-  var fechaInput = document.getElementById('fe-fecha');
-  if (fechaInput) fechaInput.value = new Date().toISOString().split('T')[0];
+  var ivaSelect=document.getElementById('fe-iva-rate');
+  if(ivaSelect) ivaSelect.addEventListener('change',recalcularFactura);
+  var fechaInput=document.getElementById('fe-fecha');
+  if(fechaInput) fechaInput.value=new Date().toISOString().split('T')[0];
   agregarLineaFactura();
 
   // Restore canvas
-  try {
-    var saved = localStorage.getItem('canvasData_v12');
-    if (saved) {
-      var canvas = document.getElementById('canvas');
-      canvas.innerHTML = saved;
-      document.getElementById('statusLeft').textContent = 'Trabajo restaurado';
-    }
-  } catch(e){}
+  try{ var saved=localStorage.getItem('canvasData_v13'); if(saved) document.getElementById('canvas').innerHTML=saved; }catch(e){}
 
-  // Update fn count in status
-  var total = 0;
-  Object.values(fnData).forEach(function(arr){ total += arr?arr.length:0; });
-  var badge = document.getElementById('fnCountBadge');
-  if (badge) badge.textContent = total + ' funciones disponibles';
-  var statusR = document.getElementById('statusRight');
-  if (statusR) statusR.textContent = total + ' funciones';
+  // Update fn count
+  var total=0; Object.values(fnData).forEach(function(arr){ total+=arr?arr.length:0; });
+  var sr=document.getElementById('statusRight'); if(sr) sr.textContent=total+' funciones';
 
-  console.log('Matriz Contable CR v12 OK');
+  // Desktop: show company in status
+  if(window.innerWidth > 768) {
+    var sm=document.getElementById('statusMid'); if(sm) sm.style.display='flex';
+  }
+
+  console.log('Matriz Contable CR v13 OK — '+total+' funciones');
 });
 </script>
 </body>
