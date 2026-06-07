@@ -95,12 +95,11 @@ body { font-family:'Plus Jakarta Sans',sans-serif; background:var(--bg); color:v
   </div>
 </div>
 
-<!-- ===== JAVASCRIPT MEJORADO - Reemplaza todo tu <script> anterior ===== -->
 <script>
-// ==================== i18n MEJORADO ====================
-const translations = { /* ← Mantén exactamente todo tu objeto translations original aquí */ 
-  // (No lo copio completo para ahorrar espacio, pero pégalo tal como lo tenías)
-};
+// ==================== i18n MEJORADO (mantiene todo lo tuyo) ====================
+const translations = { /* ← PEGA AQUÍ TODO tu objeto translations original completo */ };
+
+// (Mantén exactamente el mismo objeto translations que tenías antes)
 
 let currentLang = localStorage.getItem('lang') || 'es';
 
@@ -156,7 +155,7 @@ function setLang(lang) {
     }
   });
 
-  // Hero title especial
+  // Hero
   const heroH2 = document.querySelector('.hero h2');
   if (heroH2) {
     const spanText = trs['hero.title.span'] || 'Matriz Contable';
@@ -164,7 +163,7 @@ function setLang(lang) {
   }
 }
 
-// ==================== CANVAS ENGINE (sin romper interfaz) ====================
+// ==================== CANVAS MEJORADO ====================
 const canvas = document.getElementById('canvas');
 let historyStack = [];
 let historyIndex = -1;
@@ -191,12 +190,10 @@ function redo() {
   }
 }
 
-// Fórmulas básicas
 function parseFormula(cell) {
   let txt = cell.textContent.trim();
   if (!txt.startsWith('=')) return null;
   let expr = txt.slice(1).toUpperCase().trim();
-
   try {
     if (expr.startsWith('SUMA') || expr.startsWith('SUM')) {
       let sum = 0;
@@ -210,7 +207,7 @@ function parseFormula(cell) {
       return sum.toFixed(2);
     }
     if (expr.includes('IVA')) {
-      const val = parseFloat(cell.previousElementSibling ? cell.previousElementSibling.textContent : 0);
+      const val = parseFloat(cell.previousElementSibling?.textContent || 0);
       return (val * 0.13).toFixed(2);
     }
     return eval(expr);
@@ -236,26 +233,24 @@ function addWidget(html) {
   attachTableListeners();
 }
 
-// ==================== BOTONES TOOLBAR ====================
-document.getElementById('btnTabla').addEventListener('click', () => {
-  addWidget(`
-    <table class="table">
-      <thead><tr><th>Fecha</th><th>Cuenta</th><th>Debe (₡)</th><th>Haber (₡)</th></tr></thead>
-      <tbody><tr><td contenteditable="true">2026-06-07</td><td contenteditable="true">Nueva cuenta</td><td contenteditable="true">0</td><td contenteditable="true">0</td></tr></tbody>
-    </table>
-  `);
-});
+// ==================== BOTONES ====================
+document.getElementById('btnTabla').addEventListener('click', () => addWidget(`
+  <table class="table">
+    <thead><tr><th>Fecha</th><th>Cuenta</th><th>Debe (₡)</th><th>Haber (₡)</th></tr></thead>
+    <tbody><tr><td contenteditable="true">2026-06-07</td><td contenteditable="true">Caja</td><td contenteditable="true">56500</td><td contenteditable="true"></td></tr></tbody>
+  </table>
+`));
 
-document.getElementById('btnNota').addEventListener('click', () => {
-  addWidget(`<div style="background:var(--bg3); border:1.5px solid var(--border2); border-radius:12px; padding:16px; margin:8px 0;" contenteditable="true">📝 Nueva nota...</div>`);
-});
+document.getElementById('btnNota').addEventListener('click', () => addWidget(`
+  <div style="background:var(--bg3); border:1.5px solid var(--border2); border-radius:12px; padding:16px;" contenteditable="true">📝 Nueva nota contable...</div>
+`));
 
 document.getElementById('btnGuardar').addEventListener('click', () => {
   localStorage.setItem('canvasData_v12', canvas.innerHTML);
   const btn = document.getElementById('btnGuardar');
   const orig = btn.innerHTML;
-  btn.innerHTML = '✓ Guardado';
-  setTimeout(() => { btn.innerHTML = orig; setLang(currentLang); }, 1500);
+  btn.textContent = '✓ Guardado';
+  setTimeout(() => { btn.innerHTML = orig; setLang(currentLang); }, 1400);
 });
 
 // Undo / Redo
@@ -264,18 +259,17 @@ document.addEventListener('keydown', e => {
   if (e.ctrlKey && e.key === 'y') { e.preventDefault(); redo(); }
 });
 
-// ==================== INICIALIZACIÓN ====================
+// ==================== INICIO ====================
 document.getElementById('langSelect').addEventListener('change', e => setLang(e.target.value));
 setLang(currentLang);
 
-// Cargar guardado
 const saved = localStorage.getItem('canvasData_v12');
 if (saved) canvas.innerHTML = saved;
 
 saveHistory();
 attachTableListeners();
 
-console.log('✅ Matriz Contable CR v12 Mejorada - Botones funcionando');
+console.log('✅ Matriz Contable CR v12 - Versión Corregida');
 </script>
 </body>
 </html>
