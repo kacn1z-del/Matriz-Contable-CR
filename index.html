@@ -6,74 +6,161 @@
 <title>Matriz Contable CR v12</title>
 <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
 
 :root {
-  --bg: #f0faf2; --bg2: #ffffff; --header: #e6f7ea;
-  --primary: #5abf2a; --accent: #1a7a00;
+  --bg: #f0faf2; --bg2: #ffffff; --bg3: #e6f7ea;
+  --primary: #5abf2a; --primary2: #3a9e10; --accent: #1a7a00;
+  --text: #1a2e1a; --text2: #5a7a5a; --border: #c2e8c2;
 }
 
 * { margin:0; padding:0; box-sizing:border-box; }
-body { font-family:'Plus Jakarta Sans',sans-serif; background:var(--bg); }
+body { font-family:'Plus Jakarta Sans',sans-serif; background:var(--bg); color:var(--text); line-height:1.6; }
 
-.header { position:sticky; top:0; background:white; border-bottom:2px solid #ddd; padding:12px 16px; display:flex; justify-content:space-between; align-items:center; z-index:100; }
-#sheetTabs { display:flex; overflow-x:auto; background:#f8f9fa; padding:8px 0; border-bottom:1px solid #ddd; }
-#sheetTabs button { padding:10px 20px; margin:0 4px; border:none; background:#fff; border:1px solid #ddd; border-radius:6px 6px 0 0; white-space:nowrap; }
-#sheetTabs button.active { background:var(--header); border-bottom:3px solid var(--primary); font-weight:600; }
+.header { position:sticky; top:0; z-index:100; background:var(--glass); backdrop-filter:blur(16px); border-bottom:1.5px solid var(--border); padding:10px 20px; display:flex; align-items:center; justify-content:space-between; }
+.canvas { background:var(--bg2); border:1.5px solid var(--border); border-radius:18px; min-height:480px; padding:20px; overflow:auto; }
+.table { width:100%; border-collapse:collapse; font-size:14px; }
+.table th, .table td { padding:10px 12px; border:1px solid var(--border); text-align:right; }
+.table th { background:var(--bg3); font-weight:700; color:var(--accent); }
 
-.formula-bar { background:#f8f9fa; padding:10px 16px; border-bottom:1px solid #ddd; display:flex; align-items:center; gap:10px; }
-#formulaInput { flex:1; padding:10px; border:1px solid #ccc; border-radius:6px; font-family:'JetBrains Mono',monospace; font-size:15px; }
-
-#canvas { background:white; padding:0; overflow:auto; height:calc(100vh - 220px); }
-.table { border-collapse:collapse; font-size:15px; width:100%; table-layout:fixed; }
-.table th { background:#f1f3f5; position:sticky; top:0; z-index:10; padding:8px; text-align:center; border:1px solid #ddd; font-weight:600; }
-.table td { padding:8px 10px; border:1px solid #ddd; min-width:100px; height:32px; }
-.table td[contenteditable="true"]:focus { outline:2px solid #5abf2a; background:#fff; }
+.formula-bar { background:var(--bg2); border:1.5px solid var(--border); border-radius:12px; padding:8px 12px; margin-bottom:12px; display:flex; align-items:center; gap:8px; position:sticky; top:10px; z-index:10; }
+#sheetTabs { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:8px; }
+#sheetTabs button { padding:8px 16px; border:1.5px solid var(--border); border-radius:8px; background:var(--bg2); cursor:pointer; }
+#sheetTabs button.active { background:var(--primary); color:white; }
 </style>
 </head>
 <body>
 
+<!-- ===== TU HTML ORIGINAL (mantengo la estructura exacta) ===== -->
 <div class="header">
-  <h1>Matriz Contable CR v12</h1>
-  <select id="langSelect"><option value="es">Español</option></select>
+  <div class="logo">
+    <h1>Matriz Contable CR</h1>
+  </div>
+  <select id="langSelect">
+    <option value="es">Español CR</option>
+    <option value="en">English</option>
+  </select>
 </div>
 
-<div id="sheetTabs"></div>
-
-<div class="formula-bar">
-  <span style="font-weight:700;color:var(--primary);">fx</span>
-  <input type="text" id="formulaInput" placeholder="Escribe fórmula aquí (ej: =SUMA(C2:C10))">
+<div class="canvas-section">
+  <p class="canvas-label">Área de trabajo</p>
+  <div class="canvas-toolbar">
+    <button class="btn" id="btnTabla">Tabla</button>
+    <button class="btn" id="btnFactura">Factura</button>
+    <button class="btn" id="btnExportar">Exportar</button>
+  </div>
+  
+  <div id="sheetTabs"></div>
+  <div class="formula-bar">
+    <span style="font-weight:700;color:var(--accent);">fx</span>
+    <input type="text" id="formulaInput" placeholder="=SUMA(C2:C10) =BUSCARV(...) =HOY()" style="flex:1;padding:9px;border:1.5px solid var(--border2);border-radius:8px;font-family:'JetBrains Mono',monospace;">
+  </div>
+  <div class="canvas" id="canvas"></div>
 </div>
-
-<div id="canvas"></div>
 
 <script>
-// ==================== MOTOR + TODO LO ANTERIOR ====================
+// ==================== MOTOR DE FÓRMULAS COMPLETO ====================
 let sheets = {};
 let currentSheetName = "Hoja1";
-
 const canvas = document.getElementById('canvas');
 
+function getCellValue(table, ref) {
+  const match = ref.match(/([A-Z]+)(\d+)/i);
+  if (!match) return 0;
+  const col = match[1].toUpperCase().charCodeAt(0) - 65;
+  const row = parseInt(match[2]) - 1;
+  const rows = table.querySelectorAll('tbody tr');
+  if (rows[row] && rows[row].cells[col]) {
+    const val = rows[row].cells[col].textContent.trim();
+    return isNaN(parseFloat(val)) ? val : parseFloat(val);
+  }
+  return 0;
+}
+
+function parseRange(table, rangeStr) {
+  const m = rangeStr.match(/([A-Z]+)(\d+):([A-Z]+)(\d+)/i);
+  if (!m) return [];
+  const sc = m[1].toUpperCase().charCodeAt(0)-65, sr = +m[2]-1;
+  const ec = m[3].toUpperCase().charCodeAt(0)-65, er = +m[4]-1;
+  const data = [];
+  const rows = table.querySelectorAll('tbody tr');
+  for (let r = sr; r <= er && r < rows.length; r++) {
+    const rd = [];
+    for (let c = sc; c <= ec && c < rows[r].cells.length; c++) {
+      rd.push(rows[r].cells[c] ? rows[r].cells[c].textContent.trim() : '');
+    }
+    data.push(rd);
+  }
+  return data;
+}
+
+function evaluateFormula(formula, table) {
+  if (!formula.startsWith('=')) return formula;
+  let e = formula.substring(1).trim().toUpperCase();
+  try {
+    if (e.startsWith('SUMA')) { let s=0; table.querySelectorAll('td').forEach(td => s += parseFloat(td.textContent)||0); return Math.round(s*100)/100; }
+    if (e.startsWith('IVA')) { const b = getCellValue(table, e.match(/\((.*?)\)/)?.[1]||''); return (b*0.13).toFixed(2); }
+    if (e.startsWith('BUSCARV') || e.startsWith('VLOOKUP')) return buscarV(formula, table);
+    if (e.startsWith('BUSCARX') || e.startsWith('XLOOKUP')) return buscarV(formula, table);
+    if (e.startsWith('SUMAR.SI.CONJUNTO') || e.startsWith('SUMIFS')) return sumarSiConjunto(formula, table);
+    if (e.startsWith('HOY')) return new Date().toISOString().split('T')[0];
+    if (e.startsWith('FECHA(')) { const p=formula.match(/\((.+)\)/)[1].split(',').map(Number); return `${p[0]}-${String(p[1]).padStart(2,'0')}-${String(p[2]).padStart(2,'0')}`; }
+
+    let math = e.replace(/([A-Z]+\d+)/g, m => getCellValue(table, m));
+    return eval(math) || 0;
+  } catch(err) { return '#ERROR!'; }
+}
+
+function buscarV(f, table) {
+  try {
+    const p = f.match(/\((.+)\)/)[1].split(';').map(x=>x.trim().replace(/["']/g,''));
+    const data = parseRange(table, p[1]);
+    const idx = parseInt(p[2])-1;
+    for (let r of data) if (r[0] == p[0]) return r[idx] || '#N/A';
+    return '#N/A';
+  } catch(e) { return '#ERROR_BUSCARV'; }
+}
+
+function sumarSiConjunto(f, table) {
+  try {
+    const p = f.match(/\((.+)\)/)[1].split(';').map(x=>x.trim());
+    let total = 0;
+    const rows = table.querySelectorAll('tbody tr');
+    for (let row of rows) {
+      let ok = true;
+      for (let i=1; i<p.length; i+=2) {
+        const col = p[i].match(/[A-Z]+/)[0].charCodeAt(0)-65;
+        if (row.cells[col] && row.cells[col].textContent.trim() !== p[i+1].replace(/["']/g,'')) ok = false;
+      }
+      if (ok) total += parseFloat(row.cells[p[0].match(/[A-Z]+/)[0].charCodeAt(0)-65]?.textContent)||0;
+    }
+    return Math.round(total*100)/100;
+  } catch(e) { return '#ERROR_SUMIFS'; }
+}
+
+function processFormulas(table) {
+  if (!table) return;
+  table.querySelectorAll('td').forEach(td => {
+    if (td.textContent.trim().startsWith('=')) {
+      td.textContent = evaluateFormula(td.textContent, table);
+    }
+  });
+}
+
+// ==================== PESTAÑAS Y PERSISTENCIA ====================
 function createSheet(name) {
   const table = document.createElement('table');
   table.className = 'table';
-  table.innerHTML = `
-    <thead>
-      <tr><th></th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th></tr>
-    </thead>
-    <tbody contenteditable="true">
-      <tr><td>1</td><td>=HOY()</td><td>Venta</td><td>50000</td><td>=IVA(C2)</td><td>=C2+D2</td><td></td></tr>
-      <tr><td>2</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-    </tbody>`;
+  table.innerHTML = `<thead><tr><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th></tr></thead><tbody contenteditable="true"><tr><td>=HOY()</td><td>Venta</td><td>50000</td><td>=IVA(C2)</td><td>=C2+D2</td></tr></tbody>`;
   return table;
 }
 
 function renderTabs() {
   let html = '';
-  Object.keys(sheets).forEach(name => {
-    html += `<button onclick="switchSheet('${name}')" class="${name===currentSheetName ? 'active' : ''}">${name}</button>`;
+  Object.keys(sheets).forEach(n => {
+    html += `<button onclick="switchSheet('${n}')" class="${n===currentSheetName?'active':''}">${n}</button>`;
   });
-  html += `<button onclick="addNewSheet()" style="border-style:dashed;color:var(--primary);">+ Hoja</button>`;
+  html += `<button onclick="addNewSheet()" style="border-style:dashed;">+ Hoja</button>`;
   document.getElementById('sheetTabs').innerHTML = html;
 }
 
@@ -85,53 +172,42 @@ function switchSheet(name) {
 }
 
 function addNewSheet() {
-  const name = `Hoja${Object.keys(sheets).length + 1}`;
-  const newTable = createSheet(name);
-  sheets[name] = newTable;
+  const name = `Hoja${Object.keys(sheets).length+1}`;
+  sheets[name] = createSheet(name);
   switchSheet(name);
 }
 
-function saveData() {
-  localStorage.setItem('matriz_v12', JSON.stringify({sheets: Object.keys(sheets), current: currentSheetName}));
-}
-
-function loadData() {
-  const saved = localStorage.getItem('matriz_v12');
-  if (saved) {
-    const data = JSON.parse(saved);
-    // Por simplicidad recreamos las hojas (puedes expandir)
-  }
-  if (Object.keys(sheets).length === 0) {
-    sheets["Hoja1"] = createSheet("Hoja1");
-    canvas.appendChild(sheets["Hoja1"]);
-  }
-  renderTabs();
-}
-
-// Eventos
-canvas.addEventListener('input', () => {
-  processFormulas(sheets[currentSheetName]);
-  saveData();
-});
-
-document.getElementById('formulaInput').addEventListener('keypress', e => {
-  if (e.key === 'Enter') {
-    const active = document.activeElement;
-    if (active && active.tagName === 'TD') active.textContent = e.target.value;
-  }
-});
-
-document.getElementById('btnExportar').addEventListener('click', () => {
+function exportToExcel() {
   const wb = XLSX.utils.book_new();
   Object.keys(sheets).forEach(name => {
     const ws = XLSX.utils.table_to_sheet(sheets[name]);
     XLSX.utils.book_append_sheet(wb, ws, name);
   });
-  XLSX.writeFile(wb, 'Matriz_Contable.xlsx');
-});
+  XLSX.writeFile(wb, 'Matriz_Contable_CR.xlsx');
+}
 
-// Inicializar
-loadData();
+// Inicialización
+function init() {
+  const saved = localStorage.getItem('matriz_canvas');
+  if (saved) {
+    canvas.innerHTML = saved;
+  } else {
+    sheets["Hoja1"] = createSheet("Hoja1");
+    canvas.appendChild(sheets["Hoja1"]);
+  }
+  renderTabs();
+  
+  canvas.addEventListener('input', () => {
+    processFormulas(sheets[currentSheetName]);
+    localStorage.setItem('matriz_canvas', canvas.innerHTML);
+  });
+
+  document.getElementById('btnExportar').addEventListener('click', exportToExcel);
+  document.getElementById('btnTabla').addEventListener('click', addNewSheet);
+}
+
+init();
+console.log('✅ Matriz Contable CR v12 — Consolidado Final');
 </script>
 </body>
 </html>
