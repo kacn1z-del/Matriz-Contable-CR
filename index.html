@@ -2,42 +2,70 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Matriz Contable CR v12</title>
 <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
+
 :root {
   --bg: #f0faf2; --bg2: #ffffff; --bg3: #e6f7ea;
   --primary: #5abf2a; --primary2: #3a9e10; --accent: #1a7a00;
   --text: #1a2e1a; --text2: #5a7a5a; --border: #c2e8c2;
 }
+
 * { margin:0; padding:0; box-sizing:border-box; }
-body { font-family:'Plus Jakarta Sans',sans-serif; background:var(--bg); color:var(--text); }
-.header { position:sticky; top:0; background:rgba(255,255,255,0.9); backdrop-filter:blur(16px); border-bottom:1.5px solid var(--border); padding:10px 20px; display:flex; justify-content:space-between; align-items:center; }
-.canvas { background:var(--bg2); border:1.5px solid var(--border); border-radius:18px; min-height:520px; padding:20px; overflow:auto; }
-.table { width:100%; border-collapse:collapse; font-size:14px; }
-.table th, .table td { padding:10px 12px; border:1px solid var(--border); text-align:right; }
+body { font-family:'Plus Jakarta Sans',sans-serif; background:var(--bg); color:var(--text); line-height:1.6; }
+
+.header { position:sticky; top:0; z-index:100; background:rgba(255,255,255,0.95); backdrop-filter:blur(16px); border-bottom:1.5px solid var(--border); padding:12px 16px; display:flex; align-items:center; justify-content:space-between; }
+.canvas-section { padding:16px; }
+.canvas-toolbar { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px; }
+.btn { min-height:48px; padding:10px 14px; border-radius:12px; font-size:14px; }
+
+.formula-bar { background:var(--bg2); border:1.5px solid var(--border); border-radius:12px; padding:10px 12px; margin:8px 0; display:flex; align-items:center; gap:8px; position:sticky; top:8px; z-index:10; }
+#formulaInput { flex:1; padding:10px; border:1.5px solid var(--border); border-radius:8px; font-family:'JetBrains Mono',monospace; font-size:15px; }
+
+#canvas { background:var(--bg2); border:1.5px solid var(--border); border-radius:18px; min-height:55vh; padding:16px; overflow:auto; box-shadow:0 4px 20px rgba(58,158,16,0.1); }
+.table { width:100%; border-collapse:collapse; font-size:15px; }
+.table th, .table td { padding:12px 10px; border:1px solid var(--border); text-align:right; }
 .table th { background:var(--bg3); font-weight:700; color:var(--accent); }
-.formula-bar { background:var(--bg2); border:1.5px solid var(--border); border-radius:12px; padding:8px 12px; margin:8px 0; display:flex; align-items:center; gap:8px; position:sticky; top:10px; z-index:10; }
-#sheetTabs button { padding:6px 14px; margin:2px; border-radius:8px; border:1.5px solid var(--border); background:var(--bg2); cursor:pointer; }
+
+#sheetTabs { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px; }
+#sheetTabs button { padding:8px 14px; border-radius:10px; border:1.5px solid var(--border); background:var(--bg2); font-size:14px; }
 #sheetTabs button.active { background:var(--primary); color:white; border-color:var(--primary); }
+
+/* Responsive */
+@media (max-width: 640px) {
+  .btn, #sheetTabs button { font-size:13px; padding:9px 12px; min-height:44px; }
+}
 </style>
 </head>
 <body>
 
-<!-- === TU HTML ORIGINAL (Header, Hero, Features, Modales, etc.) === -->
-<!-- Copia aquí todo tu HTML original desde <div class="header"> hasta antes del <script> -->
+<div class="header">
+  <h1>Matriz Contable CR v12</h1>
+  <select id="langSelect">
+    <option value="es">Español</option>
+    <option value="en">English</option>
+  </select>
+</div>
 
 <div class="canvas-section">
-  <p class="canvas-label">Área de trabajo</p>
-  <div class="canvas-toolbar"> <!-- tus botones originales --> </div>
+  <p class="canvas-label" style="font-weight:700;margin-bottom:8px;">Área de trabajo</p>
   
+  <div class="canvas-toolbar">
+    <button class="btn" id="btnTabla">Nueva Tabla</button>
+    <button class="btn" id="btnFactura">Factura</button>
+    <button class="btn" id="btnExportar">Exportar Excel</button>
+  </div>
+
   <div id="sheetTabs"></div>
+  
   <div class="formula-bar">
     <span style="font-weight:700;color:var(--accent);">fx</span>
-    <input type="text" id="formulaInput" placeholder="=SUMA(C2:C10)  =BUSCARV(...)  =HOY()" style="flex:1;padding:9px;border:1.5px solid var(--border2);border-radius:8px;font-family:'JetBrains Mono',monospace;">
+    <input type="text" id="formulaInput" placeholder="=SUMA(C2:C10)  =BUSCARV(001;A2:E20;3)  =HOY()">
   </div>
+  
   <div class="canvas" id="canvas"></div>
 </div>
 
@@ -78,21 +106,15 @@ function parseRange(table, rangeStr) {
   return data;
 }
 
-// Funciones de Fecha y Hora
+// Funciones principales
 const hoy = () => new Date().toISOString().split('T')[0];
 const fecha = (a,m,d) => `${a}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-const dia = (f) => new Date(f).getDate();
-const mes = (f) => new Date(f).getMonth()+1;
-const año = (f) => new Date(f).getFullYear();
+const dia = f => new Date(f).getDate();
+const mes = f => new Date(f).getMonth()+1;
+const año = f => new Date(f).getFullYear();
 const dias = (f1,f2) => Math.floor((new Date(f2)-new Date(f1))/86400000);
 
-// Funciones de Texto
-const largo = t => String(t).length;
-const mayusc = t => String(t).toUpperCase();
-const minusc = t => String(t).toLowerCase();
-
-// BUSCARV, BUSCARX, SUMAR.SI.CONJUNTO (ya mejorados)
-function buscarV(f, table) { /* implementación anterior corregida */ 
+function buscarV(f, table) {
   try {
     const p = f.match(/\((.+)\)/)[1].split(';').map(x=>x.trim().replace(/["']/g,''));
     const data = parseRange(table, p[1]);
@@ -102,33 +124,6 @@ function buscarV(f, table) { /* implementación anterior corregida */
   } catch(e) { return '#ERROR_BUSCARV'; }
 }
 
-function buscarX(f, table) { /* similar */ 
-  try {
-    const p = f.match(/\((.+)\)/)[1].split(';').map(x=>x.trim().replace(/["']/g,''));
-    const lookup = parseRange(table, p[1]);
-    const returnR = parseRange(table, p[2]);
-    for (let i=0; i<lookup.length; i++) if (lookup[i][0] == p[0]) return returnR[i] ? returnR[i][0] : '#N/A';
-    return '#N/A';
-  } catch(e) { return '#ERROR_BUSCARX'; }
-}
-
-function sumarSiConjunto(f, table) { /* implementación corregida */ 
-  try {
-    const p = f.match(/\((.+)\)/)[1].split(';').map(x=>x.trim());
-    let total = 0;
-    const rows = table.querySelectorAll('tbody tr');
-    for (let row of rows) {
-      let ok = true;
-      for (let i=1; i<p.length; i+=2) {
-        const col = p[i].match(/[A-Z]+/)[0].charCodeAt(0)-65;
-        if (row.cells[col] && row.cells[col].textContent.trim() !== p[i+1].replace(/["']/g,'')) ok = false;
-      }
-      if (ok) total += parseFloat(row.cells[p[0].match(/[A-Z]+/)[0].charCodeAt(0)-65]?.textContent) || 0;
-    }
-    return Math.round(total*100)/100;
-  } catch(e) { return '#ERROR_SUMIFS'; }
-}
-
 function evaluateFormula(formula, table) {
   if (!formula.startsWith('=')) return formula;
   let e = formula.substring(1).trim().toUpperCase();
@@ -136,17 +131,12 @@ function evaluateFormula(formula, table) {
     if (e.startsWith('SUMA')) { let s=0; table.querySelectorAll('td').forEach(td=>s+=parseFloat(td.textContent)||0); return Math.round(s*100)/100; }
     if (e.startsWith('IVA')) { const b = getCellValue(table, e.match(/\((.*?)\)/)?.[1]||''); return (b*0.13).toFixed(2); }
     if (e.startsWith('BUSCARV') || e.startsWith('VLOOKUP')) return buscarV(formula, table);
-    if (e.startsWith('BUSCARX') || e.startsWith('XLOOKUP')) return buscarX(formula, table);
-    if (e.startsWith('SUMAR.SI.CONJUNTO') || e.startsWith('SUMIFS')) return sumarSiConjunto(formula, table);
     if (e.startsWith('HOY')) return hoy();
     if (e.startsWith('FECHA(')) { const p=formula.match(/\((.+)\)/)[1].split(',').map(Number); return fecha(p[0],p[1],p[2]); }
     if (e.startsWith('DIA(')) return dia(formula.match(/\((.+)\)/)[1].trim());
     if (e.startsWith('MES(')) return mes(formula.match(/\((.+)\)/)[1].trim());
     if (e.startsWith('AÑO(')) return año(formula.match(/\((.+)\)/)[1].trim());
     if (e.startsWith('DIAS(')) { const p=formula.match(/\((.+)\)/)[1].split(',').map(s=>s.trim()); return dias(p[1],p[0]); }
-    if (e.startsWith('LARGO(')) return largo(getCellValue(table, formula.match(/\((.+)\)/)[1]));
-    if (e.startsWith('MAYUSC(')) return mayusc(getCellValue(table, formula.match(/\((.+)\)/)[1]));
-    if (e.startsWith('MINUSC(')) return minusc(getCellValue(table, formula.match(/\((.+)\)/)[1]));
 
     let math = e.replace(/([A-Z]+\d+)/g, m => getCellValue(table, m));
     return eval(math) || 0;
@@ -162,8 +152,73 @@ function processFormulas(table) {
   });
 }
 
-// Inicialización (puedes integrar con tu código de pestañas y exportar)
-console.log('✅ Matriz Contable CR v12 — Versión Final Consolidada');
+// ==================== MÚLTIPLES HOJAS CON PESTAÑAS ====================
+function createSheet(name) {
+  const html = `
+    <table class="table">
+      <thead><tr><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th></tr></thead>
+      <tbody contenteditable="true">
+        <tr><td>Fecha</td><td>Descripción</td><td>Monto</td><td>IVA</td><td>Total</td></tr>
+        <tr><td>=HOY()</td><td>Venta</td><td>50000</td><td>=IVA(C2)</td><td>=C2+D2</td></tr>
+      </tbody>
+    </table>`;
+  const div = document.createElement('div');
+  div.dataset.sheet = name;
+  div.innerHTML = html;
+  return div;
+}
+
+function renderTabs() {
+  let html = `<div id="sheetTabs">`;
+  Object.keys(sheets).forEach(name => {
+    html += `<button onclick="switchSheet('${name}')" class="${name===currentSheetName?'active':''}">${name}</button>`;
+  });
+  html += `<button onclick="addNewSheet()" style="border-style:dashed;">+ Hoja</button></div>`;
+  document.getElementById('sheetTabs').outerHTML = html;
+}
+
+function switchSheet(name) {
+  currentSheetName = name;
+  document.querySelectorAll('#canvas > div').forEach(d => d.style.display = d.dataset.sheet === name ? 'block' : 'none');
+  renderTabs();
+}
+
+function addNewSheet() {
+  const name = `Hoja${Object.keys(sheets).length + 1}`;
+  const newSheet = createSheet(name);
+  canvas.appendChild(newSheet);
+  sheets[name] = newSheet.querySelector('table');
+  switchSheet(name);
+}
+
+// ==================== EXPORTAR EXCEL ====================
+function exportToExcel() {
+  const wb = XLSX.utils.book_new();
+  Object.keys(sheets).forEach(name => {
+    const ws = XLSX.utils.table_to_sheet(sheets[name]);
+    XLSX.utils.book_append_sheet(wb, ws, name);
+  });
+  XLSX.writeFile(wb, `Matriz_Contable_${new Date().toISOString().slice(0,10)}.xlsx`);
+}
+
+// ==================== INICIALIZACIÓN ====================
+const canvas = document.getElementById('canvas');
+
+function init() {
+  canvas.innerHTML = '';
+  const sheet1 = createSheet("Hoja1");
+  canvas.appendChild(sheet1);
+  sheets["Hoja1"] = sheet1.querySelector('table');
+
+  renderTabs();
+  document.getElementById('btnExportar').addEventListener('click', exportToExcel);
+  document.getElementById('btnTabla').addEventListener('click', addNewSheet);
+
+  canvas.addEventListener('input', () => processFormulas(sheets[currentSheetName]));
+}
+
+init();
+console.log('✅ Matriz Contable CR v12 — Versión Móvil Completa');
 </script>
 </body>
 </html>
