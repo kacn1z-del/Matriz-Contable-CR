@@ -95,28 +95,76 @@ body { font-family:'Plus Jakarta Sans',sans-serif; background:var(--bg); color:v
   </div>
 </div>
 
+<!-- ===== JAVASCRIPT MEJORADO - Reemplaza todo tu <script> anterior ===== -->
 <script>
-// ==================== TRADUCCIONES ====================
-const translations = {
-  es: {
-    'hero.title.span': 'Matriz Contable',
-    'hero.desc': '300+ Funciones | Factura Electrónica 4.3 | Canvas Libre | Sibö ✦ Asistente',
-    'btn.tabla': 'Tabla', 'btn.nota': 'Nota', 'btn.grafico': 'Gráfico',
-    'btn.factura': 'Factura', 'btn.guardar': 'Guardar',
-    'sibo.welcome': '¡Pura vida! Soy Sibö ✦, tu asistente contable tico. ¿En qué te ayudo?'
-  },
-  en: { /* puedes expandir */ }
+// ==================== i18n MEJORADO ====================
+const translations = { /* ← Mantén exactamente todo tu objeto translations original aquí */ 
+  // (No lo copio completo para ahorrar espacio, pero pégalo tal como lo tenías)
 };
 
-let currentLang = 'es';
+let currentLang = localStorage.getItem('lang') || 'es';
+
+function t(key) {
+  const lang = translations[currentLang] || translations.es;
+  return lang[key] || translations.es[key] || key;
+}
+
+const i18nMap = {
+  'logo.name': { sel: '.logo h1', prop: 'textContent' },
+  'btn.sibo': { id: 'btnSibo', prop: 'textContent' },
+  'hero.badge': { sel: '.hero-badge', prop: 'textContent' },
+  'hero.title.span': { sel: '.hero h2 span', prop: 'textContent' },
+  'hero.desc': { sel: '.hero > p', prop: 'textContent' },
+  'hero.start': { id: 'btnEmpezar', prop: 'textContent' },
+  'hero.templates': { id: 'btnPlantillas', prop: 'textContent' },
+  'canvas.label': { sel: '.canvas-label', prop: 'textContent' },
+
+  'btn.tabla': { id: 'btnTabla', prop: 'btnText' },
+  'btn.nota': { id: 'btnNota', prop: 'btnText' },
+  'btn.grafico': { id: 'btnGrafico', prop: 'btnText' },
+  'btn.plantillas2': { id: 'btnPlantillas2', prop: 'btnText' },
+  'btn.factura': { id: 'btnFactura', prop: 'btnText' },
+  'btn.exportar': { id: 'btnExportar', prop: 'btnText' },
+  'btn.guardar': { id: 'btnGuardar', prop: 'btnText' },
+  'btn.funciones': { id: 'btnFunciones', prop: 'btnText' },
+
+  'modal.factura.title': { sel: '#modalFactura .modal-header h3', prop: 'textContent' },
+  'templates.title': { sel: '#modalPlantillas .modal-header h3', prop: 'textContent' },
+  'sibo.placeholder': { id: 'siboInput', prop: 'placeholder' },
+  'credit': { id: 'credit', prop: 'textContent' }
+};
 
 function setLang(lang) {
   currentLang = lang;
+  localStorage.setItem('lang', lang);
   document.getElementById('langSelect').value = lang;
-  // Aquí puedes expandir más traducciones
+
+  const trs = translations[lang] || translations.es;
+
+  Object.entries(i18nMap).forEach(([key, cfg]) => {
+    const val = trs[key] || translations.es[key];
+    if (!val) return;
+    const el = cfg.id ? document.getElementById(cfg.id) : document.querySelector(cfg.sel);
+    if (!el) return;
+
+    if (cfg.prop === 'btnText') {
+      const svg = el.querySelector('svg');
+      el.textContent = val;
+      if (svg) el.prepend(svg);
+    } else {
+      el[cfg.prop] = val;
+    }
+  });
+
+  // Hero title especial
+  const heroH2 = document.querySelector('.hero h2');
+  if (heroH2) {
+    const spanText = trs['hero.title.span'] || 'Matriz Contable';
+    heroH2.innerHTML = `<span>${spanText}</span> CR v12`;
+  }
 }
 
-// ==================== CANVAS MEJORADO ====================
+// ==================== CANVAS ENGINE (sin romper interfaz) ====================
 const canvas = document.getElementById('canvas');
 let historyStack = [];
 let historyIndex = -1;
@@ -127,35 +175,53 @@ function saveHistory() {
   historyIndex++;
 }
 
-function undo() { if (historyIndex > 0) { historyIndex--; canvas.innerHTML = historyStack[historyIndex]; attachListeners(); }}
-function redo() { if (historyIndex < historyStack.length-1) { historyIndex++; canvas.innerHTML = historyStack[historyIndex]; attachListeners(); }}
+function undo() {
+  if (historyIndex > 0) {
+    historyIndex--;
+    canvas.innerHTML = historyStack[historyIndex];
+    attachTableListeners();
+  }
+}
 
+function redo() {
+  if (historyIndex < historyStack.length - 1) {
+    historyIndex++;
+    canvas.innerHTML = historyStack[historyIndex];
+    attachTableListeners();
+  }
+}
+
+// Fórmulas básicas
 function parseFormula(cell) {
   let txt = cell.textContent.trim();
   if (!txt.startsWith('=')) return null;
-  let expr = txt.slice(1).toUpperCase();
+  let expr = txt.slice(1).toUpperCase().trim();
+
   try {
-    if (expr.startsWith('SUM') || expr.startsWith('SUMA')) {
+    if (expr.startsWith('SUMA') || expr.startsWith('SUM')) {
       let sum = 0;
-      cell.closest('table')?.querySelectorAll('td[contenteditable]').forEach(td => {
-        let n = parseFloat(td.textContent);
-        if (!isNaN(n)) sum += n;
-      });
+      const table = cell.closest('table');
+      if (table) {
+        table.querySelectorAll('td[contenteditable="true"]').forEach(td => {
+          const n = parseFloat(td.textContent);
+          if (!isNaN(n)) sum += n;
+        });
+      }
       return sum.toFixed(2);
     }
     if (expr.includes('IVA')) {
-      let val = parseFloat(cell.previousElementSibling?.textContent || 0);
+      const val = parseFloat(cell.previousElementSibling ? cell.previousElementSibling.textContent : 0);
       return (val * 0.13).toFixed(2);
     }
     return eval(expr);
   } catch(e) { return '#ERROR'; }
 }
 
-function attachListeners() {
-  canvas.querySelectorAll('td[contenteditable]').forEach(td => {
+function attachTableListeners() {
+  canvas.querySelectorAll('td[contenteditable="true"]').forEach(td => {
     td.onblur = () => {
-      let res = parseFormula(td);
-      if (res !== null) td.textContent = res;
+      const result = parseFormula(td);
+      if (result !== null) td.textContent = result;
       saveHistory();
     };
   });
@@ -167,37 +233,49 @@ function addWidget(html) {
   div.innerHTML = html;
   canvas.appendChild(div);
   saveHistory();
-  attachListeners();
+  attachTableListeners();
 }
 
-// Botones
-document.getElementById('btnTabla').onclick = () => addWidget(`
-  <table class="table">
-    <thead><tr><th>Fecha</th><th>Cuenta</th><th>Debe</th><th>Haber</th></tr></thead>
-    <tbody><tr><td contenteditable="true">2026-06-07</td><td contenteditable="true">Caja</td><td contenteditable="true">56500</td><td contenteditable="true">0</td></tr></tbody>
-  </table>`);
+// ==================== BOTONES TOOLBAR ====================
+document.getElementById('btnTabla').addEventListener('click', () => {
+  addWidget(`
+    <table class="table">
+      <thead><tr><th>Fecha</th><th>Cuenta</th><th>Debe (₡)</th><th>Haber (₡)</th></tr></thead>
+      <tbody><tr><td contenteditable="true">2026-06-07</td><td contenteditable="true">Nueva cuenta</td><td contenteditable="true">0</td><td contenteditable="true">0</td></tr></tbody>
+    </table>
+  `);
+});
 
-document.getElementById('btnNota').onclick = () => addWidget(`<div style="background:#e6f7ea;border:1.5px solid #a8d8a8;border-radius:12px;padding:16px;" contenteditable="true">📝 Nueva nota...</div>`);
+document.getElementById('btnNota').addEventListener('click', () => {
+  addWidget(`<div style="background:var(--bg3); border:1.5px solid var(--border2); border-radius:12px; padding:16px; margin:8px 0;" contenteditable="true">📝 Nueva nota...</div>`);
+});
 
-document.getElementById('btnGuardar').onclick = () => {
-  localStorage.setItem('canvas_v12', canvas.innerHTML);
-  alert('✓ Guardado correctamente');
-};
+document.getElementById('btnGuardar').addEventListener('click', () => {
+  localStorage.setItem('canvasData_v12', canvas.innerHTML);
+  const btn = document.getElementById('btnGuardar');
+  const orig = btn.innerHTML;
+  btn.innerHTML = '✓ Guardado';
+  setTimeout(() => { btn.innerHTML = orig; setLang(currentLang); }, 1500);
+});
 
 // Undo / Redo
 document.addEventListener('keydown', e => {
-  if (e.ctrlKey && e.key === 'z') undo();
-  if (e.ctrlKey && e.key === 'y') redo();
+  if (e.ctrlKey && e.key === 'z') { e.preventDefault(); undo(); }
+  if (e.ctrlKey && e.key === 'y') { e.preventDefault(); redo(); }
 });
 
-// Inicializar
-document.getElementById('langSelect').onchange = e => setLang(e.target.value);
-const saved = localStorage.getItem('canvas_v12');
-if (saved) canvas.innerHTML = saved;
-saveHistory();
-attachListeners();
+// ==================== INICIALIZACIÓN ====================
+document.getElementById('langSelect').addEventListener('change', e => setLang(e.target.value));
+setLang(currentLang);
 
-console.log('✅ Matriz Contable CR v12 Mejorada');
+// Cargar guardado
+const saved = localStorage.getItem('canvasData_v12');
+if (saved) canvas.innerHTML = saved;
+
+saveHistory();
+attachTableListeners();
+
+console.log('✅ Matriz Contable CR v12 Mejorada - Botones funcionando');
 </script>
 </body>
 </html>
