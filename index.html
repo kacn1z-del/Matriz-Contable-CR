@@ -1,3 +1,5 @@
+Matriz Contable 
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -8,268 +10,2161 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
 
 :root {
-  --bg: #f0faf2; --bg2: #ffffff; --bg3: #e6f7ea;
-  --primary: #5abf2a; --primary2: #3a9e10; --primary3: #84e04a;
-  --accent: #1a7a00; --text: #1a2e1a; --text2: #5a7a5a;
-  --border: #c2e8c2; --border2: #a8d8a8;
-  --glass: rgba(255,255,255,0.75); --glass2: rgba(230,247,234,0.85);
+  --bg: #f0faf2;
+  --bg2: #ffffff;
+  --bg3: #e6f7ea;
+  --primary: #5abf2a;
+  --primary2: #3a9e10;
+  --primary3: #84e04a;
+  --accent: #1a7a00;
+  --text: #1a2e1a;
+  --text2: #5a7a5a;
+  --border: #c2e8c2;
+  --border2: #a8d8a8;
+  --glass: rgba(255,255,255,0.75);
+  --glass2: rgba(230,247,234,0.85);
+  --danger: #e05a2a;
   --shadow: 0 4px 24px rgba(58,158,16,0.10);
   --shadow2: 0 2px 12px rgba(58,158,16,0.08);
 }
 
-* { margin:0; padding:0; box-sizing:border-box; }
-body { font-family:'Plus Jakarta Sans',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
-.header { position:sticky; top:0; z-index:100; background:var(--glass); backdrop-filter:blur(16px); border-bottom:1.5px solid var(--border); padding:10px 20px; display:flex; align-items:center; justify-content:space-between; box-shadow:var(--shadow2); }
-.logo { display:flex; align-items:center; gap:12px; }
-.logo-icon { width:40px; height:40px; border-radius:12px; background:linear-gradient(135deg,var(--primary),var(--primary2)); display:flex; align-items:center; justify-content:center; }
-.logo h1 { font-size:17px; font-weight:800; color:var(--accent); }
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  min-height: 100vh;
+  background-image:
+    radial-gradient(ellipse 80% 40% at 50% -10%, rgba(90,191,42,0.18) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 30% at 100% 100%, rgba(90,191,42,0.08) 0%, transparent 60%);
+}
 
-.btn { min-height:40px; padding:8px 16px; border:1.5px solid var(--border2); border-radius:12px; background:var(--bg2); color:var(--text); font-weight:600; cursor:pointer; display:flex; align-items:center; gap:7px; }
-.btn-primary { background:linear-gradient(135deg,var(--primary),var(--primary2)); border:none; color:white; font-weight:700; }
-.canvas { background:var(--bg2); border:1.5px solid var(--border); border-radius:18px; min-height:500px; padding:20px; box-shadow:var(--shadow); }
-.table { width:100%; border-collapse:collapse; margin:12px 0; }
-.table th, .table td { padding:10px 12px; border-bottom:1px solid var(--border); text-align:left; }
-.table th { background:var(--bg3); font-weight:700; color:var(--accent); }
-.modal { display:none; position:fixed; inset:0; background:rgba(20,40,20,0.45); backdrop-filter:blur(6px); align-items:center; justify-content:center; }
-.modal.active { display:flex; }
-.modal-content { background:var(--bg2); border:1.5px solid var(--border); border-radius:22px; max-width:600px; width:100%; max-height:90vh; overflow-y:auto; }
-.sibo-chat { position:fixed; bottom:20px; right:20px; width:360px; background:var(--bg2); border:1.5px solid var(--border); border-radius:22px; box-shadow:0 16px 48px rgba(0,0,0,0.14); display:none; flex-direction:column; max-height:500px; }
-.sibo-chat.active { display:flex; }
+/* ===== HEADER ===== */
+.header {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--glass);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1.5px solid var(--border);
+  padding: 10px 20px;
+  display: flex; align-items: center; justify-content: space-between;
+  box-shadow: var(--shadow2);
+}
+
+.logo { display: flex; align-items: center; gap: 12px; }
+
+.logo-icon {
+  width: 40px; height: 40px; border-radius: 12px;
+  background: linear-gradient(135deg, var(--primary), var(--primary2));
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 12px rgba(90,191,42,0.35);
+}
+
+.logo h1 {
+  font-size: 17px; font-weight: 800; letter-spacing: -0.3px;
+  color: var(--accent);
+}
+
+.header-actions { display: flex; gap: 8px; align-items: center; }
+
+.btn {
+  min-height: 40px; min-width: 40px; padding: 8px 16px;
+  border: 1.5px solid var(--border2); border-radius: 12px;
+  background: var(--bg2); color: var(--text);
+  font-size: 13px; font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 600; cursor: pointer; transition: all 0.18s ease;
+  display: inline-flex; align-items: center; gap: 7px;
+  box-shadow: var(--shadow2);
+}
+.btn:hover {
+  background: var(--bg3); border-color: var(--primary);
+  transform: translateY(-1px); box-shadow: 0 6px 18px rgba(90,191,42,0.15);
+}
+.btn:active { transform: translateY(0); }
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary), var(--primary2));
+  border: none; color: white; font-weight: 700;
+  box-shadow: 0 4px 14px rgba(90,191,42,0.35);
+}
+.btn-primary:hover {
+  background: linear-gradient(135deg, var(--primary3), var(--primary));
+  border: none; color: white;
+}
+
+.btn-icon { padding: 8px 12px; }
+
+select {
+  min-height: 40px; padding: 8px 12px; border-radius: 12px;
+  background: var(--bg2); color: var(--text);
+  border: 1.5px solid var(--border2);
+  font-size: 13px; font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 500; cursor: pointer;
+  box-shadow: var(--shadow2);
+}
+select:focus { outline: none; border-color: var(--primary); }
+
+/* ===== HERO ===== */
+.hero {
+  padding: 56px 20px 40px;
+  text-align: center;
+  position: relative;
+}
+
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(90,191,42,0.12); border: 1.5px solid rgba(90,191,42,0.3);
+  color: var(--primary2); font-size: 12px; font-weight: 700;
+  padding: 5px 14px; border-radius: 999px; margin-bottom: 20px;
+  letter-spacing: 0.5px; text-transform: uppercase;
+}
+
+.hero h2 {
+  font-size: clamp(28px, 6vw, 48px);
+  font-weight: 800; letter-spacing: -1px;
+  line-height: 1.15; margin-bottom: 14px;
+  color: var(--accent);
+}
+
+.hero h2 span {
+  background: linear-gradient(135deg, var(--primary), var(--primary2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero p { color: var(--text2); margin-bottom: 28px; font-size: 15px; font-weight: 500; }
+
+.hero-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+/* ===== FEATURES ===== */
+.features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 14px; padding: 8px 20px 28px;
+}
+
+.card {
+  background: var(--glass);
+  border: 1.5px solid var(--border);
+  border-radius: 18px; padding: 20px;
+  backdrop-filter: blur(8px);
+  box-shadow: var(--shadow2);
+  transition: all 0.2s ease;
+}
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 28px rgba(90,191,42,0.14);
+  border-color: var(--primary);
+}
+
+.card-icon {
+  width: 46px; height: 46px; border-radius: 13px;
+  background: linear-gradient(135deg, rgba(90,191,42,0.15), rgba(90,191,42,0.05));
+  border: 1.5px solid rgba(90,191,42,0.2);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 13px;
+}
+
+.card h3 { font-size: 16px; font-weight: 700; margin-bottom: 6px; color: var(--accent); }
+.card p { color: var(--text2); font-size: 13px; line-height: 1.5; }
+
+/* ===== CANVAS SECTION ===== */
+.canvas-section { padding: 4px 20px 32px; }
+
+.canvas-label {
+  font-size: 11px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 1px; color: var(--text2); margin-bottom: 10px;
+  padding-left: 4px;
+}
+
+.canvas-toolbar {
+  background: var(--glass2);
+  border: 1.5px solid var(--border);
+  border-radius: 16px; padding: 10px 12px; margin-bottom: 12px;
+  display: flex; gap: 6px; flex-wrap: wrap; align-items: center;
+  box-shadow: var(--shadow2);
+}
+
+.canvas {
+  background: var(--bg2);
+  border: 1.5px solid var(--border);
+  border-radius: 18px; min-height: 380px; padding: 20px;
+  background-image:
+    radial-gradient(circle, rgba(90,191,42,0.15) 1px, transparent 1px);
+  background-size: 22px 22px;
+  box-shadow: var(--shadow);
+}
+
+/* ===== TABLES ===== */
+.table { width: 100%; border-collapse: collapse; margin-top: 14px; font-size: 14px; }
+.table th, .table td {
+  padding: 10px 12px; text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+.table th {
+  background: var(--bg3); font-weight: 700; font-size: 12px;
+  text-transform: uppercase; letter-spacing: 0.5px; color: var(--accent);
+}
+.table tr:hover td { background: rgba(90,191,42,0.04); }
+
+/* ===== MODALS ===== */
+.modal {
+  display: none; position: fixed; inset: 0; z-index: 200;
+  background: rgba(20,40,20,0.45); backdrop-filter: blur(6px);
+  align-items: center; justify-content: center; padding: 16px;
+}
+.modal.active { display: flex; }
+
+.modal-content {
+  background: var(--bg2);
+  border: 1.5px solid var(--border);
+  border-radius: 22px; max-width: 600px; width: 100%;
+  max-height: 90vh; overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+}
+
+.modal-header {
+  padding: 18px 20px; border-bottom: 1.5px solid var(--border);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.modal-header h3 { font-size: 16px; font-weight: 700; color: var(--accent); }
+
+.modal-body { padding: 20px; }
+
+.form-group { margin-bottom: 14px; }
+.form-group label { display: block; margin-bottom: 5px; font-size: 13px; font-weight: 600; color: var(--text2); }
+.form-group input, .form-group select {
+  width: 100%; min-height: 42px; padding: 10px 14px;
+  background: var(--bg3); border: 1.5px solid var(--border2);
+  border-radius: 10px; color: var(--text); font-size: 14px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+.form-group input:focus, .form-group select:focus {
+  outline: none; border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(90,191,42,0.12);
+}
+
+/* ===== PLANTILLAS GRID ===== */
+.templates-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.template-card {
+  background: var(--bg3); border: 1.5px solid var(--border);
+  border-radius: 14px; padding: 16px; cursor: pointer;
+  transition: all 0.18s;
+}
+.template-card:hover {
+  border-color: var(--primary); background: rgba(90,191,42,0.1);
+  transform: translateY(-2px); box-shadow: var(--shadow);
+}
+.template-card h4 { font-size: 15px; font-weight: 700; margin-bottom: 5px; color: var(--accent); }
+.template-card p { font-size: 12px; color: var(--text2); }
+
+/* ===== SIBÖ CHAT ===== */
+.sibo-chat {
+  position: fixed; bottom: 20px; right: 20px; z-index: 150;
+  width: 360px; max-width: calc(100vw - 32px);
+  background: var(--bg2);
+  border: 1.5px solid var(--border);
+  border-radius: 22px;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.14);
+  display: none; flex-direction: column; max-height: 500px;
+  overflow: hidden;
+}
+.sibo-chat.active { display: flex; }
+
+.sibo-header {
+  padding: 14px 16px; border-bottom: 1.5px solid var(--border);
+  display: flex; justify-content: space-between; align-items: center;
+  background: linear-gradient(135deg, rgba(90,191,42,0.08), rgba(90,191,42,0.02));
+}
+.sibo-header strong { font-size: 15px; color: var(--accent); }
+
+.sibo-messages { flex: 1; padding: 14px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+
+.sibo-msg {
+  padding: 10px 14px; border-radius: 14px;
+  max-width: 85%; font-size: 13px; line-height: 1.5;
+  animation: msgIn 0.2s ease;
+}
+@keyframes msgIn { from { opacity:0; transform: translateY(6px); } to { opacity:1; transform: translateY(0); } }
+
+.sibo-msg.user {
+  background: linear-gradient(135deg, var(--primary), var(--primary2));
+  color: white; margin-left: auto; border-bottom-right-radius: 4px;
+  font-weight: 500;
+}
+.sibo-msg.bot {
+  background: var(--bg3); border: 1.5px solid var(--border);
+  color: var(--text); border-bottom-left-radius: 4px;
+}
+
+.sibo-input {
+  padding: 12px; border-top: 1.5px solid var(--border);
+  display: flex; gap: 8px;
+  background: var(--bg3);
+}
+.sibo-input input {
+  flex: 1; min-height: 40px; padding: 9px 14px;
+  background: var(--bg2); border: 1.5px solid var(--border2);
+  border-radius: 10px; color: var(--text);
+  font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px;
+}
+.sibo-input input:focus { outline: none; border-color: var(--primary); }
+
+/* ===== FACTURA ===== */
+.factura-box {
+  border: 2px solid var(--border2); border-radius: 14px;
+  padding: 22px; background: var(--bg3);
+}
+.factura-title { font-size: 22px; font-weight: 800; color: var(--accent); margin-bottom: 4px; }
+.factura-num { font-size: 13px; color: var(--text2); font-family: 'JetBrains Mono', monospace; }
+.factura-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+.factura-section h4 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text2); margin-bottom: 6px; }
+.factura-section p { font-size: 13px; color: var(--text); }
+.factura-totals { margin-top: 16px; text-align: right; }
+.factura-totals p { font-size: 14px; color: var(--text2); margin-bottom: 3px; }
+.factura-totals .total { font-size: 20px; font-weight: 800; color: var(--accent); margin-top: 6px; }
+.factura-actions { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
+
+/* ===== CREDIT ===== */
+.credit {
+  position: fixed; bottom: 8px; left: 12px;
+  font-size: 10px; color: var(--text2); opacity: 0.6;
+  font-weight: 500;
+}
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 999px; }
+::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 640px) {
+  .hero h2 { font-size: 26px; }
+  .logo h1 { font-size: 15px; }
+  .sibo-chat { width: calc(100vw - 24px); right: 12px; bottom: 12px; }
+  .factura-grid { grid-template-columns: 1fr; }
+}
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
+<!-- ===== HEADER ===== -->
 <div class="header">
   <div class="logo">
-    <div class="logo-icon">📊</div>
+    <div class="logo-icon">
+      <svg width="22" height="22" fill="white" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h7" stroke="white" stroke-width="2.5" stroke-linecap="round" fill="none"/></svg>
+    </div>
     <h1>Matriz Contable CR</h1>
   </div>
-  <div>
-    <button class="btn" id="btnSibo">Sibö ✦</button>
-    <button class="btn" id="btnShare">Compartir</button>
+  <div class="header-actions">
+    <button class="btn btn-icon" id="btnSibo" title="Sibö ✦">
+      <svg width="17" height="17" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      Sibö ✦
+    </button>
+    <button class="btn btn-icon" id="btnShare" title="Compartir">
+      <svg width="17" height="17" fill="currentColor" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>
+    </button>
     <select id="langSelect">
       <option value="es">Español CR</option>
       <option value="en">English US</option>
       <option value="bribri">Bribri</option>
       <option value="cabecar">Cabécar</option>
+      <option value="ngabe">Ngäbe/Guaymí</option>
+      <option value="boruca">Boruca</option>
+      <option value="terraba">Térraba</option>
+      <option value="maleku">Maleku</option>
+      <option value="guaymi">Guaymí</option>
+      <option value="brunca">Brunca</option>
     </select>
   </div>
 </div>
 
-<!-- HERO -->
-<div class="hero" style="padding:40px 20px; text-align:center;">
-  <h2><span>Matriz Contable</span> CR v12</h2>
-  <p>300+ Funciones | Factura Electrónica 4.3 | Canvas Libre | Sibö ✦</p>
-  <button class="btn btn-primary" id="btnEmpezar">Empezar</button>
-  <button class="btn" id="btnPlantillas">Plantillas</button>
+<!-- ===== HERO ===== -->
+<div class="hero">
+  <div class="hero-badge">
+    <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+    Versión 12 — Offline First
+  </div>
+  <h2 data-i18n="hero.title"><span>Matriz Contable</span> CR v12</h2>
+  <p data-i18n="hero.desc">300+ Funciones | Factura Electrónica 4.3 | Canvas Libre | Sibö ✦ Asistente</p>
+  <div class="hero-actions">
+    <button class="btn btn-primary" id="btnEmpezar" data-i18n="hero.start">Empezar</button>
+    <button class="btn" id="btnPlantillas" data-i18n="hero.templates">Plantillas</button>
+  </div>
 </div>
 
-<!-- CANVAS -->
-<div style="padding:20px;">
+<!-- ===== FEATURES ===== -->
+<div class="features">
+  <div class="card">
+    <div class="card-icon">
+      <svg width="22" height="22" fill="#3a9e10" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z"/></svg>
+    </div>
+    <h3 data-i18n="feat1.title">Factura Electrónica 4.3</h3>
+    <p data-i18n="feat1.desc">Genera facturas XML + PDF con QR para Hacienda CR. IVA 13%, 4%, 2%, 1%, Exento.</p>
+  </div>
+  <div class="card">
+    <div class="card-icon">
+      <svg width="22" height="22" fill="#3a9e10" viewBox="0 0 24 24"><path d="M3 3h18v18H3V3zm2 2v14h14V5H5zm2 2h10v2H7V7zm0 4h10v2H7v-2zm0 4h6v2H7v-2z"/></svg>
+    </div>
+    <h3 data-i18n="feat2.title">Canvas Libre</h3>
+    <p data-i18n="feat2.desc">Libro Diario, Mayor, Balance. Tablas dinámicas con fórmulas =SUMA, =IVA.</p>
+  </div>
+  <div class="card">
+    <div class="card-icon">
+      <svg width="22" height="22" fill="#3a9e10" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+    </div>
+    <h3 data-i18n="feat3.title">Sibö ✦ Asistente</h3>
+    <p data-i18n="feat3.desc">Asistente en 10 lenguas. Te ayuda con asientos, cálculos y reportes.</p>
+  </div>
+  <div class="card">
+    <div class="card-icon">
+      <svg width="22" height="22" fill="#3a9e10" viewBox="0 0 24 24"><path d="M16 11c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 3-1.34 3-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+    </div>
+    <h3 data-i18n="feat4.title">10 Lenguas CR</h3>
+    <p data-i18n="feat4.desc">Español, English, Bribri, Cabécar, Ngäbe, Boruca, Térraba, Maleku, Guaymí, Brunca.</p>
+  </div>
+  <div class="card">
+    <div class="card-icon">
+      <svg width="22" height="22" fill="#3a9e10" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+    </div>
+    <h3 data-i18n="feat5.title">6 Plantillas</h3>
+    <p data-i18n="feat5.desc">Diario, Mayor, Balance, Conciliación, Factura CR, Compras/Ventas.</p>
+  </div>
+  <div class="card">
+    <div class="card-icon">
+      <svg width="22" height="22" fill="#3a9e10" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+    </div>
+    <h3 data-i18n="feat6.title">Exportar</h3>
+    <p data-i18n="feat6.desc">PDF, Excel, XML 4.3. Funciona 100% offline sin internet.</p>
+  </div>
+</div>
+
+<!-- ===== CANVAS SECTION ===== -->
+<div class="canvas-section">
   <p class="canvas-label">Área de trabajo</p>
-  <div style="background:#f0f0f0; padding:8px; border-radius:12px; margin-bottom:12px; display:flex; gap:8px; flex-wrap:wrap;">
-    <button class="btn" id="btnTabla">Tabla</button>
-    <button class="btn" id="btnNota">Nota</button>
-    <button class="btn" id="btnGrafico">Gráfico</button>
-    <button class="btn" id="btnFactura">Factura</button>
-    <button class="btn" id="btnFunciones">fx Funciones</button>
-    <button class="btn btn-primary" id="btnGuardar">Guardar</button>
+  <div class="canvas-toolbar">
+    <button class="btn" id="btnTabla">
+      <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M3 3h18v18H3V3zm2 2v14h14V5H5z"/></svg>
+      Tabla
+    </button>
+    <button class="btn" id="btnNota">
+      <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z"/></svg>
+      Nota
+    </button>
+    <button class="btn" id="btnGrafico">
+      <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M5 9.2h3V19H5V9.2zm6-4.2h3v15.2h-3V5zm6 8h3v7.2h-3V13z"/></svg>
+      Gráfico
+    </button>
+    <button class="btn" id="btnPlantillas2">
+      <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg>
+      Plantillas
+    </button>
+    <button class="btn" id="btnFactura">
+      <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/></svg>
+      Factura
+    </button>
+    <button class="btn" id="btnExportar">
+      <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+      Exportar
+    </button>
+    <button class="btn" id="btnFunciones">
+      <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M7 2v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2V2h-2v2H9V2H7zm0 8h2v2H7v-2zm4 0h2v2h-2v-2zm4 0h2v2h-2v-2zM7 14h2v2H7v-2zm4 0h2v2h-2v-2zm4 0h2v2h-2v-2z"/></svg>
+      fx Funciones
+    </button>
+    <button class="btn btn-primary" id="btnGuardar">
+      <svg width="16" height="16" fill="white" viewBox="0 0 24 24"><path d="M17 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg>
+      Guardar
+    </button>
   </div>
   <div class="canvas" id="canvas"></div>
 </div>
 
-<!-- MODALES (simplificados) -->
-<div class="modal" id="modalFactura"><div class="modal-content">Factura Electrónica</div></div>
-<div class="modal" id="modalPlantillas"><div class="modal-content">Plantillas</div></div>
-
-<!-- SIBO -->
-<div class="sibo-chat" id="siboChat">
-  <div id="siboMessages" style="padding:14px; flex:1; overflow-y:auto;">
-    <div class="sibo-msg bot">¡Pura vida! Soy Sibö ✦. ¿En qué te ayudo?</div>
-  </div>
-  <div style="padding:12px; border-top:1.5px solid var(--border); display:flex;">
-    <input type="text" id="siboInput" placeholder="Escribe aquí..." style="flex:1; padding:10px;">
-    <button class="btn btn-primary" onclick="sendSibo()">Enviar</button>
+<!-- ===== MODAL FUNCIONES ===== -->
+<div class="modal" id="modalFunciones">
+  <div class="modal-content" style="max-width:860px;">
+    <div class="modal-header">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <h3 id="funciones-modal-title" style="font-size:16px;">📐 Biblioteca de Funciones — 300+</h3>
+      </div>
+      <button class="btn btn-icon" onclick="closeModal('modalFunciones')">
+        <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+      </button>
+    </div>
+    <div class="modal-body" style="padding:16px;">
+      <input type="text" id="fnSearch" placeholder="🔍 Buscar función... ej: BUSCARV, SUMA, HOY, NPV"
+        style="width:100%;min-height:40px;padding:9px 14px;background:var(--bg3);border:1.5px solid var(--border2);border-radius:10px;color:var(--text);font-family:inherit;font-size:13px;margin-bottom:12px;">
+      <div id="fnTabs" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;"></div>
+      <div id="fnList" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:7px;max-height:380px;overflow-y:auto;padding-right:4px;"></div>
+      <div id="fnDetail" style="display:none;margin-top:12px;background:var(--bg3);border:1.5px solid var(--border2);border-radius:12px;padding:14px;">
+        <p id="fnDetailName" style="font-weight:800;font-size:16px;color:var(--accent);margin-bottom:3px;"></p>
+        <p id="fnDetailSyntax" style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--primary2);margin-bottom:7px;"></p>
+        <p id="fnDetailDesc" style="font-size:13px;color:var(--text);line-height:1.6;margin-bottom:8px;"></p>
+        <div style="background:var(--bg2);padding:9px 12px;border-radius:8px;margin-bottom:10px;">
+          <p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text2);margin-bottom:4px;">Ejemplo</p>
+          <p id="fnDetailEx" style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent);"></p>
+        </div>
+        <button class="btn btn-primary" style="font-size:12px;" onclick="insertarFuncion()">
+          ↳ Insertar en Canvas
+        </button>
+      </div>
+    </div>
   </div>
 </div>
 
-<script>
-// ==================== i18n MEJORADO (mantiene todo lo tuyo) ====================
-const translations = { /* ← PEGA AQUÍ TODO tu objeto translations original completo */ };
+<!-- ===== MODAL FACTURA ===== -->
+<div class="modal" id="modalFactura">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Factura Electrónica — Ministerio de Hacienda CR</h3>
+      <button class="btn btn-icon" onclick="closeModal('modalFactura')">
+        <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="factura-box">
+        <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom:16px;">
+          <div>
+            <p class="factura-title">FACTURA ELECTRÓNICA</p>
+            <p class="factura-num">No. 001-00001-00000001</p>
+          </div>
+          <div id="qrCode" style="width:76px; height:76px; background:white; border-radius:8px; border:1.5px solid var(--border2);"></div>
+        </div>
+        <div class="factura-grid">
+          <div class="factura-section">
+            <h4 id="factura-emisor-lbl">Emisor</h4>
+            <p style="font-weight:700;">Matriz Contable CR S.A.</p>
+            <p style="color:var(--text2); font-size:13px;">Céd. Jurídica: 3-101-000000</p>
+          </div>
+          <div class="factura-section">
+            <h4 id="factura-receptor-lbl">Receptor</h4>
+            <p style="font-weight:700;">Cliente General</p>
+            <p style="color:var(--text2); font-size:13px;">Cédula: 1-0000-0000</p>
+          </div>
+        </div>
+        <table class="table">
+          <thead><tr><th id="factura-th-cant">Cant.</th><th id="factura-th-desc">Descripción</th><th id="factura-th-unit">Precio Unit.</th><th id="factura-th-total">Total</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>Servicio Contable Profesional</td><td>₡50,000.00</td><td>₡50,000.00</td></tr>
+          </tbody>
+        </table>
+        <div class="factura-totals">
+          <p><span id="factura-subtotal-lbl">Subtotal:</span> <strong>₡50,000.00</strong></p>
+          <p><span id="factura-iva-lbl">IVA 13%:</span> <strong>₡6,500.00</strong></p>
+          <p class="total"><span id="factura-total-lbl">Total:</span> ₡56,500.00</p>
+        </div>
+        <div class="factura-actions">
+          <button class="btn btn-primary" id="btnEnviarHacienda" onclick="enviarHacienda()">Enviar a Hacienda</button>
+          <button class="btn" id="btnExportarPDF" onclick="exportarPDF()">PDF</button>
+          <button class="btn" id="btnExportarXML" onclick="exportarXML()">XML</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
-// (Mantén exactamente el mismo objeto translations que tenías antes)
+<!-- ===== MODAL PLANTILLAS ===== -->
+<div class="modal" id="modalPlantillas">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 data-i18n="templates.title">Plantillas Contables CR</h3>
+      <button class="btn btn-icon" onclick="closeModal('modalPlantillas')">
+        <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="templates-grid">
+        <div class="template-card" id="tpl-diario" onclick="loadTemplate('diario')">
+          <h4>📘 Libro Diario</h4>
+          <p>Asientos contables con Debe/Haber</p>
+        </div>
+        <div class="template-card" id="tpl-mayor" onclick="loadTemplate('mayor')">
+          <h4>📗 Libro Mayor</h4>
+          <p>Cuentas T y saldos</p>
+        </div>
+        <div class="template-card" id="tpl-balance" onclick="loadTemplate('balance')">
+          <h4>📊 Balance Comprobación</h4>
+          <p>Sumas iguales y saldos</p>
+        </div>
+        <div class="template-card" id="tpl-conciliacion" onclick="loadTemplate('conciliacion')">
+          <h4>🏦 Conciliación Bancaria</h4>
+          <p>Banco vs Libros</p>
+        </div>
+        <div class="template-card" id="tpl-factura" onclick="loadTemplate('factura')">
+          <h4>📄 Factura Electrónica CR</h4>
+          <p>XML 4.3 + QR Hacienda</p>
+        </div>
+        <div class="template-card" id="tpl-compras" onclick="loadTemplate('compras')">
+          <h4>🛒 Reporte Compras/Ventas</h4>
+          <p>D-151 compatible</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SIBÖ CHAT ===== -->
+<div class="sibo-chat" id="siboChat">
+  <div class="sibo-header">
+    <div style="display:flex; align-items:center; gap:8px;">
+      <svg width="18" height="18" fill="#3a9e10" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      <strong>Sibö ✦</strong>
+    </div>
+    <button class="btn btn-icon" onclick="toggleSibo()">
+      <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+    </button>
+  </div>
+  <div class="sibo-messages" id="siboMessages">
+    <div class="sibo-msg bot">¡Pura vida! Soy Sibö ✦, tu asistente contable tico. ¿En qué te ayudo?</div>
+  </div>
+  <div class="sibo-input">
+    <input type="text" id="siboInput" placeholder="Escribe aquí...">
+    <button class="btn btn-primary btn-icon" onclick="sendSibo()">
+      <svg width="16" height="16" fill="white" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+    </button>
+  </div>
+</div>
+
+<div class="credit" id="credit">Diseño y programación: Keny Chinchilla Navarro</div>
+
+<!-- ===== JAVASCRIPT ===== -->
+<script>
+// ===== i18n - 10 Idiomas CR — Cobertura TOTAL =====
+const translations = {
+  es: {
+    // Header
+    'logo.name': 'Matriz Contable CR',
+    'btn.sibo': 'Sibö ✦',
+    'btn.share.title': 'Compartir',
+    // Hero
+    'hero.badge': 'Versión 12 — Offline First',
+    'hero.title': 'Matriz Contable CR v12',
+    'hero.title.span': 'Matriz Contable',
+    'hero.desc': '300+ Funciones | Factura Electrónica 4.3 | Canvas Libre | Sibö ✦ Asistente',
+    'hero.start': 'Empezar',
+    'hero.templates': 'Plantillas',
+    // Features
+    'feat1.title': 'Factura Electrónica 4.3',
+    'feat1.desc': 'Genera facturas XML + PDF con QR para Hacienda CR. IVA 13%, 4%, 2%, 1%, Exento.',
+    'feat2.title': 'Canvas Libre',
+    'feat2.desc': 'Libro Diario, Mayor, Balance. Tablas dinámicas con fórmulas =SUMA, =IVA.',
+    'feat3.title': 'Sibö ✦ Asistente',
+    'feat3.desc': 'Asistente en 10 lenguas. Te ayuda con asientos, cálculos y reportes.',
+    'feat4.title': '10 Lenguas CR',
+    'feat4.desc': 'Español, English, Bribri, Cabécar, Ngäbe, Boruca, Térraba, Maleku, Guaymí, Brunca.',
+    'feat5.title': '6 Plantillas',
+    'feat5.desc': 'Diario, Mayor, Balance, Conciliación, Factura CR, Compras/Ventas.',
+    'feat6.title': 'Exportar',
+    'feat6.desc': 'PDF, Excel, XML 4.3. Funciona 100% offline sin internet.',
+    // Canvas toolbar
+    'canvas.label': 'Área de trabajo',
+    'btn.tabla': 'Tabla',
+    'btn.nota': 'Nota',
+    'btn.grafico': 'Gráfico',
+    'btn.plantillas2': 'Plantillas',
+    'btn.factura': 'Factura',
+    'btn.exportar': 'Exportar',
+    'btn.guardar': 'Guardar',
+    // Modal Factura
+    'modal.factura.title': 'Factura Electrónica — Ministerio de Hacienda CR',
+    'factura.label': 'FACTURA ELECTRÓNICA',
+    'factura.emisor': 'Emisor',
+    'factura.receptor': 'Receptor',
+    'factura.col.cant': 'Cant.',
+    'factura.col.desc': 'Descripción',
+    'factura.col.unit': 'Precio Unit.',
+    'factura.col.total': 'Total',
+    'factura.subtotal': 'Subtotal:',
+    'factura.iva': 'IVA 13%:',
+    'factura.total': 'Total:',
+    'btn.enviar': 'Enviar a Hacienda',
+    'btn.pdf': 'PDF',
+    'btn.xml': 'XML',
+    // Modal Plantillas
+    'templates.title': 'Plantillas Contables CR',
+    'tpl.diario.title': '📘 Libro Diario',
+    'tpl.diario.desc': 'Asientos contables con Debe/Haber',
+    'tpl.mayor.title': '📗 Libro Mayor',
+    'tpl.mayor.desc': 'Cuentas T y saldos',
+    'tpl.balance.title': '📊 Balance Comprobación',
+    'tpl.balance.desc': 'Sumas iguales y saldos',
+    'tpl.conciliacion.title': '🏦 Conciliación Bancaria',
+    'tpl.conciliacion.desc': 'Banco vs Libros',
+    'tpl.factura.title': '📄 Factura Electrónica CR',
+    'tpl.factura.desc': 'XML 4.3 + QR Hacienda',
+    'tpl.compras.title': '🛒 Reporte Compras/Ventas',
+    'tpl.compras.desc': 'D-151 compatible',
+    // Sibö chat
+    'sibo.placeholder': 'Escribe aquí...',
+    'sibo.welcome': '¡Pura vida! Soy Sibö ✦, tu asistente contable tico. ¿En qué te ayudo?',
+    // Sibö respuestas
+    'sibo.r.quien': 'Soy Sibö ✦, tu asistente contable tico. Te ayudo con facturas, IVA, asientos y reportes en 10 lenguas de CR.',
+    'sibo.r.factura': 'Para factura electrónica: toca el botón Factura, llena datos del cliente, monto e IVA 13%. Se genera PDF + XML 4.3 con QR para Hacienda.',
+    'sibo.r.iva': 'IVA CR: 13% general, 4% canasta básica, 2% medicinas, 1% equipo médico, 0% exento. Fórmula: Monto × 0.13',
+    'sibo.r.diario': 'Libro Diario: toca Plantillas → Libro Diario. Fecha | Cuenta | Debe | Haber. Ej: Caja (D) vs Ventas (H).',
+    'sibo.r.idioma': 'Cambia el idioma arriba a la derecha. Disponible: Español, English, Bribri, Cabécar, Ngäbe, Boruca, Térraba, Maleku, Guaymí, Brunca.',
+    'sibo.r.balance': 'Balance de Comprobación: Plantillas → Balance. Verifica que Debe = Haber. Si no cuadran, hay un error en los asientos.',
+    'sibo.r.banco': 'Conciliación Bancaria: Plantillas → Conciliación. Compara saldo del banco vs tus libros. Identifica cheques en tránsito y depósitos no acreditados.',
+    'sibo.r.default': '¡Pura vida! Puedo ayudarte con: Facturas, Libro Diario/Mayor, Balance, Conciliación, IVA, reportes D-151. ¿Qué ocupás?',
+    // Alertas / estados
+    'alert.guardado': '✓ Guardado',
+    'alert.copiado': 'Link copiado al portapapeles.',
+    'alert.hacienda': '✓ Factura enviada a Hacienda CR\nNo. 001-00001-00000001\nXML 4.3 generado\nClave: 50603062600310100000000100001010000000001',
+    'alert.pdf': 'Generando PDF...\n(Demo) En producción usa jsPDF.\nFactura guardada como: factura-001.pdf',
+    // Credit
+    'credit': 'Diseño y programación: Keny Chinchilla Navarro'
+  },
+
+  en: {
+    'logo.name': 'Accounting Matrix CR',
+    'btn.sibo': 'Sibö ✦',
+    'btn.share.title': 'Share',
+    'hero.badge': 'Version 12 — Offline First',
+    'hero.title': 'Accounting Matrix CR v12',
+    'hero.title.span': 'Accounting Matrix',
+    'hero.desc': '300+ Functions | Electronic Invoice 4.3 | Free Canvas | Sibö ✦ Assistant',
+    'hero.start': 'Start',
+    'hero.templates': 'Templates',
+    'feat1.title': 'Electronic Invoice 4.3',
+    'feat1.desc': 'Generate XML + PDF invoices with QR for Hacienda CR. VAT 13%, 4%, 2%, 1%, Exempt.',
+    'feat2.title': 'Free Canvas',
+    'feat2.desc': 'Journal, Ledger, Balance. Dynamic tables with =SUM, =VAT formulas.',
+    'feat3.title': 'Sibö ✦ Assistant',
+    'feat3.desc': 'Assistant in 10 languages. Helps with entries, calculations and reports.',
+    'feat4.title': '10 CR Languages',
+    'feat4.desc': 'Spanish, English, Bribri, Cabécar, Ngäbe, Boruca, Térraba, Maleku, Guaymí, Brunca.',
+    'feat5.title': '6 Templates',
+    'feat5.desc': 'Journal, Ledger, Balance, Reconciliation, CR Invoice, Purchases/Sales.',
+    'feat6.title': 'Export',
+    'feat6.desc': 'PDF, Excel, XML 4.3. Works 100% offline without internet.',
+    'canvas.label': 'Workspace',
+    'btn.tabla': 'Table',
+    'btn.nota': 'Note',
+    'btn.grafico': 'Chart',
+    'btn.plantillas2': 'Templates',
+    'btn.factura': 'Invoice',
+    'btn.exportar': 'Export',
+    'btn.guardar': 'Save',
+    'modal.factura.title': 'Electronic Invoice — Ministry of Finance CR',
+    'factura.label': 'ELECTRONIC INVOICE',
+    'factura.emisor': 'Issuer',
+    'factura.receptor': 'Recipient',
+    'factura.col.cant': 'Qty.',
+    'factura.col.desc': 'Description',
+    'factura.col.unit': 'Unit Price',
+    'factura.col.total': 'Total',
+    'factura.subtotal': 'Subtotal:',
+    'factura.iva': 'VAT 13%:',
+    'factura.total': 'Total:',
+    'btn.enviar': 'Send to Hacienda',
+    'btn.pdf': 'PDF',
+    'btn.xml': 'XML',
+    'templates.title': 'CR Accounting Templates',
+    'tpl.diario.title': '📘 Journal',
+    'tpl.diario.desc': 'Accounting entries with Debit/Credit',
+    'tpl.mayor.title': '📗 General Ledger',
+    'tpl.mayor.desc': 'T-accounts and balances',
+    'tpl.balance.title': '📊 Trial Balance',
+    'tpl.balance.desc': 'Equal sums and balances',
+    'tpl.conciliacion.title': '🏦 Bank Reconciliation',
+    'tpl.conciliacion.desc': 'Bank vs Books',
+    'tpl.factura.title': '📄 CR Electronic Invoice',
+    'tpl.factura.desc': 'XML 4.3 + QR Hacienda',
+    'tpl.compras.title': '🛒 Purchase/Sales Report',
+    'tpl.compras.desc': 'D-151 compatible',
+    'sibo.placeholder': 'Type here...',
+    'sibo.welcome': 'Hello! I am Sibö ✦, your Costa Rican accounting assistant. How can I help you?',
+    'sibo.r.quien': 'I am Sibö ✦, your CR accounting assistant. I help with invoices, VAT, journal entries and reports in 10 languages.',
+    'sibo.r.factura': 'For electronic invoice: tap the Invoice button, fill in client data, amount and VAT 13%. Generates PDF + XML 4.3 with QR for Hacienda.',
+    'sibo.r.iva': 'CR VAT: 13% general, 4% basic basket, 2% medicines, 1% medical equipment, 0% exempt. Formula: Amount × 0.13',
+    'sibo.r.diario': 'Journal: tap Templates → Journal. Date | Account | Debit | Credit. Ex: Cash (D) vs Sales (C).',
+    'sibo.r.idioma': 'Change language top right. Available: Spanish, English, Bribri, Cabécar, Ngäbe, Boruca, Térraba, Maleku, Guaymí, Brunca.',
+    'sibo.r.balance': 'Trial Balance: Templates → Balance. Verify Debit = Credit. If they don\'t match, there\'s an entry error.',
+    'sibo.r.banco': 'Bank Reconciliation: Templates → Reconciliation. Compare bank balance vs your books. Identify outstanding checks and uncleared deposits.',
+    'sibo.r.default': 'Hello! I can help you with: Invoices, Journal/Ledger, Balance, Reconciliation, VAT, D-151 reports. What do you need?',
+    'alert.guardado': '✓ Saved',
+    'alert.copiado': 'Link copied to clipboard.',
+    'alert.hacienda': '✓ Invoice sent to Hacienda CR\nNo. 001-00001-00000001\nXML 4.3 generated\nKey: 50603062600310100000000100001010000000001',
+    'alert.pdf': 'Generating PDF...\n(Demo) In production use jsPDF.\nInvoice saved as: invoice-001.pdf',
+    'credit': 'Design and programming: Keny Chinchilla Navarro'
+  },
+
+  bribri: {
+    'logo.name': 'Matriz Contable CR',
+    'btn.sibo': 'Sibö ✦',
+    'hero.badge': 'Tsuru 12 — Offline',
+    'hero.title': 'Matriz Contable CR v12',
+    'hero.title.span': 'Matriz Contable',
+    'hero.desc': '300+ Ù tök | Factura 4.3 | Canvas | Sibö ✦',
+    'hero.start': 'Tsá',
+    'hero.templates': 'Ù Tök',
+    'feat1.title': 'Factura Electrónica 4.3',
+    'feat1.desc': 'Ù tök XML + PDF ie QR Hacienda CR.',
+    'feat2.title': 'Canvas Ù',
+    'feat2.desc': 'Libro Diario, Mayor, Balance. Ù tök =SUMA, =IVA.',
+    'feat3.title': 'Sibö ✦ Ù',
+    'feat3.desc': 'Ù ie 10 tsuru. Ù tök asientos, cálculos.',
+    'feat4.title': '10 Tsuru CR',
+    'feat4.desc': 'Español, English, Bribri, Cabécar, Ngäbe, Boruca, Térraba, Maleku, Guaymí, Brunca.',
+    'feat5.title': '6 Ù Tök',
+    'feat5.desc': 'Diario, Mayor, Balance, Conciliación, Factura, Compras.',
+    'feat6.title': 'Ù Tsá',
+    'feat6.desc': 'PDF, Excel, XML 4.3. Ù offline.',
+    'canvas.label': 'Ù Tök',
+    'btn.tabla': 'Ù Tök',
+    'btn.nota': 'Ù Ie',
+    'btn.grafico': 'Ù Kö',
+    'btn.plantillas2': 'Ù Tök',
+    'btn.factura': 'Factura',
+    'btn.exportar': 'Ù Tsá',
+    'btn.guardar': 'Ù Ie',
+    'modal.factura.title': 'Factura Electrónica — Hacienda CR',
+    'factura.label': 'FACTURA ELECTRÓNICA',
+    'factura.emisor': 'Ù Tsá',
+    'factura.receptor': 'Ù Ie',
+    'factura.col.cant': 'Ù',
+    'factura.col.desc': 'Ù Tök',
+    'factura.col.unit': 'Ù Kö',
+    'factura.col.total': 'Tsá',
+    'factura.subtotal': 'Subtotal:',
+    'factura.iva': 'IVA 13%:',
+    'factura.total': 'Tsá:',
+    'btn.enviar': 'Ù Hacienda',
+    'btn.pdf': 'PDF',
+    'btn.xml': 'XML',
+    'templates.title': 'Ù Tök Contable CR',
+    'tpl.diario.title': '📘 Libro Diario',
+    'tpl.diario.desc': 'Ù tök Debe/Haber',
+    'tpl.mayor.title': '📗 Libro Mayor',
+    'tpl.mayor.desc': 'Ù tök saldos',
+    'tpl.balance.title': '📊 Balance',
+    'tpl.balance.desc': 'Ù sumas',
+    'tpl.conciliacion.title': '🏦 Conciliación',
+    'tpl.conciliacion.desc': 'Banco ie Libros',
+    'tpl.factura.title': '📄 Factura CR',
+    'tpl.factura.desc': 'XML 4.3 + QR',
+    'tpl.compras.title': '🛒 Compras/Ventas',
+    'tpl.compras.desc': 'D-151',
+    'sibo.placeholder': 'Tsá ie...',
+    'sibo.welcome': 'Ù pura vida! Soy Sibö ✦, ù tök contable CR. ¿Ù tsá?',
+    'sibo.r.quien': 'Ù Sibö ✦, asistente contable CR. Ù tök facturas, IVA, asientos ie 10 tsuru.',
+    'sibo.r.factura': 'Factura: Ù tök Factura, llena datos, monto, IVA 13%. PDF + XML 4.3 + QR.',
+    'sibo.r.iva': 'IVA CR: 13% general, 4% canasta, 2% medicinas. Ù: Monto × 0.13',
+    'sibo.r.diario': 'Libro Diario: Plantillas → Diario. Fecha | Cuenta | Debe | Haber.',
+    'sibo.r.idioma': 'Tsuru: arriba derecha. 10 tsuru CR.',
+    'sibo.r.balance': 'Balance: Plantillas → Balance. Debe = Haber.',
+    'sibo.r.banco': 'Conciliación: Plantillas → Conciliación. Banco ie libros.',
+    'sibo.r.default': 'Ù tök: Facturas, Diario, Balance, IVA, D-151. ¿Ù tsá?',
+    'alert.guardado': '✓ Ù Ie',
+    'alert.copiado': 'Ù tsá portapapeles.',
+    'alert.hacienda': '✓ Factura Hacienda CR\nNo. 001-00001-00000001',
+    'alert.pdf': 'Ù PDF...',
+    'credit': 'Wéshke tö kàl: Keny Chinchilla Navarro'
+  },
+
+  cabecar: {
+    'logo.name': 'Matriz Contable CR',
+    'btn.sibo': 'Sibö ✦',
+    'hero.badge': 'Jí 12 — Offline',
+    'hero.title': 'Matriz Contable CR v12',
+    'hero.title.span': 'Matriz Contable',
+    'hero.desc': '300+ Jí tök | Factura 4.3 | Canvas | Sibö ✦',
+    'hero.start': 'Ják',
+    'hero.templates': 'Jí Tök',
+    'feat1.title': 'Factura Electrónica 4.3',
+    'feat1.desc': 'Jí tök XML + PDF ie QR Hacienda CR.',
+    'feat2.title': 'Canvas Jí',
+    'feat2.desc': 'Libro Diario, Mayor, Balance. Jí tök =SUMA.',
+    'feat3.title': 'Sibö ✦ Jí',
+    'feat3.desc': 'Jí ie 10 tsuru. Jí tök asientos.',
+    'feat4.title': '10 Jí CR',
+    'feat4.desc': 'Español, English, Bribri, Cabécar, Ngäbe, Boruca, Térraba, Maleku, Guaymí, Brunca.',
+    'feat5.title': '6 Jí Tök',
+    'feat5.desc': 'Diario, Mayor, Balance, Conciliación, Factura, Compras.',
+    'feat6.title': 'Jí Tsá',
+    'feat6.desc': 'PDF, Excel, XML 4.3. Jí offline.',
+    'canvas.label': 'Jí Tök',
+    'btn.tabla': 'Jí Tök',
+    'btn.nota': 'Jí',
+    'btn.grafico': 'Jí Kö',
+    'btn.plantillas2': 'Jí Tök',
+    'btn.factura': 'Factura',
+    'btn.exportar': 'Jí Tsá',
+    'btn.guardar': 'Jí Ie',
+    'modal.factura.title': 'Factura Electrónica — Hacienda CR',
+    'factura.label': 'FACTURA ELECTRÓNICA',
+    'factura.emisor': 'Emisor',
+    'factura.receptor': 'Receptor',
+    'factura.col.cant': 'Jí',
+    'factura.col.desc': 'Jí Tök',
+    'factura.col.unit': 'Precio',
+    'factura.col.total': 'Tsá',
+    'factura.subtotal': 'Subtotal:',
+    'factura.iva': 'IVA 13%:',
+    'factura.total': 'Tsá:',
+    'btn.enviar': 'Jí Hacienda',
+    'btn.pdf': 'PDF',
+    'btn.xml': 'XML',
+    'templates.title': 'Jí Tök Contable CR',
+    'tpl.diario.title': '📘 Libro Diario',
+    'tpl.diario.desc': 'Jí Debe/Haber',
+    'tpl.mayor.title': '📗 Libro Mayor',
+    'tpl.mayor.desc': 'Jí saldos',
+    'tpl.balance.title': '📊 Balance',
+    'tpl.balance.desc': 'Jí sumas',
+    'tpl.conciliacion.title': '🏦 Conciliación',
+    'tpl.conciliacion.desc': 'Banco ie Libros',
+    'tpl.factura.title': '📄 Factura CR',
+    'tpl.factura.desc': 'XML 4.3 + QR',
+    'tpl.compras.title': '🛒 Compras/Ventas',
+    'tpl.compras.desc': 'D-151',
+    'sibo.placeholder': 'Jí tsá...',
+    'sibo.welcome': 'Ják! Soy Sibö ✦, jí tök contable CR. ¿Jí tsá?',
+    'sibo.r.quien': 'Jí Sibö ✦, asistente contable CR. Jí tök facturas, IVA ie 10 lenguas.',
+    'sibo.r.factura': 'Factura: Jí tök Factura, datos, monto, IVA 13%. PDF + XML 4.3.',
+    'sibo.r.iva': 'IVA CR: 13%, 4%, 2%. Jí: Monto × 0.13',
+    'sibo.r.diario': 'Diario: Plantillas → Diario. Fecha | Cuenta | Debe | Haber.',
+    'sibo.r.idioma': 'Jí tsuru: arriba derecha.',
+    'sibo.r.balance': 'Balance: Debe = Haber.',
+    'sibo.r.banco': 'Conciliación: Banco ie libros.',
+    'sibo.r.default': 'Jí tök: Facturas, Diario, Balance, IVA. ¿Jí tsá?',
+    'alert.guardado': '✓ Jí Ie',
+    'alert.copiado': 'Jí tsá portapapeles.',
+    'alert.hacienda': '✓ Factura Hacienda CR\nNo. 001-00001-00000001',
+    'alert.pdf': 'Jí PDF...',
+    'credit': 'Yé ki ta: Keny Chinchilla Navarro'
+  },
+
+  ngabe: {
+    'logo.name': 'Matriz Contable CR',
+    'btn.sibo': 'Sibö ✦',
+    'hero.badge': 'Kwe 12 — Offline',
+    'hero.title': 'Matriz Contable CR v12',
+    'hero.title.span': 'Matriz Contable',
+    'hero.desc': '300+ Kwe | Factura 4.3 | Canvas | Sibö ✦',
+    'hero.start': 'Nän',
+    'hero.templates': 'Kwe Tök',
+    'feat1.title': 'Factura Electrónica 4.3',
+    'feat1.desc': 'Kwe tök XML + PDF QR Hacienda CR.',
+    'feat2.title': 'Canvas Kwe',
+    'feat2.desc': 'Diario, Mayor, Balance. Kwe =SUMA.',
+    'feat3.title': 'Sibö ✦ Kwe',
+    'feat3.desc': 'Kwe ie 10 ngöbö. Kwe tök asientos.',
+    'feat4.title': '10 Ngöbö CR',
+    'feat4.desc': 'Español, English, Bribri, Cabécar, Ngäbe, Boruca, Térraba, Maleku, Guaymí, Brunca.',
+    'feat5.title': '6 Kwe Tök',
+    'feat5.desc': 'Diario, Mayor, Balance, Conciliación, Factura, Compras.',
+    'feat6.title': 'Kwe Nän',
+    'feat6.desc': 'PDF, Excel, XML 4.3. Kwe offline.',
+    'canvas.label': 'Kwe Tök',
+    'btn.tabla': 'Kwe',
+    'btn.nota': 'Ngöbö',
+    'btn.grafico': 'Kwe Kö',
+    'btn.plantillas2': 'Kwe Tök',
+    'btn.factura': 'Factura',
+    'btn.exportar': 'Kwe Nän',
+    'btn.guardar': 'Kwe Ie',
+    'modal.factura.title': 'Factura Electrónica — Hacienda CR',
+    'factura.label': 'FACTURA ELECTRÓNICA',
+    'factura.emisor': 'Emisor',
+    'factura.receptor': 'Receptor',
+    'factura.col.cant': 'Kwe',
+    'factura.col.desc': 'Kwe Tök',
+    'factura.col.unit': 'Precio',
+    'factura.col.total': 'Nän',
+    'factura.subtotal': 'Subtotal:',
+    'factura.iva': 'IVA 13%:',
+    'factura.total': 'Nän:',
+    'btn.enviar': 'Kwe Hacienda',
+    'btn.pdf': 'PDF',
+    'btn.xml': 'XML',
+    'templates.title': 'Kwe Tök Contable CR',
+    'tpl.diario.title': '📘 Libro Diario',
+    'tpl.diario.desc': 'Kwe Debe/Haber',
+    'tpl.mayor.title': '📗 Libro Mayor',
+    'tpl.mayor.desc': 'Kwe saldos',
+    'tpl.balance.title': '📊 Balance',
+    'tpl.balance.desc': 'Kwe sumas',
+    'tpl.conciliacion.title': '🏦 Conciliación',
+    'tpl.conciliacion.desc': 'Banco ie Libros',
+    'tpl.factura.title': '📄 Factura CR',
+    'tpl.factura.desc': 'XML 4.3 + QR',
+    'tpl.compras.title': '🛒 Compras/Ventas',
+    'tpl.compras.desc': 'D-151',
+    'sibo.placeholder': 'Kwe ngöbö...',
+    'sibo.welcome': 'Nän! Soy Sibö ✦, kwe tök contable CR. ¿Kwe nän?',
+    'sibo.r.quien': 'Kwe Sibö ✦, asistente CR. Kwe tök facturas, IVA ie ngöbö.',
+    'sibo.r.factura': 'Factura: Kwe tök Factura, datos, monto, IVA 13%.',
+    'sibo.r.iva': 'IVA CR: 13%, 4%, 2%. Kwe: Monto × 0.13',
+    'sibo.r.diario': 'Diario: Plantillas → Diario. Fecha | Cuenta | Debe | Haber.',
+    'sibo.r.idioma': 'Kwe ngöbö: arriba derecha.',
+    'sibo.r.balance': 'Balance: Debe = Haber.',
+    'sibo.r.banco': 'Conciliación: Banco ie libros.',
+    'sibo.r.default': 'Kwe tök: Facturas, Diario, Balance, IVA. ¿Kwe nän?',
+    'alert.guardado': '✓ Kwe Ie',
+    'alert.copiado': 'Kwe ngöbö portapapeles.',
+    'alert.hacienda': '✓ Factura Hacienda CR\nNo. 001-00001-00000001',
+    'alert.pdf': 'Kwe PDF...',
+    'credit': 'Ngöbö käre: Keny Chinchilla Navarro'
+  },
+
+  boruca: {
+    'logo.name': 'Matriz Contable CR',
+    'btn.sibo': 'Sibö ✦',
+    'hero.badge': 'Ró 12 — Offline',
+    'hero.title': 'Matriz Contable CR v12',
+    'hero.title.span': 'Matriz Contable',
+    'hero.desc': '300+ Ró | Factura 4.3 | Canvas | Sibö ✦',
+    'hero.start': 'Ísh',
+    'hero.templates': 'Ró Tök',
+    'feat1.title': 'Factura Electrónica 4.3',
+    'feat1.desc': 'Ró tök XML + PDF QR Hacienda CR.',
+    'feat2.title': 'Canvas Ró',
+    'feat2.desc': 'Diario, Mayor, Balance. Ró =SUMA.',
+    'feat3.title': 'Sibö ✦ Ró',
+    'feat3.desc': 'Ró ie 10 shú. Ró tök asientos.',
+    'feat4.title': '10 Shú CR',
+    'feat4.desc': 'Español, English, Bribri, Cabécar, Ngäbe, Boruca, Térraba, Maleku, Guaymí, Brunca.',
+    'feat5.title': '6 Ró Tök',
+    'feat5.desc': 'Diario, Mayor, Balance, Conciliación, Factura, Compras.',
+    'feat6.title': 'Ró Ísh',
+    'feat6.desc': 'PDF, Excel, XML 4.3. Ró offline.',
+    'canvas.label': 'Ró Tök',
+    'btn.tabla': 'Ró',
+    'btn.nota': 'Shú',
+    'btn.grafico': 'Ró Kö',
+    'btn.plantillas2': 'Ró Tök',
+    'btn.factura': 'Factura',
+    'btn.exportar': 'Ró Ísh',
+    'btn.guardar': 'Ró Ie',
+    'modal.factura.title': 'Factura Electrónica — Hacienda CR',
+    'factura.label': 'FACTURA ELECTRÓNICA',
+    'factura.emisor': 'Emisor',
+    'factura.receptor': 'Receptor',
+    'factura.col.cant': 'Ró',
+    'factura.col.desc': 'Ró Tök',
+    'factura.col.unit': 'Precio',
+    'factura.col.total': 'Ísh',
+    'factura.subtotal': 'Subtotal:',
+    'factura.iva': 'IVA 13%:',
+    'factura.total': 'Ísh:',
+    'btn.enviar': 'Ró Hacienda',
+    'btn.pdf': 'PDF',
+    'btn.xml': 'XML',
+    'templates.title': 'Ró Tök Contable CR',
+    'tpl.diario.title': '📘 Libro Diario',
+    'tpl.diario.desc': 'Ró Debe/Haber',
+    'tpl.mayor.title': '📗 Libro Mayor',
+    'tpl.mayor.desc': 'Ró saldos',
+    'tpl.balance.title': '📊 Balance',
+    'tpl.balance.desc': 'Ró sumas',
+    'tpl.conciliacion.title': '🏦 Conciliación',
+    'tpl.conciliacion.desc': 'Banco ie Libros',
+    'tpl.factura.title': '📄 Factura CR',
+    'tpl.factura.desc': 'XML 4.3 + QR',
+    'tpl.compras.title': '🛒 Compras/Ventas',
+    'tpl.compras.desc': 'D-151',
+    'sibo.placeholder': 'Ró shú...',
+    'sibo.welcome': 'Ísh! Soy Sibö ✦, ró tök contable CR. ¿Ró ísh?',
+    'sibo.r.quien': 'Ró Sibö ✦, asistente CR. Ró tök facturas, IVA.',
+    'sibo.r.factura': 'Factura: Ró tök Factura, datos, IVA 13%.',
+    'sibo.r.iva': 'IVA CR: 13%, 4%, 2%. Ró: Monto × 0.13',
+    'sibo.r.diario': 'Diario: Plantillas → Diario.',
+    'sibo.r.idioma': 'Shú: arriba derecha.',
+    'sibo.r.balance': 'Balance: Debe = Haber.',
+    'sibo.r.banco': 'Conciliación: Banco ie libros.',
+    'sibo.r.default': 'Ró tök: Facturas, Diario, Balance. ¿Ró ísh?',
+    'alert.guardado': '✓ Ró Ie',
+    'alert.copiado': 'Ró shú portapapeles.',
+    'alert.hacienda': '✓ Factura Hacienda CR\nNo. 001-00001-00000001',
+    'alert.pdf': 'Ró PDF...',
+    'credit': 'Shú ki: Keny Chinchilla Navarro'
+  },
+
+  terraba: {
+    'logo.name': 'Matriz Contable CR',
+    'btn.sibo': 'Sibö ✦',
+    'hero.badge': 'Kò 12 — Offline',
+    'hero.title': 'Matriz Contable CR v12',
+    'hero.title.span': 'Matriz Contable',
+    'hero.desc': '300+ Kò | Factura 4.3 | Canvas | Sibö ✦',
+    'hero.start': 'Kà',
+    'hero.templates': 'Kò Tök',
+    'feat1.title': 'Factura Electrónica 4.3',
+    'feat1.desc': 'Kò tök XML + PDF QR Hacienda CR.',
+    'feat2.title': 'Canvas Kò',
+    'feat2.desc': 'Diario, Mayor, Balance. Kò =SUMA.',
+    'feat3.title': 'Sibö ✦ Kò',
+    'feat3.desc': 'Kò ie 10 së. Kò tök asientos.',
+    'feat4.title': '10 Së CR',
+    'feat4.desc': 'Español, English, Bribri, Cabécar, Ngäbe, Boruca, Térraba, Maleku, Guaymí, Brunca.',
+    'feat5.title': '6 Kò Tök',
+    'feat5.desc': 'Diario, Mayor, Balance, Conciliación, Factura, Compras.',
+    'feat6.title': 'Kò Kà',
+    'feat6.desc': 'PDF, Excel, XML 4.3. Kò offline.',
+    'canvas.label': 'Kò Tök',
+    'btn.tabla': 'Kò',
+    'btn.nota': 'Së',
+    'btn.grafico': 'Kò Kö',
+    'btn.plantillas2': 'Kò Tök',
+    'btn.factura': 'Factura',
+    'btn.exportar': 'Kò Kà',
+    'btn.guardar': 'Kò Ie',
+    'modal.factura.title': 'Factura Electrónica — Hacienda CR',
+    'factura.label': 'FACTURA ELECTRÓNICA',
+    'factura.emisor': 'Emisor',
+    'factura.receptor': 'Receptor',
+    'factura.col.cant': 'Kò',
+    'factura.col.desc': 'Kò Tök',
+    'factura.col.unit': 'Precio',
+    'factura.col.total': 'Kà',
+    'factura.subtotal': 'Subtotal:',
+    'factura.iva': 'IVA 13%:',
+    'factura.total': 'Kà:',
+    'btn.enviar': 'Kò Hacienda',
+    'btn.pdf': 'PDF',
+    'btn.xml': 'XML',
+    'templates.title': 'Kò Tök Contable CR',
+    'tpl.diario.title': '📘 Libro Diario',
+    'tpl.diario.desc': 'Kò Debe/Haber',
+    'tpl.mayor.title': '📗 Libro Mayor',
+    'tpl.mayor.desc': 'Kò saldos',
+    'tpl.balance.title': '📊 Balance',
+    'tpl.balance.desc': 'Kò sumas',
+    'tpl.conciliacion.title': '🏦 Conciliación',
+    'tpl.conciliacion.desc': 'Banco ie Libros',
+    'tpl.factura.title': '📄 Factura CR',
+    'tpl.factura.desc': 'XML 4.3 + QR',
+    'tpl.compras.title': '🛒 Compras/Ventas',
+    'tpl.compras.desc': 'D-151',
+    'sibo.placeholder': 'Kò së...',
+    'sibo.welcome': 'Kà! Soy Sibö ✦, kò tök contable CR. ¿Kò kà?',
+    'sibo.r.quien': 'Kò Sibö ✦, asistente CR. Kò tök facturas, IVA.',
+    'sibo.r.factura': 'Factura: Kò tök Factura, datos, IVA 13%.',
+    'sibo.r.iva': 'IVA CR: 13%, 4%, 2%. Kò: Monto × 0.13',
+    'sibo.r.diario': 'Diario: Plantillas → Diario.',
+    'sibo.r.idioma': 'Së: arriba derecha.',
+    'sibo.r.balance': 'Balance: Debe = Haber.',
+    'sibo.r.banco': 'Conciliación: Banco ie libros.',
+    'sibo.r.default': 'Kò tök: Facturas, Diario, Balance. ¿Kò kà?',
+    'alert.guardado': '✓ Kò Ie',
+    'alert.copiado': 'Kò portapapeles.',
+    'alert.hacienda': '✓ Factura Hacienda CR\nNo. 001-00001-00000001',
+    'alert.pdf': 'Kò PDF...',
+    'credit': 'Së ki: Keny Chinchilla Navarro'
+  },
+
+  maleku: {
+    'logo.name': 'Matriz Contable CR',
+    'btn.sibo': 'Sibö ✦',
+    'hero.badge': 'Tó 12 — Offline',
+    'hero.title': 'Matriz Contable CR v12',
+    'hero.title.span': 'Matriz Contable',
+    'hero.desc': '300+ Tó | Factura 4.3 | Canvas | Sibö ✦',
+    'hero.start': 'Tó',
+    'hero.templates': 'Tó Tök',
+    'feat1.title': 'Factura Electrónica 4.3',
+    'feat1.desc': 'Tó tök XML + PDF QR Hacienda CR.',
+    'feat2.title': 'Canvas Tó',
+    'feat2.desc': 'Diario, Mayor, Balance. Tó =SUMA.',
+    'feat3.title': 'Sibö ✦ Tó',
+    'feat3.desc': 'Tó ie 10 marama. Tó tök asientos.',
+    'feat4.title': '10 Marama CR',
+    'feat4.desc': 'Español, English, Bribri, Cabécar, Ngäbe, Boruca, Térraba, Maleku, Guaymí, Brunca.',
+    'feat5.title': '6 Tó Tök',
+    'feat5.desc': 'Diario, Mayor, Balance, Conciliación, Factura, Compras.',
+    'feat6.title': 'Tó Tóri',
+    'feat6.desc': 'PDF, Excel, XML 4.3. Tó offline.',
+    'canvas.label': 'Tó Tök',
+    'btn.tabla': 'Tó',
+    'btn.nota': 'Marama',
+    'btn.grafico': 'Tó Kö',
+    'btn.plantillas2': 'Tó Tök',
+    'btn.factura': 'Factura',
+    'btn.exportar': 'Tó Tóri',
+    'btn.guardar': 'Tó Ie',
+    'modal.factura.title': 'Factura Electrónica — Hacienda CR',
+    'factura.label': 'FACTURA ELECTRÓNICA',
+    'factura.emisor': 'Emisor',
+    'factura.receptor': 'Receptor',
+    'factura.col.cant': 'Tó',
+    'factura.col.desc': 'Tó Tök',
+    'factura.col.unit': 'Precio',
+    'factura.col.total': 'Tóri',
+    'factura.subtotal': 'Subtotal:',
+    'factura.iva': 'IVA 13%:',
+    'factura.total': 'Tóri:',
+    'btn.enviar': 'Tó Hacienda',
+    'btn.pdf': 'PDF',
+    'btn.xml': 'XML',
+    'templates.title': 'Tó Tök Contable CR',
+    'tpl.diario.title': '📘 Libro Diario',
+    'tpl.diario.desc': 'Tó Debe/Haber',
+    'tpl.mayor.title': '📗 Libro Mayor',
+    'tpl.mayor.desc': 'Tó saldos',
+    'tpl.balance.title': '📊 Balance',
+    'tpl.balance.desc': 'Tó sumas',
+    'tpl.conciliacion.title': '🏦 Conciliación',
+    'tpl.conciliacion.desc': 'Banco ie Libros',
+    'tpl.factura.title': '📄 Factura CR',
+    'tpl.factura.desc': 'XML 4.3 + QR',
+    'tpl.compras.title': '🛒 Compras/Ventas',
+    'tpl.compras.desc': 'D-151',
+    'sibo.placeholder': 'Tó marama...',
+    'sibo.welcome': 'Tó! Soy Sibö ✦, tó tök contable CR. ¿Tó tóri?',
+    'sibo.r.quien': 'Tó Sibö ✦, asistente CR. Tó tök facturas, IVA.',
+    'sibo.r.factura': 'Factura: Tó tök Factura, datos, IVA 13%.',
+    'sibo.r.iva': 'IVA CR: 13%, 4%, 2%. Tó: Monto × 0.13',
+    'sibo.r.diario': 'Diario: Plantillas → Diario.',
+    'sibo.r.idioma': 'Marama: arriba derecha.',
+    'sibo.r.balance': 'Balance: Debe = Haber.',
+    'sibo.r.banco': 'Conciliación: Banco ie libros.',
+    'sibo.r.default': 'Tó tök: Facturas, Diario, Balance. ¿Tó tóri?',
+    'alert.guardado': '✓ Tó Ie',
+    'alert.copiado': 'Tó portapapeles.',
+    'alert.hacienda': '✓ Factura Hacienda CR\nNo. 001-00001-00000001',
+    'alert.pdf': 'Tó PDF...',
+    'credit': 'Marama ki: Keny Chinchilla Navarro'
+  },
+
+  guaymi: {
+    'logo.name': 'Matriz Contable CR',
+    'btn.sibo': 'Sibö ✦',
+    'hero.badge': 'Kugwe 12 — Offline',
+    'hero.title': 'Matriz Contable CR v12',
+    'hero.title.span': 'Matriz Contable',
+    'hero.desc': '300+ Kugwe | Factura 4.3 | Canvas | Sibö ✦',
+    'hero.start': 'Näin',
+    'hero.templates': 'Kugwe Tök',
+    'feat1.title': 'Factura Electrónica 4.3',
+    'feat1.desc': 'Kugwe tök XML + PDF QR Hacienda CR.',
+    'feat2.title': 'Canvas Kugwe',
+    'feat2.desc': 'Diario, Mayor, Balance. Kugwe =SUMA.',
+    'feat3.title': 'Sibö ✦ Kugwe',
+    'feat3.desc': 'Kugwe ie 10 niere. Kugwe tök asientos.',
+    'feat4.title': '10 Niere CR',
+    'feat4.desc': 'Español, English, Bribri, Cabécar, Ngäbe, Boruca, Térraba, Maleku, Guaymí, Brunca.',
+    'feat5.title': '6 Kugwe Tök',
+    'feat5.desc': 'Diario, Mayor, Balance, Conciliación, Factura, Compras.',
+    'feat6.title': 'Kugwe Näin',
+    'feat6.desc': 'PDF, Excel, XML 4.3. Kugwe offline.',
+    'canvas.label': 'Kugwe Tök',
+    'btn.tabla': 'Kugwe',
+    'btn.nota': 'Niere',
+    'btn.grafico': 'Kugwe Kö',
+    'btn.plantillas2': 'Kugwe Tök',
+    'btn.factura': 'Factura',
+    'btn.exportar': 'Kugwe Näin',
+    'btn.guardar': 'Kugwe Ie',
+    'modal.factura.title': 'Factura Electrónica — Hacienda CR',
+    'factura.label': 'FACTURA ELECTRÓNICA',
+    'factura.emisor': 'Emisor',
+    'factura.receptor': 'Receptor',
+    'factura.col.cant': 'Kugwe',
+    'factura.col.desc': 'Kugwe Tök',
+    'factura.col.unit': 'Precio',
+    'factura.col.total': 'Näin',
+    'factura.subtotal': 'Subtotal:',
+    'factura.iva': 'IVA 13%:',
+    'factura.total': 'Näin:',
+    'btn.enviar': 'Kugwe Hacienda',
+    'btn.pdf': 'PDF',
+    'btn.xml': 'XML',
+    'templates.title': 'Kugwe Tök Contable CR',
+    'tpl.diario.title': '📘 Libro Diario',
+    'tpl.diario.desc': 'Kugwe Debe/Haber',
+    'tpl.mayor.title': '📗 Libro Mayor',
+    'tpl.mayor.desc': 'Kugwe saldos',
+    'tpl.balance.title': '📊 Balance',
+    'tpl.balance.desc': 'Kugwe sumas',
+    'tpl.conciliacion.title': '🏦 Conciliación',
+    'tpl.conciliacion.desc': 'Banco ie Libros',
+    'tpl.factura.title': '📄 Factura CR',
+    'tpl.factura.desc': 'XML 4.3 + QR',
+    'tpl.compras.title': '🛒 Compras/Ventas',
+    'tpl.compras.desc': 'D-151',
+    'sibo.placeholder': 'Kugwe niere...',
+    'sibo.welcome': 'Näin! Soy Sibö ✦, kugwe tök contable CR. ¿Kugwe näin?',
+    'sibo.r.quien': 'Kugwe Sibö ✦, asistente CR. Kugwe tök facturas, IVA.',
+    'sibo.r.factura': 'Factura: Kugwe tök Factura, datos, IVA 13%.',
+    'sibo.r.iva': 'IVA CR: 13%, 4%, 2%. Kugwe: Monto × 0.13',
+    'sibo.r.diario': 'Diario: Plantillas → Diario.',
+    'sibo.r.idioma': 'Niere: arriba derecha.',
+    'sibo.r.balance': 'Balance: Debe = Haber.',
+    'sibo.r.banco': 'Conciliación: Banco ie libros.',
+    'sibo.r.default': 'Kugwe tök: Facturas, Diario, Balance. ¿Kugwe näin?',
+    'alert.guardado': '✓ Kugwe Ie',
+    'alert.copiado': 'Kugwe portapapeles.',
+    'alert.hacienda': '✓ Factura Hacienda CR\nNo. 001-00001-00000001',
+    'alert.pdf': 'Kugwe PDF...',
+    'credit': 'Kugwe niere: Keny Chinchilla Navarro'
+  },
+
+  brunca: {
+    'logo.name': 'Matriz Contable CR',
+    'btn.sibo': 'Sibö ✦',
+    'hero.badge': 'Di 12 — Offline',
+    'hero.title': 'Matriz Contable CR v12',
+    'hero.title.span': 'Matriz Contable',
+    'hero.desc': '300+ Di | Factura 4.3 | Canvas | Sibö ✦',
+    'hero.start': 'I',
+    'hero.templates': 'Di Tök',
+    'feat1.title': 'Factura Electrónica 4.3',
+    'feat1.desc': 'Di tök XML + PDF QR Hacienda CR.',
+    'feat2.title': 'Canvas Di',
+    'feat2.desc': 'Diario, Mayor, Balance. Di =SUMA.',
+    'feat3.title': 'Sibö ✦ Di',
+    'feat3.desc': 'Di ie 10 ish. Di tök asientos.',
+    'feat4.title': '10 Ish CR',
+    'feat4.desc': 'Español, English, Bribri, Cabécar, Ngäbe, Boruca, Térraba, Maleku, Guaymí, Brunca.',
+    'feat5.title': '6 Di Tök',
+    'feat5.desc': 'Diario, Mayor, Balance, Conciliación, Factura, Compras.',
+    'feat6.title': 'Di I',
+    'feat6.desc': 'PDF, Excel, XML 4.3. Di offline.',
+    'canvas.label': 'Di Tök',
+    'btn.tabla': 'Di',
+    'btn.nota': 'Ish',
+    'btn.grafico': 'Di Kö',
+    'btn.plantillas2': 'Di Tök',
+    'btn.factura': 'Factura',
+    'btn.exportar': 'Di I',
+    'btn.guardar': 'Di Ie',
+    'modal.factura.title': 'Factura Electrónica — Hacienda CR',
+    'factura.label': 'FACTURA ELECTRÓNICA',
+    'factura.emisor': 'Emisor',
+    'factura.receptor': 'Receptor',
+    'factura.col.cant': 'Di',
+    'factura.col.desc': 'Di Tök',
+    'factura.col.unit': 'Precio',
+    'factura.col.total': 'I',
+    'factura.subtotal': 'Subtotal:',
+    'factura.iva': 'IVA 13%:',
+    'factura.total': 'I:',
+    'btn.enviar': 'Di Hacienda',
+    'btn.pdf': 'PDF',
+    'btn.xml': 'XML',
+    'templates.title': 'Di Tök Contable CR',
+    'tpl.diario.title': '📘 Libro Diario',
+    'tpl.diario.desc': 'Di Debe/Haber',
+    'tpl.mayor.title': '📗 Libro Mayor',
+    'tpl.mayor.desc': 'Di saldos',
+    'tpl.balance.title': '📊 Balance',
+    'tpl.balance.desc': 'Di sumas',
+    'tpl.conciliacion.title': '🏦 Conciliación',
+    'tpl.conciliacion.desc': 'Banco ie Libros',
+    'tpl.factura.title': '📄 Factura CR',
+    'tpl.factura.desc': 'XML 4.3 + QR',
+    'tpl.compras.title': '🛒 Compras/Ventas',
+    'tpl.compras.desc': 'D-151',
+    'sibo.placeholder': 'Di ish...',
+    'sibo.welcome': 'I! Soy Sibö ✦, di tök contable CR. ¿Di i?',
+    'sibo.r.quien': 'Di Sibö ✦, asistente CR. Di tök facturas, IVA.',
+    'sibo.r.factura': 'Factura: Di tök Factura, datos, IVA 13%.',
+    'sibo.r.iva': 'IVA CR: 13%, 4%, 2%. Di: Monto × 0.13',
+    'sibo.r.diario': 'Diario: Plantillas → Diario.',
+    'sibo.r.idioma': 'Ish: arriba derecha.',
+    'sibo.r.balance': 'Balance: Debe = Haber.',
+    'sibo.r.banco': 'Conciliación: Banco ie libros.',
+    'sibo.r.default': 'Di tök: Facturas, Diario, Balance. ¿Di i?',
+    'alert.guardado': '✓ Di Ie',
+    'alert.copiado': 'Di portapapeles.',
+    'alert.hacienda': '✓ Factura Hacienda CR\nNo. 001-00001-00000001',
+    'alert.pdf': 'Di PDF...',
+    'credit': 'Ish ki: Keny Chinchilla Navarro'
+  }
+};
+
+// ===== IDs dinámicos en HTML para data-i18n =====
+// Mapa: data-i18n key → { id o selector, propiedad }
+const i18nMap = {
+  // Header
+  'logo.name':             { sel: '.logo h1',           prop: 'textContent' },
+  'btn.sibo':              { id: 'btnSibo',              prop: 'textContent', prefix: '⭐ ' },
+  // Hero badge
+  'hero.badge':            { sel: '.hero-badge',         prop: 'textContent', prefix: '⭐ ' },
+  // Hero title (span dentro del h2)
+  'hero.title.span':       { sel: '.hero h2 span',       prop: 'textContent' },
+  // Hero desc
+  'hero.desc':             { sel: '.hero > p',           prop: 'textContent' },
+  // Botones hero
+  'hero.start':            { id: 'btnEmpezar',           prop: 'textContent' },
+  'hero.templates':        { id: 'btnPlantillas',        prop: 'textContent' },
+  // Canvas label
+  'canvas.label':          { sel: '.canvas-label',       prop: 'textContent' },
+  // Toolbar buttons (texto dentro del botón, preservando el SVG)
+  'btn.tabla':             { id: 'btnTabla',             prop: 'btnText' },
+  'btn.nota':              { id: 'btnNota',              prop: 'btnText' },
+  'btn.grafico':           { id: 'btnGrafico',           prop: 'btnText' },
+  'btn.plantillas2':       { id: 'btnPlantillas2',       prop: 'btnText' },
+  'btn.factura':           { id: 'btnFactura',           prop: 'btnText' },
+  'btn.exportar':          { id: 'btnExportar',          prop: 'btnText' },
+  'btn.guardar':           { id: 'btnGuardar',           prop: 'btnText' },
+  // Modal Factura título
+  'modal.factura.title':   { sel: '#modalFactura .modal-header h3', prop: 'textContent' },
+  'factura.label':         { sel: '.factura-title',      prop: 'textContent' },
+  'factura.emisor':        { sel: '#factura-emisor-lbl', prop: 'textContent' },
+  'factura.receptor':      { sel: '#factura-receptor-lbl', prop: 'textContent' },
+  'factura.col.cant':      { sel: '#factura-th-cant',    prop: 'textContent' },
+  'factura.col.desc':      { sel: '#factura-th-desc',    prop: 'textContent' },
+  'factura.col.unit':      { sel: '#factura-th-unit',    prop: 'textContent' },
+  'factura.col.total':     { sel: '#factura-th-total',   prop: 'textContent' },
+  'factura.subtotal':      { sel: '#factura-subtotal-lbl', prop: 'textContent' },
+  'factura.iva':           { sel: '#factura-iva-lbl',    prop: 'textContent' },
+  'factura.total':         { sel: '#factura-total-lbl',  prop: 'textContent' },
+  'btn.enviar':            { sel: '#btnEnviarHacienda',  prop: 'textContent' },
+  'btn.pdf':               { sel: '#btnExportarPDF',     prop: 'textContent' },
+  'btn.xml':               { sel: '#btnExportarXML',     prop: 'textContent' },
+  // Modal Plantillas
+  'templates.title':       { sel: '#modalPlantillas .modal-header h3', prop: 'textContent' },
+  'tpl.diario.title':      { sel: '#tpl-diario h4',     prop: 'textContent' },
+  'tpl.diario.desc':       { sel: '#tpl-diario p',      prop: 'textContent' },
+  'tpl.mayor.title':       { sel: '#tpl-mayor h4',      prop: 'textContent' },
+  'tpl.mayor.desc':        { sel: '#tpl-mayor p',       prop: 'textContent' },
+  'tpl.balance.title':     { sel: '#tpl-balance h4',    prop: 'textContent' },
+  'tpl.balance.desc':      { sel: '#tpl-balance p',     prop: 'textContent' },
+  'tpl.conciliacion.title':{ sel: '#tpl-conciliacion h4', prop: 'textContent' },
+  'tpl.conciliacion.desc': { sel: '#tpl-conciliacion p',  prop: 'textContent' },
+  'tpl.factura.title':     { sel: '#tpl-factura h4',    prop: 'textContent' },
+  'tpl.factura.desc':      { sel: '#tpl-factura p',     prop: 'textContent' },
+  'tpl.compras.title':     { sel: '#tpl-compras h4',    prop: 'textContent' },
+  'tpl.compras.desc':      { sel: '#tpl-compras p',     prop: 'textContent' },
+  // Sibö chat
+  'sibo.placeholder':      { id: 'siboInput',           prop: 'placeholder' },
+  // Credit
+  'credit':                { id: 'credit',              prop: 'textContent' }
+};
 
 let currentLang = localStorage.getItem('lang') || 'es';
 
 function t(key) {
-  const lang = translations[currentLang] || translations.es;
-  return lang[key] || translations.es[key] || key;
+  const lang = translations[currentLang] || translations['es'];
+  return lang[key] || translations['es'][key] || key;
 }
-
-const i18nMap = {
-  'logo.name': { sel: '.logo h1', prop: 'textContent' },
-  'btn.sibo': { id: 'btnSibo', prop: 'textContent' },
-  'hero.badge': { sel: '.hero-badge', prop: 'textContent' },
-  'hero.title.span': { sel: '.hero h2 span', prop: 'textContent' },
-  'hero.desc': { sel: '.hero > p', prop: 'textContent' },
-  'hero.start': { id: 'btnEmpezar', prop: 'textContent' },
-  'hero.templates': { id: 'btnPlantillas', prop: 'textContent' },
-  'canvas.label': { sel: '.canvas-label', prop: 'textContent' },
-
-  'btn.tabla': { id: 'btnTabla', prop: 'btnText' },
-  'btn.nota': { id: 'btnNota', prop: 'btnText' },
-  'btn.grafico': { id: 'btnGrafico', prop: 'btnText' },
-  'btn.plantillas2': { id: 'btnPlantillas2', prop: 'btnText' },
-  'btn.factura': { id: 'btnFactura', prop: 'btnText' },
-  'btn.exportar': { id: 'btnExportar', prop: 'btnText' },
-  'btn.guardar': { id: 'btnGuardar', prop: 'btnText' },
-  'btn.funciones': { id: 'btnFunciones', prop: 'btnText' },
-
-  'modal.factura.title': { sel: '#modalFactura .modal-header h3', prop: 'textContent' },
-  'templates.title': { sel: '#modalPlantillas .modal-header h3', prop: 'textContent' },
-  'sibo.placeholder': { id: 'siboInput', prop: 'placeholder' },
-  'credit': { id: 'credit', prop: 'textContent' }
-};
 
 function setLang(lang) {
   currentLang = lang;
   localStorage.setItem('lang', lang);
   document.getElementById('langSelect').value = lang;
 
-  const trs = translations[lang] || translations.es;
+  const trs = translations[lang] || translations['es'];
 
+  // Aplicar todas las claves del mapa
   Object.entries(i18nMap).forEach(([key, cfg]) => {
-    const val = trs[key] || translations.es[key];
+    const val = trs[key] || translations['es'][key];
     if (!val) return;
-    const el = cfg.id ? document.getElementById(cfg.id) : document.querySelector(cfg.sel);
+    const el = cfg.id ? document.getElementById(cfg.id)
+                      : document.querySelector(cfg.sel);
     if (!el) return;
 
     if (cfg.prop === 'btnText') {
+      // Preserva el SVG del botón y solo reemplaza el texto
       const svg = el.querySelector('svg');
       el.textContent = val;
-      if (svg) el.prepend(svg);
+      if (svg) el.insertBefore(svg, el.firstChild);
+    } else if (cfg.prop === 'placeholder') {
+      el.placeholder = val;
     } else {
       el[cfg.prop] = val;
     }
   });
 
-  // Hero
-  const heroH2 = document.querySelector('.hero h2');
-  if (heroH2) {
-    const spanText = trs['hero.title.span'] || 'Matriz Contable';
-    heroH2.innerHTML = `<span>${spanText}</span> CR v12`;
-  }
-}
-
-// ==================== CANVAS MEJORADO ====================
-const canvas = document.getElementById('canvas');
-let historyStack = [];
-let historyIndex = -1;
-
-function saveHistory() {
-  historyStack = historyStack.slice(0, historyIndex + 1);
-  historyStack.push(canvas.innerHTML);
-  historyIndex++;
-}
-
-function undo() {
-  if (historyIndex > 0) {
-    historyIndex--;
-    canvas.innerHTML = historyStack[historyIndex];
-    attachTableListeners();
-  }
-}
-
-function redo() {
-  if (historyIndex < historyStack.length - 1) {
-    historyIndex++;
-    canvas.innerHTML = historyStack[historyIndex];
-    attachTableListeners();
-  }
-}
-
-function parseFormula(cell) {
-  let txt = cell.textContent.trim();
-  if (!txt.startsWith('=')) return null;
-  let expr = txt.slice(1).toUpperCase().trim();
-  try {
-    if (expr.startsWith('SUMA') || expr.startsWith('SUM')) {
-      let sum = 0;
-      const table = cell.closest('table');
-      if (table) {
-        table.querySelectorAll('td[contenteditable="true"]').forEach(td => {
-          const n = parseFloat(td.textContent);
-          if (!isNaN(n)) sum += n;
-        });
-      }
-      return sum.toFixed(2);
-    }
-    if (expr.includes('IVA')) {
-      const val = parseFloat(cell.previousElementSibling?.textContent || 0);
-      return (val * 0.13).toFixed(2);
-    }
-    return eval(expr);
-  } catch(e) { return '#ERROR'; }
-}
-
-function attachTableListeners() {
-  canvas.querySelectorAll('td[contenteditable="true"]').forEach(td => {
-    td.onblur = () => {
-      const result = parseFormula(td);
-      if (result !== null) td.textContent = result;
-      saveHistory();
-    };
+  // data-i18n legacy (hero.title span y feat* cards ya cubiertos arriba)
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    const val = trs[key] || translations['es'][key];
+    if (val) el.textContent = val;
   });
+
+  // Sibö: actualizar saludo inicial solo si no hay mensajes de usuario aún
+  const msgs = document.getElementById('siboMessages');
+  if (msgs && msgs.querySelectorAll('.sibo-msg.user').length === 0) {
+    msgs.innerHTML = `<div class="sibo-msg bot">${trs['sibo.welcome'] || translations['es']['sibo.welcome']}</div>`;
+  }
 }
 
-function addWidget(html) {
-  const div = document.createElement('div');
-  div.style.margin = '12px 0';
-  div.innerHTML = html;
-  canvas.appendChild(div);
-  saveHistory();
-  attachTableListeners();
+document.getElementById('langSelect').addEventListener('change', e => setLang(e.target.value));
+setLang(currentLang);
+
+// ===== Compartir =====
+document.getElementById('btnShare').addEventListener('click', async () => {
+  const url = window.location.href;
+  if (navigator.share) {
+    try { await navigator.share({ title: 'Matriz Contable CR v12', text: 'App contable offline para Costa Rica', url }); }
+    catch(e) {}
+  } else {
+    navigator.clipboard.writeText(url);
+    alert(t('alert.copiado'));
+  }
+});
+
+// ===== Modales =====
+function openModal(id) { document.getElementById(id).classList.add('active'); }
+function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+document.querySelectorAll('.modal').forEach(m => {
+  m.addEventListener('click', e => { if (e.target === m) m.classList.remove('active'); });
+});
+
+document.getElementById('btnFactura').addEventListener('click', () => openModal('modalFactura'));
+document.getElementById('btnPlantillas').addEventListener('click', () => openModal('modalPlantillas'));
+document.getElementById('btnPlantillas2').addEventListener('click', () => openModal('modalPlantillas'));
+document.getElementById('btnEmpezar').addEventListener('click', () => {
+  document.querySelector('.canvas-section').scrollIntoView({ behavior: 'smooth' });
+});
+
+// ===== Sibö Chat =====
+function toggleSibo() { document.getElementById('siboChat').classList.toggle('active'); }
+document.getElementById('btnSibo').addEventListener('click', toggleSibo);
+
+function sendSibo() {
+  const input = document.getElementById('siboInput');
+  const msg = input.value.trim();
+  if (!msg) return;
+  const messages = document.getElementById('siboMessages');
+  messages.innerHTML += `<div class="sibo-msg user">${msg}</div>`;
+  input.value = '';
+
+  let r = '';
+  const m = msg.toLowerCase();
+  if (m.includes('quien eres') || m.includes('quién eres') || m.includes('who are you'))
+    r = t('sibo.r.quien');
+  else if (m.includes('factura') || m.includes('invoice'))
+    r = t('sibo.r.factura');
+  else if (m.includes('iva') || m.includes('calcular') || m.includes('vat') || m.includes('tax'))
+    r = t('sibo.r.iva');
+  else if (m.includes('asiento') || m.includes('diario') || m.includes('journal'))
+    r = t('sibo.r.diario');
+  else if (m.includes('idioma') || m.includes('lengua') || m.includes('language'))
+    r = t('sibo.r.idioma');
+  else if (m.includes('balance'))
+    r = t('sibo.r.balance');
+  else if (m.includes('conciliacion') || m.includes('banco') || m.includes('bank'))
+    r = t('sibo.r.banco');
+  else
+    r = t('sibo.r.default');
+
+  setTimeout(() => {
+    messages.innerHTML += `<div class="sibo-msg bot">${r}</div>`;
+    messages.scrollTop = messages.scrollHeight;
+  }, 420);
+  messages.scrollTop = messages.scrollHeight;
 }
 
-// ==================== BOTONES ====================
-document.getElementById('btnTabla').addEventListener('click', () => addWidget(`
-  <table class="table">
-    <thead><tr><th>Fecha</th><th>Cuenta</th><th>Debe (₡)</th><th>Haber (₡)</th></tr></thead>
-    <tbody><tr><td contenteditable="true">2026-06-07</td><td contenteditable="true">Caja</td><td contenteditable="true">56500</td><td contenteditable="true"></td></tr></tbody>
-  </table>
-`));
+document.getElementById('siboInput').addEventListener('keypress', e => { if (e.key === 'Enter') sendSibo(); });
 
-document.getElementById('btnNota').addEventListener('click', () => addWidget(`
-  <div style="background:var(--bg3); border:1.5px solid var(--border2); border-radius:12px; padding:16px;" contenteditable="true">📝 Nueva nota contable...</div>
-`));
+// ===== Canvas =====
+const canvas = document.getElementById('canvas');
+
+function loadTemplate(tipo) {
+  closeModal('modalPlantillas');
+  canvas.innerHTML = '';
+  if (tipo === 'diario') {
+    canvas.innerHTML = `
+      <h3 style="margin-bottom:12px; color:var(--accent);">📘 Libro Diario</h3>
+      <table class="table">
+        <thead><tr><th>Fecha</th><th>Cuenta</th><th>Debe (₡)</th><th>Haber (₡)</th></tr></thead>
+        <tbody>
+          <tr><td>2026-06-03</td><td>Caja</td><td>56,500</td><td></td></tr>
+          <tr><td>2026-06-03</td><td>Ventas</td><td></td><td>50,000</td></tr>
+          <tr><td>2026-06-03</td><td>IVA por Pagar</td><td></td><td>6,500</td></tr>
+        </tbody>
+      </table>`;
+  } else if (tipo === 'mayor') {
+    canvas.innerHTML = `
+      <h3 style="margin-bottom:12px; color:var(--accent);">📗 Libro Mayor — Caja</h3>
+      <table class="table">
+        <thead><tr><th>Fecha</th><th>Concepto</th><th>Debe (₡)</th><th>Haber (₡)</th><th>Saldo (₡)</th></tr></thead>
+        <tbody>
+          <tr><td>2026-06-03</td><td>Venta Factura 001</td><td>56,500</td><td></td><td>56,500</td></tr>
+        </tbody>
+      </table>`;
+  } else if (tipo === 'balance') {
+    canvas.innerHTML = `
+      <h3 style="margin-bottom:12px; color:var(--accent);">📊 Balance de Comprobación</h3>
+      <table class="table">
+        <thead><tr><th>Cuenta</th><th>Debe (₡)</th><th>Haber (₡)</th></tr></thead>
+        <tbody>
+          <tr><td>Caja</td><td>56,500</td><td></td></tr>
+          <tr><td>Ventas</td><td></td><td>50,000</td></tr>
+          <tr><td>IVA por Pagar</td><td></td><td>6,500</td></tr>
+          <tr><td><strong>TOTAL</strong></td><td><strong>56,500</strong></td><td><strong>56,500</strong></td></tr>
+        </tbody>
+      </table>`;
+  } else if (tipo === 'conciliacion') {
+    canvas.innerHTML = `
+      <h3 style="margin-bottom:12px; color:var(--accent);">🏦 Conciliación Bancaria</h3>
+      <table class="table">
+        <thead><tr><th>Concepto</th><th>Banco (₡)</th><th>Libros (₡)</th></tr></thead>
+        <tbody>
+          <tr><td>Saldo inicial</td><td>100,000</td><td>100,000</td></tr>
+          <tr><td>Depósito en tránsito</td><td></td><td>20,000</td></tr>
+          <tr><td>Cheque pendiente</td><td>-5,000</td><td></td></tr>
+          <tr><td><strong>Saldo ajustado</strong></td><td><strong>95,000</strong></td><td><strong>120,000</strong></td></tr>
+        </tbody>
+      </table>`;
+  } else if (tipo === 'compras') {
+    canvas.innerHTML = `
+      <h3 style="margin-bottom:12px; color:var(--accent);">🛒 Reporte Compras/Ventas — D-151</h3>
+      <table class="table">
+        <thead><tr><th>Fecha</th><th>Tipo</th><th>Proveedor/Cliente</th><th>Monto (₡)</th><th>IVA (₡)</th></tr></thead>
+        <tbody>
+          <tr><td>2026-06-03</td><td>Venta</td><td>Cliente A</td><td>50,000</td><td>6,500</td></tr>
+          <tr><td>2026-06-03</td><td>Compra</td><td>Proveedor B</td><td>30,000</td><td>3,900</td></tr>
+        </tbody>
+      </table>`;
+  } else if (tipo === 'factura') {
+    openModal('modalFactura');
+  }
+}
+
+document.getElementById('btnTabla').addEventListener('click', () => {
+  canvas.innerHTML += `
+    <table class="table" style="margin-bottom:12px;">
+      <thead><tr><th>Fecha</th><th>Cuenta</th><th>Debe (₡)</th><th>Haber (₡)</th></tr></thead>
+      <tbody>
+        <tr>
+          <td contenteditable="true">2026-06-03</td>
+          <td contenteditable="true">Nueva Cuenta</td>
+          <td contenteditable="true">0</td>
+          <td contenteditable="true">0</td>
+        </tr>
+      </tbody>
+    </table>`;
+});
+
+document.getElementById('btnNota').addEventListener('click', () => {
+  canvas.innerHTML += `
+    <div style="background:var(--bg3); border:1.5px solid var(--border2); border-radius:12px; padding:14px; margin:8px 0; font-size:14px;" contenteditable="true">
+      📝 Nota nueva — edita aquí...
+    </div>`;
+});
+
+document.getElementById('btnGrafico').addEventListener('click', () => {
+  const id = 'chart_' + Date.now();
+  canvas.innerHTML += `
+    <div style="background:var(--bg3); border:1.5px solid var(--border); border-radius:14px; padding:16px; margin:8px 0;">
+      <p style="font-size:13px; color:var(--text2); margin-bottom:10px; font-weight:600;">📊 Gráfico de Barras — Debe vs Haber</p>
+      <canvas id="${id}" height="80"></canvas>
+    </div>`;
+  const ctx = document.getElementById(id).getContext('2d');
+  const w = ctx.canvas.width;
+  const bars = [
+    { label: 'Caja', debe: 56500, haber: 0 },
+    { label: 'Ventas', debe: 0, haber: 50000 },
+    { label: 'IVA', debe: 0, haber: 6500 }
+  ];
+  const max = 60000; const bw = 30; const gap = 80;
+  bars.forEach((b, i) => {
+    const x = 40 + i * gap;
+    const dh = (b.debe / max) * 70;
+    const hh = (b.haber / max) * 70;
+    ctx.fillStyle = '#5abf2a';
+    ctx.fillRect(x, 75 - dh, bw, dh);
+    ctx.fillStyle = '#3a9e10';
+    ctx.fillRect(x + bw + 4, 75 - hh, bw, hh);
+    ctx.fillStyle = '#5a7a5a';
+    ctx.font = '10px Plus Jakarta Sans';
+    ctx.fillText(b.label, x, 80);
+  });
+});
+
+document.getElementById('btnExportar').addEventListener('click', () => {
+  exportarXML();
+});
 
 document.getElementById('btnGuardar').addEventListener('click', () => {
   localStorage.setItem('canvasData_v12', canvas.innerHTML);
   const btn = document.getElementById('btnGuardar');
   const orig = btn.innerHTML;
-  btn.textContent = '✓ Guardado';
-  setTimeout(() => { btn.innerHTML = orig; setLang(currentLang); }, 1400);
+  btn.innerHTML = t('alert.guardado');
+  setTimeout(() => { btn.innerHTML = orig; setLang(currentLang); }, 1800);
 });
 
-// Undo / Redo
-document.addEventListener('keydown', e => {
-  if (e.ctrlKey && e.key === 'z') { e.preventDefault(); undo(); }
-  if (e.ctrlKey && e.key === 'y') { e.preventDefault(); redo(); }
-});
-
-// ==================== INICIO ====================
-document.getElementById('langSelect').addEventListener('change', e => setLang(e.target.value));
-setLang(currentLang);
-
+// Restaurar canvas guardado
 const saved = localStorage.getItem('canvasData_v12');
 if (saved) canvas.innerHTML = saved;
 
-saveHistory();
-attachTableListeners();
+// ===== Factura: acciones =====
+function enviarHacienda() {
+  alert(t('alert.hacienda'));
+}
 
-console.log('✅ Matriz Contable CR v12 - Versión Corregida');
+function exportarPDF() {
+  alert(t('alert.pdf'));
+}
+
+function exportarXML() {
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<FacturaElectronica xmlns="https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.3/facturaElectronica">
+  <Clave>50603062600310100000000100001010000000001</Clave>
+  <NumeroConsecutivo>00100001010000000001</NumeroConsecutivo>
+  <FechaEmision>2026-06-03T09:15:00-06:00</FechaEmision>
+  <Emisor><Nombre>Matriz Contable CR S.A.</Nombre></Emisor>
+  <TotalImpuesto>6500.00</TotalImpuesto>
+  <TotalComprobante>56500.00</TotalComprobante>
+</FacturaElectronica>`;
+  const blob = new Blob([xml], { type: 'application/xml' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'factura-001.xml'; a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ===== QR Code simple =====
+const qrDiv = document.getElementById('qrCode');
+if (qrDiv) {
+  const c = document.createElement('canvas');
+  c.width = 76; c.height = 76;
+  const ctx = c.getContext('2d');
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(0, 0, 76, 76);
+  const pattern = [
+    [1,1,1,1,1,1,1,0],[1,0,0,0,0,0,1,0],[1,0,1,1,1,0,1,0],
+    [1,0,1,1,1,0,1,0],[1,0,1,1,1,0,1,0],[1,0,0,0,0,0,1,0],[1,1,1,1,1,1,1,0]
+  ];
+  ctx.fillStyle = '#000';
+  pattern.forEach((row, r) => row.forEach((v, c2) => {
+    if (v) ctx.fillRect(c2 * 9 + 4, r * 9 + 4, 8, 8);
+  }));
+  // data dots
+  for (let i = 0; i < 5; i++) for (let j = 0; j < 5; j++) {
+    if ((i + j) % 2 === 0) ctx.fillRect(40 + i * 7, 4 + j * 7, 6, 6);
+  }
+  qrDiv.appendChild(c);
+}
+
+
+// ===== BIBLIOTECA DE FUNCIONES =====
+const fnData = {
+  'Búsqueda y Referencia': [
+    {n:'AGRUPARPOR',e:'GROUPBY',d:'Agrupa, agrega, ordena y filtra datos según los campos especificados.',s:'AGRUPARPOR(campo_filas; campo_valores; función)',x:'=AGRUPARPOR(A2:A10,B2:B10,SUMA)'},
+    {n:'AJUSTARCOLS',e:'WRAPCOLS',d:'Envuelve un vector de fila o columna después de un número especificado de valores.',s:'AJUSTARCOLS(vector; nº_wrap; [relleno])',x:'=AJUSTARCOLS(A1:A12,3)'},
+    {n:'AJUSTARFILAS',e:'WRAPROWS',d:'Envuelve un vector de fila o columna después de un número especificado de valores.',s:'AJUSTARFILAS(vector; nº_wrap; [relleno])',x:'=AJUSTARFILAS(A1:A12,3)'},
+    {n:'APILARH',e:'HSTACK',d:'Apila horizontalmente matrices en una sola.',s:'APILARH(matriz1; [matriz2]; ...)',x:'=APILARH(A1:B3,D1:E3)'},
+    {n:'APILARV',e:'VSTACK',d:'Apila verticalmente matrices en una sola.',s:'APILARV(matriz1; [matriz2]; ...)',x:'=APILARV(A1:B3,A5:B7)'},
+    {n:'AREAS',e:'AREAS',d:'Devuelve el número de áreas de una referencia.',s:'AREAS(referencia)',x:'=AREAS((A1:B2,C3:D4))'},
+    {n:'BUSCAR',e:'LOOKUP',d:'Busca valores en un rango de una columna, fila o matriz.',s:'BUSCAR(valor_buscado; vector_de_comparación; [vector_resultado])',x:'=BUSCAR(A2,B2:B10,C2:C10)'},
+    {n:'BUSCARH',e:'HLOOKUP',d:'Busca en la primera fila de una tabla y devuelve el valor de la fila especificada.',s:'BUSCARH(valor_buscado; matriz_buscar_en; indicador_filas; [ordenado])',x:'=BUSCARH("Precio",A1:E5,3,FALSO)'},
+    {n:'BUSCARV',e:'VLOOKUP',d:'Busca un valor en la primera columna y devuelve un valor en la misma fila desde la columna especificada.',s:'BUSCARV(valor_buscado; matriz_buscar_en; indicador_columnas; [ordenado])',x:'=BUSCARV(101,A2:D10,3,FALSO)'},
+    {n:'BUSCARX',e:'XLOOKUP',d:'Busca una coincidencia en un rango y devuelve el elemento correspondiente de otro rango.',s:'BUSCARX(valor_buscado; matriz_buscada; matriz_devuelta; [si_no_se_encuentra])',x:'=BUSCARX(A2,B2:B100,C2:C100,"No encontrado")'},
+    {n:'COINCIDIR',e:'MATCH',d:'Devuelve la posición relativa de un elemento en una matriz.',s:'COINCIDIR(valor_buscado; matriz_buscada; [tipo_de_coincidencia])',x:'=COINCIDIR("Manzana",A1:A10,0)'},
+    {n:'COINCIDIRX',e:'XMATCH',d:'Devuelve la posición relativa de un elemento en una matriz (versión moderna).',s:'COINCIDIRX(valor_buscado; matriz_de_búsqueda; [modo_coincidencia]; [modo_búsqueda])',x:'=COINCIDIRX("Manzana",A1:A10,0)'},
+    {n:'COLUMNA',e:'COLUMN',d:'Devuelve el número de columna de una referencia.',s:'COLUMNA([referencia])',x:'=COLUMNA(C5) → 3'},
+    {n:'COLUMNAS',e:'COLUMNS',d:'Devuelve el número de columnas en una matriz o referencia.',s:'COLUMNAS(matriz)',x:'=COLUMNAS(A1:D1) → 4'},
+    {n:'DESREF',e:'OFFSET',d:'Devuelve una referencia desplazada un número de filas y columnas.',s:'DESREF(referencia; filas; columnas; [alto]; [ancho])',x:'=DESREF(A1,2,3)'},
+    {n:'DIRECCION',e:'ADDRESS',d:'Crea una referencia de celda en forma de texto a partir de números de fila y columna.',s:'DIRECCION(fila; columna; [abs]; [a1]; [hoja])',x:'=DIRECCION(2,3) → $C$2'},
+    {n:'ELEGIR',e:'CHOOSE',d:'Elige un valor de una lista según un número de índice.',s:'ELEGIR(núm_índice; valor1; [valor2]; ...)',x:'=ELEGIR(2,"Ene","Feb","Mar") → Feb'},
+    {n:'ELEGIRCOLS',e:'CHOOSECOLS',d:'Devuelve columnas específicas de una matriz.',s:'ELEGIRCOLS(matriz; col_núm1; [col_núm2]; ...)',x:'=ELEGIRCOLS(A1:D5,1,3)'},
+    {n:'ELEGIRFILAS',e:'CHOOSEROWS',d:'Devuelve filas específicas de una matriz.',s:'ELEGIRFILAS(matriz; fila_núm1; [fila_núm2]; ...)',x:'=ELEGIRFILAS(A1:D5,1,3)'},
+    {n:'ENCOL',e:'TOCOL',d:'Devuelve la matriz como una sola columna.',s:'ENCOL(matriz; [ignorar]; [escanear_por_columna])',x:'=ENCOL(A1:C3)'},
+    {n:'ENFILA',e:'TOROW',d:'Devuelve la matriz como una sola fila.',s:'ENFILA(matriz; [ignorar]; [escanear_por_columna])',x:'=ENFILA(A1:C3)'},
+    {n:'EXCLUIR',e:'DROP',d:'Quita filas o columnas del inicio o final de la matriz.',s:'EXCLUIR(matriz; filas; [columnas])',x:'=EXCLUIR(A1:D10,2)'},
+    {n:'EXPANDIR',e:'EXPAND',d:'Expande una matriz a las dimensiones especificadas.',s:'EXPANDIR(matriz; filas; [columnas]; [relleno])',x:'=EXPANDIR(A1:B3,5,3)'},
+    {n:'FILA',e:'ROW',d:'Devuelve el número de fila de una referencia.',s:'FILA([referencia])',x:'=FILA(B5) → 5'},
+    {n:'FILAS',e:'ROWS',d:'Devuelve el número de filas de una referencia o matriz.',s:'FILAS(matriz)',x:'=FILAS(A1:A10) → 10'},
+    {n:'FILTRAR',e:'FILTER',d:'Filtra un rango o matriz según una condición.',s:'FILTRAR(matriz; incluir; [si_está_vacío])',x:'=FILTRAR(A1:C10,B1:B10>100)'},
+    {n:'FORMULATEXTO',e:'FORMULATEXT',d:'Devuelve una fórmula como cadena de texto.',s:'FORMULATEXTO(referencia)',x:'=FORMULATEXTO(A1)'},
+    {n:'HIPERVINCULO',e:'HYPERLINK',d:'Crea un enlace que abre un documento o URL.',s:'HIPERVINCULO(ubicación_del_vínculo; [nombre_descriptivo])',x:'=HIPERVINCULO("https://hacienda.go.cr","Hacienda CR")'},
+    {n:'IMAGEN',e:'IMAGE',d:'Devuelve una imagen de un origen determinado.',s:'IMAGEN(origen; [alt_text]; [tamaño]; [alto]; [ancho])',x:'=IMAGEN("https://ejemplo.com/img.png")'},
+    {n:'IMPORTARDATOSDINAMICOS',e:'GETPIVOTDATA',d:'Extrae datos almacenados en una tabla dinámica.',s:'IMPORTARDATOSDINAMICOS(campo_datos; tabla_dinámica; [campo1]; [elemento1]; ...)',x:'=IMPORTARDATOSDINAMICOS("Ventas",A3,"Producto","Manzana")'},
+    {n:'INDICE',e:'INDEX',d:'Devuelve el valor en la intersección de una fila y columna en un rango.',s:'INDICE(matriz; núm_fila; [núm_columna])',x:'=INDICE(A1:C10,3,2)'},
+    {n:'INDIRECTO',e:'INDIRECT',d:'Devuelve una referencia especificada por un valor de texto.',s:'INDIRECTO(ref_en_texto; [a1])',x:'=INDIRECTO("A"&B1)'},
+    {n:'ORDENAR',e:'SORT',d:'Ordena un rango o matriz.',s:'ORDENAR(matriz; [índice_ordenar]; [orden_sort]; [por_col])',x:'=ORDENAR(A2:B10,2,-1)'},
+    {n:'ORDENARPOR',e:'SORTBY',d:'Ordena un rango basándose en los valores de otro rango.',s:'ORDENARPOR(matriz; por_matriz1; [orden1]; ...)',x:'=ORDENARPOR(A2:B10,B2:B10,-1)'},
+    {n:'PIVOTARPOR',e:'PIVOTBY',d:'Agrupa, agrega, ordena y filtra por campos de fila y columna.',s:'PIVOTARPOR(campo_filas; campo_cols; campo_valores; función)',x:'=PIVOTARPOR(A2:A10,B2:B10,C2:C10,SUMA)'},
+    {n:'RDTR',e:'RTD',d:'Recupera datos en tiempo real de un programa COM.',s:'RDTR(id_programa; servidor; tema1; [tema2]; ...)',x:'=RDTR("ExcelRTD","",A1)'},
+    {n:'RECORTAR.RANGO',e:'TRIMRANGE',d:'Recorta un rango hasta la última celda usada.',s:'RECORTAR.RANGO(rango; [filas]; [columnas])',x:'=RECORTAR.RANGO(A1:Z100)'},
+    {n:'TOMAR',e:'TAKE',d:'Devuelve filas o columnas desde el inicio o final de la matriz.',s:'TOMAR(matriz; filas; [columnas])',x:'=TOMAR(A1:D10,3)'},
+    {n:'TRANSPONER',e:'TRANSPOSE',d:'Devuelve un rango vertical como horizontal o viceversa.',s:'TRANSPONER(matriz)',x:'=TRANSPONER(A1:E1)'},
+    {n:'UNICOS',e:'UNIQUE',d:'Devuelve los valores únicos de un rango o matriz.',s:'UNICOS(matriz; [por_col]; [exactamente_una_vez])',x:'=UNICOS(A2:A100)'},
+    {n:'VALOR.CAMPO',e:'FIELDVALUE',d:'Extrae un valor de un campo de un registro dado.',s:'VALOR.CAMPO(valor; nombre_campo)',x:'=VALOR.CAMPO(A2,"Precio")'},
+  ],
+  'Texto': [
+    {n:'CARACTER',e:'CHAR',d:'Devuelve el carácter especificado por el código de carácter.',s:'CARACTER(número)',x:'=CARACTER(65) → A'},
+    {n:'CODIGO',e:'CODE',d:'Devuelve el código del primer carácter del texto.',s:'CODIGO(texto)',x:'=CODIGO("A") → 65'},
+    {n:'CONCAT',e:'CONCAT',d:'Concatena una lista o rango de cadenas de texto.',s:'CONCAT(texto1; [texto2]; ...)',x:'=CONCAT(A1," ",B1)'},
+    {n:'DECIMAL',e:'FIXED',d:'Redondea un número y devuelve el resultado como texto.',s:'DECIMAL(número; [decimales]; [sin_separador])',x:'=DECIMAL(1234.5,2) → "1,234.50"'},
+    {n:'DERECHA',e:'RIGHT',d:'Devuelve los últimos caracteres de una cadena de texto.',s:'DERECHA(texto; [núm_de_caracteres])',x:'=DERECHA("Costa Rica",4) → "Rica"'},
+    {n:'DETECTARIDIOMA',e:'DETECTLANGUAGE',d:'Detecta el idioma de una cadena de texto.',s:'DETECTARIDIOMA(texto)',x:'=DETECTARIDIOMA("Hola mundo") → "es"'},
+    {n:'DIVIDIRTEXTO',e:'TEXTSPLIT',d:'Divide el texto en filas o columnas con delimitadores.',s:'DIVIDIRTEXTO(texto; delimitador_col; [delimitador_fila])',x:'=DIVIDIRTEXTO(A1,",")'},
+    {n:'ENCONTRAR',e:'FIND',d:'Devuelve la posición inicial de una cadena dentro de otra (distingue mayúsculas).',s:'ENCONTRAR(texto_buscado; dentro_del_texto; [núm_inicial])',x:'=ENCONTRAR("CR","Hacienda CR") → 10'},
+    {n:'ESPACIOS',e:'TRIM',d:'Quita todos los espacios excepto los individuales entre palabras.',s:'ESPACIOS(texto)',x:'=ESPACIOS("  Hola  mundo  ") → "Hola mundo"'},
+    {n:'EXTRAE',e:'MID',d:'Devuelve caracteres del centro de una cadena.',s:'EXTRAE(texto; posición_inicial; núm_de_caracteres)',x:'=EXTRAE("Costa Rica",7,4) → "Rica"'},
+    {n:'HALLAR',e:'SEARCH',d:'Devuelve la posición de una cadena dentro de otra (no distingue mayúsculas).',s:'HALLAR(texto_buscado; dentro_del_texto; [núm_inicial])',x:'=HALLAR("rica","Costa Rica") → 7'},
+    {n:'IGUAL',e:'EXACT',d:'Comprueba si dos cadenas son exactamente iguales.',s:'IGUAL(texto1; texto2)',x:'=IGUAL("CR","cr") → FALSO'},
+    {n:'IZQUIERDA',e:'LEFT',d:'Devuelve los primeros caracteres de una cadena.',s:'IZQUIERDA(texto; [núm_de_caracteres])',x:'=IZQUIERDA("Costa Rica",5) → "Costa"'},
+    {n:'LARGO',e:'LEN',d:'Devuelve el número de caracteres de una cadena.',s:'LARGO(texto)',x:'=LARGO("Costa Rica") → 10'},
+    {n:'LIMPIAR',e:'CLEAN',d:'Quita todos los caracteres no imprimibles del texto.',s:'LIMPIAR(texto)',x:'=LIMPIAR(A1)'},
+    {n:'MATRIZATEXTO',e:'ARRAYTOTEXT',d:'Devuelve una representación de texto de un array.',s:'MATRIZATEXTO(matriz; [formato])',x:'=MATRIZATEXTO(A1:C1,1)'},
+    {n:'MAYUSC',e:'UPPER',d:'Convierte una cadena en letras mayúsculas.',s:'MAYUSC(texto)',x:'=MAYUSC("costa rica") → "COSTA RICA"'},
+    {n:'MINUSC',e:'LOWER',d:'Convierte todas las letras en minúsculas.',s:'MINUSC(texto)',x:'=MINUSC("COSTA RICA") → "costa rica"'},
+    {n:'MONEDA',e:'DOLLAR',d:'Convierte un número en texto con formato de moneda.',s:'MONEDA(número; [decimales])',x:'=MONEDA(1234.5,2) → "$1,234.50"'},
+    {n:'NOMPROPIO',e:'PROPER',d:'Convierte la primera letra de cada palabra en mayúscula.',s:'NOMPROPIO(texto)',x:'=NOMPROPIO("costa rica") → "Costa Rica"'},
+    {n:'REEMPLAZAR',e:'REPLACE',d:'Reemplaza parte de una cadena por otra.',s:'REEMPLAZAR(texto_original; núm_inicial; núm_de_caracteres; texto_nuevo)',x:'=REEMPLAZAR("CR-2024",4,4,"2025")'},
+    {n:'REGEXEXTRACCION',e:'REGEXEXTRACT',d:'Extrae cadenas que coinciden con un patrón regex.',s:'REGEXEXTRACCION(texto; patrón)',x:'=REGEXEXTRACCION(A1,"[0-9]+")'},
+    {n:'REGEXPRUEBA',e:'REGEXTEST',d:'Comprueba si el texto coincide con un patrón regex.',s:'REGEXPRUEBA(texto; patrón)',x:'=REGEXPRUEBA(A1,"^[A-Z]")'},
+    {n:'REGEXREEMPLAZAR',e:'REGEXREPLACE',d:'Reemplaza cadenas que coinciden con un patrón regex.',s:'REGEXREEMPLAZAR(texto; patrón; reemplazo)',x:'=REGEXREEMPLAZAR(A1,"[0-9]+","#")'},
+    {n:'REPETIR',e:'REPT',d:'Repite el texto un número determinado de veces.',s:'REPETIR(texto; núm_de_veces)',x:'=REPETIR("=-",10) → "=-=-=-=-=-=-=-=-=-=-"'},
+    {n:'SUSTITUIR',e:'SUBSTITUTE',d:'Reemplaza el texto existente con texto nuevo en una cadena.',s:'SUSTITUIR(texto; texto_original; texto_nuevo; [núm_de_instancia])',x:'=SUSTITUIR("Costa Rica","Rica","Verde")'},
+    {n:'T',e:'T',d:'Devuelve el texto si el valor es texto, o "" si no.',s:'T(valor)',x:'=T("Hola") → "Hola"; =T(123) → ""'},
+    {n:'TEXTO',e:'TEXT',d:'Convierte un valor en texto con un formato específico.',s:'TEXTO(valor; formato)',x:'=TEXTO(HOY(),"dd/mm/aaaa")'},
+    {n:'TEXTOANTES',e:'TEXTBEFORE',d:'Devuelve el texto que está antes del delimitador.',s:'TEXTOANTES(texto; delimitador; [núm_instancia])',x:'=TEXTOANTES("Costa Rica",",")'},
+    {n:'TEXTOBAHT',e:'BAHTTEXT',d:'Convierte un número en texto baht (tailandés).',s:'TEXTOBAHT(número)',x:'=TEXTOBAHT(1234)'},
+    {n:'TEXTODESPUES',e:'TEXTAFTER',d:'Devuelve el texto que está después del delimitador.',s:'TEXTODESPUES(texto; delimitador; [núm_instancia])',x:'=TEXTODESPUES("Nombre, Apellido",",")',},
+    {n:'TRADUCIR',e:'TRANSLATE',d:'Traduce texto de un idioma a otro con el servicio Microsoft.',s:'TRADUCIR(texto; idioma_origen; idioma_destino)',x:'=TRADUCIR("Hola","es","en") → "Hello"'},
+    {n:'UNICAR',e:'UNICHAR',d:'Devuelve el carácter Unicode del valor numérico dado.',s:'UNICAR(número)',x:'=UNICAR(9786) → ☺'},
+    {n:'UNICODE',e:'UNICODE',d:'Devuelve el punto de código Unicode del primer carácter.',s:'UNICODE(texto)',x:'=UNICODE("A") → 65'},
+    {n:'UNIRCADENAS',e:'TEXTJOIN',d:'Concatena cadenas usando un delimitador.',s:'UNIRCADENAS(delimitador; ignorar_vacío; texto1; [texto2]; ...)',x:'=UNIRCADENAS(", ",VERDADERO,A1:A5)'},
+    {n:'VALOR',e:'VALUE',d:'Convierte texto que representa un número en número.',s:'VALOR(texto)',x:'=VALOR("1234.50") → 1234.5'},
+    {n:'VALOR.NUMERO',e:'NUMBERVALUE',d:'Convierte texto a número de forma independiente a la configuración regional.',s:'VALOR.NUMERO(texto; [separador_decimal]; [separador_de_grupo])',x:'=VALOR.NUMERO("1.234,50",",",".")'},
+    {n:'VALORATEXTO',e:'VALUETOTEXT',d:'Devuelve una representación de texto de un valor.',s:'VALORATEXTO(valor; [formato])',x:'=VALORATEXTO(A1)'},
+  ],
+  'Lógicas': [
+    {n:'ARCHIVOMAKEARRAY',e:'MAKEARRAY',d:'Devuelve una matriz calculada de tamaño fila×columna aplicando una función LAMBDA.',s:'ARCHIVOMAKEARRAY(filas; columnas; lambda)',x:'=ARCHIVOMAKEARRAY(3,3,LAMBDA(f,c,f*c))'},
+    {n:'BYCOL',e:'BYCOL',d:'Aplica una función LAMBDA a cada columna y devuelve una matriz de resultados.',s:'BYCOL(matriz; lambda)',x:'=BYCOL(A1:C10,LAMBDA(c,SUMA(c)))'},
+    {n:'BYROW',e:'BYROW',d:'Aplica una función LAMBDA a cada fila y devuelve una matriz de resultados.',s:'BYROW(matriz; lambda)',x:'=BYROW(A1:C10,LAMBDA(f,SUMA(f)))'},
+    {n:'CAMBIAR',e:'SWITCH',d:'Evalúa una expresión con una lista de valores y devuelve el resultado del primero coincidente.',s:'CAMBIAR(expresión; valor1; resultado1; [default])',x:'=CAMBIAR(A1,1,"Ene",2,"Feb",3,"Mar","Otro")'},
+    {n:'FALSO',e:'FALSE',d:'Devuelve el valor lógico FALSO.',s:'FALSO()',x:'=FALSO() → FALSO'},
+    {n:'LAMBDA',e:'LAMBDA',d:'Crea una función reutilizable dentro de fórmulas.',s:'LAMBDA([parámetro1; ...]; cálculo)',x:'=LAMBDA(x,x*x)(5) → 25'},
+    {n:'LET',e:'LET',d:'Asigna nombres a resultados de cálculo dentro de una fórmula.',s:'LET(nombre1; valor1; ...; cálculo)',x:'=LET(x,A1*2,y,B1+3,x+y)'},
+    {n:'MAP',e:'MAP',d:'Asigna cada valor de matrices a un nuevo valor aplicando LAMBDA.',s:'MAP(matriz1; [matriz2]; ...; lambda)',x:'=MAP(A1:A5,LAMBDA(v,v*2))'},
+    {n:'NO',e:'NOT',d:'Cambia FALSO por VERDADERO y VERDADERO por FALSO.',s:'NO(lógico)',x:'=NO(A1>10)'},
+    {n:'O',e:'OR',d:'Devuelve VERDADERO si algún argumento es VERDADERO.',s:'O(lógico1; [lógico2]; ...)',x:'=O(A1>0,B1>0)'},
+    {n:'REDUCE',e:'REDUCE',d:'Reduce una matriz a un valor acumulado aplicando LAMBDA.',s:'REDUCE([acumulado_inicial]; matriz; lambda)',x:'=REDUCE(0,A1:A10,LAMBDA(a,v,a+v))'},
+    {n:'SCAN',e:'SCAN',d:'Examina una matriz con LAMBDA y devuelve cada valor intermedio.',s:'SCAN([acumulado_inicial]; matriz; lambda)',x:'=SCAN(0,A1:A5,LAMBDA(a,v,a+v))'},
+    {n:'SI',e:'IF',d:'Devuelve un valor si la condición es VERDADERO y otro si es FALSO.',s:'SI(prueba_lógica; valor_si_verdadero; [valor_si_falso])',x:'=SI(A1>100,"Alto","Bajo")'},
+    {n:'SI.CONJUNTO',e:'IFS',d:'Comprueba múltiples condiciones y devuelve el valor de la primera verdadera.',s:'SI.CONJUNTO(lógico1; valor1; [lógico2; valor2]; ...)',x:'=SI.CONJUNTO(A1>=90,"A",A1>=80,"B",A1>=70,"C")'},
+    {n:'SI.ERROR',e:'IFERROR',d:'Devuelve un valor si la expresión es un error, otro si no lo es.',s:'SI.ERROR(valor; valor_si_error)',x:'=SI.ERROR(A1/B1,0)'},
+    {n:'SI.ND',e:'IFNA',d:'Devuelve un valor si la expresión produce #N/A.',s:'SI.ND(valor; valor_si_nd)',x:'=SI.ND(BUSCARV(A1,B:C,2,0),"No encontrado")'},
+    {n:'VERDADERO',e:'TRUE',d:'Devuelve el valor lógico VERDADERO.',s:'VERDADERO()',x:'=VERDADERO() → VERDADERO'},
+    {n:'XO',e:'XOR',d:'Devuelve "Exclusive Or" lógica de todos los argumentos.',s:'XO(lógico1; [lógico2]; ...)',x:'=XO(A1>0,B1>0)'},
+    {n:'Y',e:'AND',d:'Devuelve VERDADERO si todos los argumentos son VERDADEROS.',s:'Y(lógico1; [lógico2]; ...)',x:'=Y(A1>0,A1<100)'},
+  ],
+  'Fecha y Hora': [
+    {n:'AHORA',e:'NOW',d:'Devuelve la fecha y hora actuales.',s:'AHORA()',x:'=AHORA() → 03/06/2026 09:15'},
+    {n:'AÑO',e:'YEAR',d:'Devuelve el año de una fecha.',s:'AÑO(núm_de_serie)',x:'=AÑO(HOY()) → 2026'},
+    {n:'DIA',e:'DAY',d:'Devuelve el día del mes (1 a 31).',s:'DIA(núm_de_serie)',x:'=DIA(HOY()) → 3'},
+    {n:'DIA.LAB',e:'WORKDAY',d:'Devuelve la fecha antes o después de N días laborables.',s:'DIA.LAB(fecha_inicial; días; [festivos])',x:'=DIA.LAB(HOY(),10)'},
+    {n:'DIA.LAB.INTL',e:'WORKDAY.INTL',d:'Devuelve la fecha con parámetros de fin de semana personalizados.',s:'DIA.LAB.INTL(fecha_inicial; días; [fin_de_semana]; [festivos])',x:'=DIA.LAB.INTL(HOY(),10,1)'},
+    {n:'DIAS',e:'DAYS',d:'Devuelve la cantidad de días entre dos fechas.',s:'DIAS(fecha_final; fecha_inicial)',x:'=DIAS("31/12/2026",HOY())'},
+    {n:'DIAS.LAB',e:'NETWORKDAYS',d:'Devuelve el número total de días laborables entre dos fechas.',s:'DIAS.LAB(fecha_inicial; fecha_final; [festivos])',x:'=DIAS.LAB("01/01/2026","31/12/2026")'},
+    {n:'DIAS.LAB.INTL',e:'NETWORKDAYS.INTL',d:'Días laborables con parámetros de fin de semana personalizados.',s:'DIAS.LAB.INTL(fecha_inicial; fecha_final; [fin_de_semana]; [festivos])',x:'=DIAS.LAB.INTL(A1,B1,1)'},
+    {n:'DIAS360',e:'DAYS360',d:'Calcula días entre fechas basándose en un año de 360 días.',s:'DIAS360(fecha_inicial; fecha_final; [método])',x:'=DIAS360("01/01/2026","31/12/2026")'},
+    {n:'DIASEM',e:'WEEKDAY',d:'Devuelve el día de la semana (1-7).',s:'DIASEM(núm_de_serie; [tipo])',x:'=DIASEM(HOY(),2) → 1=Lun'},
+    {n:'FECHA',e:'DATE',d:'Devuelve el número que representa la fecha especificada.',s:'FECHA(año; mes; día)',x:'=FECHA(2026,6,3)'},
+    {n:'FECHA.MES',e:'EDATE',d:'Devuelve la fecha N meses antes o después.',s:'FECHA.MES(fecha_inicial; meses)',x:'=FECHA.MES(HOY(),3)'},
+    {n:'FECHANUMERO',e:'DATEVALUE',d:'Convierte una fecha en forma de texto en número de serie.',s:'FECHANUMERO(texto_de_fecha)',x:'=FECHANUMERO("03/06/2026")'},
+    {n:'FIN.MES',e:'EOMONTH',d:'Devuelve el último día del mes N meses antes/después.',s:'FIN.MES(fecha_inicial; meses)',x:'=FIN.MES(HOY(),0) → último día del mes'},
+    {n:'FRAC.AÑO',e:'YEARFRAC',d:'Devuelve la fracción del año entre dos fechas.',s:'FRAC.AÑO(fecha_inicial; fecha_final; [base])',x:'=FRAC.AÑO("01/01/2026",HOY())'},
+    {n:'HORA',e:'HOUR',d:'Devuelve la hora (0-23) de un valor de hora.',s:'HORA(núm_de_serie)',x:'=HORA(AHORA()) → 9'},
+    {n:'HORANUMERO',e:'TIMEVALUE',d:'Convierte una hora de texto en número de serie.',s:'HORANUMERO(texto_de_hora)',x:'=HORANUMERO("09:15:00")'},
+    {n:'HOY',e:'TODAY',d:'Devuelve la fecha actual.',s:'HOY()',x:'=HOY() → 03/06/2026'},
+    {n:'ISO.NUM.DE.SEMANA',e:'ISOWEEKNUM',d:'Devuelve el número de semana ISO del año.',s:'ISO.NUM.DE.SEMANA(fecha)',x:'=ISO.NUM.DE.SEMANA(HOY()) → 23'},
+    {n:'MES',e:'MONTH',d:'Devuelve el mes (1-12) de una fecha.',s:'MES(núm_de_serie)',x:'=MES(HOY()) → 6'},
+    {n:'MINUTO',e:'MINUTE',d:'Devuelve el minuto (0-59) de un valor de hora.',s:'MINUTO(núm_de_serie)',x:'=MINUTO(AHORA()) → 15'},
+    {n:'NSHORA',e:'TIME',d:'Convierte horas, minutos y segundos en número de serie de hora.',s:'NSHORA(hora; minuto; segundo)',x:'=NSHORA(9,15,0)'},
+    {n:'NUM.DE.SEMANA',e:'WEEKNUM',d:'Devuelve el número de semana del año.',s:'NUM.DE.SEMANA(núm_de_serie; [tipo])',x:'=NUM.DE.SEMANA(HOY(),2)'},
+    {n:'SEGUNDO',e:'SECOND',d:'Devuelve los segundos (0-59) de un valor de hora.',s:'SEGUNDO(núm_de_serie)',x:'=SEGUNDO(AHORA()) → 30'},
+  ],
+  'Base de Datos': [
+    {n:'BDCONTAR',e:'DCOUNT',d:'Cuenta celdas con números en la columna que cumplen las condiciones.',s:'BDCONTAR(base_de_datos; nombre_de_campo; criterios)',x:'=BDCONTAR(A1:D10,"Ventas",F1:F2)'},
+    {n:'BDCONTARA',e:'DCOUNTA',d:'Cuenta celdas no vacías en la columna que cumplen las condiciones.',s:'BDCONTARA(base_de_datos; nombre_de_campo; criterios)',x:'=BDCONTARA(A1:D10,"Cliente",F1:F2)'},
+    {n:'BDDESVEST',e:'DSTDEV',d:'Calcula la desviación estándar de una muestra en la BD.',s:'BDDESVEST(base_de_datos; nombre_de_campo; criterios)',x:'=BDDESVEST(A1:D10,"Precio",F1:F2)'},
+    {n:'BDDESVESTP',e:'DSTDEVP',d:'Calcula la desviación estándar de la población total en la BD.',s:'BDDESVESTP(base_de_datos; nombre_de_campo; criterios)',x:'=BDDESVESTP(A1:D10,"Precio",F1:F2)'},
+    {n:'BDEXTRAER',e:'DGET',d:'Extrae un único registro que coincide con las condiciones.',s:'BDEXTRAER(base_de_datos; nombre_de_campo; criterios)',x:'=BDEXTRAER(A1:D10,"Nombre",F1:F2)'},
+    {n:'BDMAX',e:'DMAX',d:'Devuelve el valor máximo en la columna que cumple las condiciones.',s:'BDMAX(base_de_datos; nombre_de_campo; criterios)',x:'=BDMAX(A1:D10,"Ventas",F1:F2)'},
+    {n:'BDMIN',e:'DMIN',d:'Devuelve el valor mínimo en la columna que cumple las condiciones.',s:'BDMIN(base_de_datos; nombre_de_campo; criterios)',x:'=BDMIN(A1:D10,"Ventas",F1:F2)'},
+    {n:'BDPRODUCTO',e:'DPRODUCT',d:'Multiplica los valores de la columna que cumplen las condiciones.',s:'BDPRODUCTO(base_de_datos; nombre_de_campo; criterios)',x:'=BDPRODUCTO(A1:D10,"Factor",F1:F2)'},
+    {n:'BDPROMEDIO',e:'DAVERAGE',d:'Obtiene el promedio de una columna que cumple las condiciones.',s:'BDPROMEDIO(base_de_datos; nombre_de_campo; criterios)',x:'=BDPROMEDIO(A1:D10,"Ventas",F1:F2)'},
+    {n:'BDSUMA',e:'DSUM',d:'Suma los valores de la columna que cumplen las condiciones.',s:'BDSUMA(base_de_datos; nombre_de_campo; criterios)',x:'=BDSUMA(A1:D10,"Ventas",F1:F2)'},
+    {n:'BDVAR',e:'DVAR',d:'Calcula la varianza de una muestra en la BD.',s:'BDVAR(base_de_datos; nombre_de_campo; criterios)',x:'=BDVAR(A1:D10,"Precio",F1:F2)'},
+    {n:'BDVARP',e:'DVARP',d:'Calcula la varianza de la población total en la BD.',s:'BDVARP(base_de_datos; nombre_de_campo; criterios)',x:'=BDVARP(A1:D10,"Precio",F1:F2)'},
+  ],
+  'Matemáticas': [
+    {n:'ABS',e:'ABS',d:'Devuelve el valor absoluto de un número.',s:'ABS(número)',x:'=ABS(-15) → 15'},
+    {n:'ACOS',e:'ACOS',d:'Devuelve el arcoseno de un número en radianes (0 a Pi).',s:'ACOS(número)',x:'=ACOS(1) → 0'},
+    {n:'ACOSH',e:'ACOSH',d:'Devuelve el coseno hiperbólico inverso.',s:'ACOSH(número)',x:'=ACOSH(10)'},
+    {n:'ACOT',e:'ACOT',d:'Devuelve el arco tangente en radianes (0 a Pi).',s:'ACOT(número)',x:'=ACOT(1) → 0.7854'},
+    {n:'ACOTH',e:'ACOTH',d:'Devuelve la cotangente hiperbólica inversa.',s:'ACOTH(número)',x:'=ACOTH(6)'},
+    {n:'AGREGAR',e:'AGGREGATE',d:'Devuelve un agregado de una lista o base de datos.',s:'AGREGAR(núm_función; opciones; ref1; ...)',x:'=AGREGAR(9,5,A1:A10)'},
+    {n:'ALEATORIO',e:'RAND',d:'Devuelve un número aleatorio entre 0 y 1.',s:'ALEATORIO()',x:'=ALEATORIO() → 0.7382'},
+    {n:'ALEATORIO.ENTRE',e:'RANDBETWEEN',d:'Devuelve un número aleatorio entre dos valores.',s:'ALEATORIO.ENTRE(inferior; superior)',x:'=ALEATORIO.ENTRE(1,100)'},
+    {n:'ASENO',e:'ASIN',d:'Devuelve el arcoseno en radianes.',s:'ASENO(número)',x:'=ASENO(1) → 1.5708'},
+    {n:'ASENOH',e:'ASINH',d:'Devuelve el seno hiperbólico inverso.',s:'ASENOH(número)',x:'=ASENOH(2.5)'},
+    {n:'ATAN',e:'ATAN',d:'Devuelve el arco tangente en radianes (-Pi/2 a Pi/2).',s:'ATAN(número)',x:'=ATAN(1) → 0.7854'},
+    {n:'ATAN2',e:'ATAN2',d:'Devuelve el arco tangente de las coordenadas X e Y.',s:'ATAN2(x; y)',x:'=ATAN2(1,1) → 0.7854'},
+    {n:'ATANH',e:'ATANH',d:'Devuelve la tangente hiperbólica inversa.',s:'ATANH(número)',x:'=ATANH(0.5)'},
+    {n:'BASE',e:'BASE',d:'Convierte un número en texto con la base dada.',s:'BASE(número; base; [longitud_mínima])',x:'=BASE(255,16) → "FF"'},
+    {n:'COCIENTE',e:'QUOTIENT',d:'Devuelve la parte entera de una división.',s:'COCIENTE(numerador; denominador)',x:'=COCIENTE(10,3) → 3'},
+    {n:'COMBINA',e:'COMBINA',d:'Devuelve combinaciones con repeticiones.',s:'COMBINA(número; tamaño)',x:'=COMBINA(4,2) → 10'},
+    {n:'COMBINAT',e:'COMBIN',d:'Devuelve el número de combinaciones sin repetición.',s:'COMBINAT(número; tamaño)',x:'=COMBINAT(4,2) → 6'},
+    {n:'COS',e:'COS',d:'Devuelve el coseno de un ángulo.',s:'COS(número)',x:'=COS(PI()) → -1'},
+    {n:'COSH',e:'COSH',d:'Devuelve el coseno hiperbólico.',s:'COSH(número)',x:'=COSH(0) → 1'},
+    {n:'COT',e:'COT',d:'Devuelve la cotangente de un ángulo.',s:'COT(número)',x:'=COT(PI()/4) → 1'},
+    {n:'ENTERO',e:'INT',d:'Redondea un número al entero inferior más próximo.',s:'ENTERO(número)',x:'=ENTERO(8.9) → 8'},
+    {n:'EXP',e:'EXP',d:'Devuelve e elevado a la potencia del número.',s:'EXP(número)',x:'=EXP(1) → 2.71828'},
+    {n:'FACT',e:'FACT',d:'Devuelve el factorial de un número.',s:'FACT(número)',x:'=FACT(5) → 120'},
+    {n:'GRADOS',e:'DEGREES',d:'Convierte radianes en grados.',s:'GRADOS(ángulo)',x:'=GRADOS(PI()) → 180'},
+    {n:'LN',e:'LN',d:'Devuelve el logaritmo natural.',s:'LN(número)',x:'=LN(EXP(1)) → 1'},
+    {n:'LOG',e:'LOG',d:'Devuelve el logaritmo en la base especificada.',s:'LOG(número; [base])',x:'=LOG(1000,10) → 3'},
+    {n:'LOG10',e:'LOG10',d:'Devuelve el logaritmo en base 10.',s:'LOG10(número)',x:'=LOG10(1000) → 3'},
+    {n:'M.C.D',e:'GCD',d:'Devuelve el máximo común divisor.',s:'M.C.D(número1; [número2]; ...)',x:'=M.C.D(12,18) → 6'},
+    {n:'M.C.M',e:'LCM',d:'Devuelve el mínimo común múltiplo.',s:'M.C.M(número1; [número2]; ...)',x:'=M.C.M(4,6) → 12'},
+    {n:'MATRIZALEAT',e:'RANDARRAY',d:'Devuelve una matriz de números aleatorios.',s:'MATRIZALEAT([filas]; [columnas]; [mín]; [máx]; [entero])',x:'=MATRIZALEAT(3,3,1,100,VERDADERO)'},
+    {n:'MMULT',e:'MMULT',d:'Devuelve el producto matricial de dos matrices.',s:'MMULT(matriz1; matriz2)',x:'=MMULT(A1:B2,C1:D2)'},
+    {n:'PI',e:'PI',d:'Devuelve el valor de Pi (3.14159...).',s:'PI()',x:'=PI() → 3.14159265358979'},
+    {n:'POTENCIA',e:'POWER',d:'Devuelve el número elevado a una potencia.',s:'POTENCIA(número; potencia)',x:'=POTENCIA(2,10) → 1024'},
+    {n:'PRODUCTO',e:'PRODUCT',d:'Multiplica todos los números especificados.',s:'PRODUCTO(número1; [número2]; ...)',x:'=PRODUCTO(A1:A5)'},
+    {n:'RADIANES',e:'RADIANS',d:'Convierte grados en radianes.',s:'RADIANES(ángulo)',x:'=RADIANES(180) → 3.14159'},
+    {n:'RAIZ',e:'SQRT',d:'Devuelve la raíz cuadrada de un número.',s:'RAIZ(número)',x:'=RAIZ(144) → 12'},
+    {n:'REDONDEAR',e:'ROUND',d:'Redondea un número al número de decimales especificado.',s:'REDONDEAR(número; núm_decimales)',x:'=REDONDEAR(3.14159,2) → 3.14'},
+    {n:'REDONDEAR.MAS',e:'ROUNDUP',d:'Redondea hacia arriba, alejándose de cero.',s:'REDONDEAR.MAS(número; núm_decimales)',x:'=REDONDEAR.MAS(3.14,1) → 3.2'},
+    {n:'REDONDEAR.MENOS',e:'ROUNDDOWN',d:'Redondea hacia abajo, hacia cero.',s:'REDONDEAR.MENOS(número; núm_decimales)',x:'=REDONDEAR.MENOS(3.99,1) → 3.9'},
+    {n:'RESIDUO',e:'MOD',d:'Devuelve el residuo de una división.',s:'RESIDUO(número; divisor)',x:'=RESIDUO(10,3) → 1'},
+    {n:'SECUENCIA',e:'SEQUENCE',d:'Devuelve una secuencia de números.',s:'SECUENCIA(filas; [columnas]; [inicio]; [paso])',x:'=SECUENCIA(5,1,1,2) → 1,3,5,7,9'},
+    {n:'SENO',e:'SIN',d:'Devuelve el seno de un ángulo.',s:'SENO(número)',x:'=SENO(PI()/2) → 1'},
+    {n:'SIGNO',e:'SIGN',d:'Devuelve el signo de un número (1, 0 o -1).',s:'SIGNO(número)',x:'=SIGNO(-5) → -1'},
+    {n:'SUBTOTALES',e:'SUBTOTAL',d:'Devuelve un subtotal dentro de una lista o BD.',s:'SUBTOTALES(núm_función; ref1; ...)',x:'=SUBTOTALES(9,A1:A100)'},
+    {n:'SUMA',e:'SUM',d:'Suma todos los números en un rango.',s:'SUMA(número1; [número2]; ...)',x:'=SUMA(A1:A10)'},
+    {n:'SUMAR.SI',e:'SUMIF',d:'Suma las celdas que cumplen determinado criterio.',s:'SUMAR.SI(rango; criterio; [rango_suma])',x:'=SUMAR.SI(A1:A10,">100",B1:B10)'},
+    {n:'SUMAR.SI.CONJUNTO',e:'SUMIFS',d:'Suma celdas que cumplen múltiples criterios.',s:'SUMAR.SI.CONJUNTO(rango_suma; rango_criterio1; criterio1; ...)',x:'=SUMAR.SI.CONJUNTO(C:C,A:A,"CR",B:B,">0")'},
+    {n:'SUMAPRODUCTO',e:'SUMPRODUCT',d:'Suma los productos de rangos correspondientes.',s:'SUMAPRODUCTO(matriz1; [matriz2]; ...)',x:'=SUMAPRODUCTO(A1:A5,B1:B5)'},
+    {n:'TAN',e:'TAN',d:'Devuelve la tangente de un ángulo.',s:'TAN(número)',x:'=TAN(PI()/4) → 1'},
+    {n:'TRUNCAR',e:'TRUNC',d:'Trunca un número eliminando la parte decimal.',s:'TRUNCAR(número; [núm_decimales])',x:'=TRUNCAR(3.999) → 3'},
+  ],
+  'Financieras': [
+    {n:'AMORTIZ.LIN',e:'AMORLINC',d:'Devuelve la amortización de cada período contable.',s:'AMORTIZ.LIN(costo; fecha_compra; primer_período; rescate; período; tasa; [base])',x:'=AMORTIZ.LIN(2400,"01/01/2023","01/01/2024",300,1,0.15,1)'},
+    {n:'DB',e:'DB',d:'Depreciación por método de saldo fijo.',s:'DB(costo; valor_residual; vida; período; [mes])',x:'=DB(1000000,100000,6,1)'},
+    {n:'DDB',e:'DDB',d:'Depreciación por método de doble disminución.',s:'DDB(costo; valor_residual; vida; período; [factor])',x:'=DDB(1000000,100000,10,1)'},
+    {n:'DURACION',e:'DURATION',d:'Duración anual de un valor bursátil con pagos periódicos.',s:'DURACION(liquidación; vencimiento; cupón; rendimiento; frecuencia; [base])',x:'=DURACION("01/01/2026","01/01/2030",0.08,0.09,2)'},
+    {n:'INT.ACUM',e:'ACCRINT',d:'Devuelve el interés devengado con pagos periódicos.',s:'INT.ACUM(emisión; primer_interés; liquidación; tasa; par; frecuencia; [base])',x:'=INT.ACUM("01/01/2026","07/01/2026","01/08/2026",0.1,1000,2)'},
+    {n:'INT.EFECTIVO',e:'EFFECT',d:'Devuelve la tasa de interés anual efectiva.',s:'INT.EFECTIVO(tasa_nominal; núm_per_año)',x:'=INT.EFECTIVO(0.12,12) → 12.68%'},
+    {n:'NPER',e:'NPER',d:'Devuelve el número de pagos de una inversión.',s:'NPER(tasa; pago; va; [vf]; [tipo])',x:'=NPER(0.01,-200,1000) → 5.06'},
+    {n:'PAGO',e:'PMT',d:'Calcula el pago periódico de un préstamo.',s:'PAGO(tasa; nper; va; [vf]; [tipo])',x:'=PAGO(0.08/12,48,-18000) → ₡439.43'},
+    {n:'PAGO.INT.ENTRE',e:'CUMIPMT',d:'Interés acumulado entre dos períodos.',s:'PAGO.INT.ENTRE(tasa; nper; vp; per_inicial; per_final; tipo)',x:'=PAGO.INT.ENTRE(0.09/12,30*12,125000,13,24,0)'},
+    {n:'PAGO.PRINC.ENTRE',e:'CUMPRINC',d:'Principal acumulado de un préstamo entre dos períodos.',s:'PAGO.PRINC.ENTRE(tasa; nper; vp; per_inicial; per_final; tipo)',x:'=PAGO.PRINC.ENTRE(0.09/12,30*12,125000,13,24,0)'},
+    {n:'PAGOINT',e:'IPMT',d:'Interés pagado en un período determinado.',s:'PAGOINT(tasa; período; nper; va; [vf]; [tipo])',x:'=PAGOINT(0.1/12,1,36,-8000)'},
+    {n:'PAGOPRIN',e:'PPMT',d:'Pago del capital en un período determinado.',s:'PAGOPRIN(tasa; período; nper; va; [vf]; [tipo])',x:'=PAGOPRIN(0.1/12,1,36,-8000)'},
+    {n:'PRECIO',e:'PRICE',d:'Precio por ₡100 de valor nominal de un bono.',s:'PRECIO(liquidación; vencimiento; tasa; rendimiento; reembolso; frecuencia; [base])',x:'=PRECIO("15/02/2026","15/11/2027",0.065,0.0625,100,2,0)'},
+    {n:'P.DURACION',e:'PDURATION',d:'Períodos necesarios para que una inversión alcance un valor.',s:'P.DURACION(tasa; va; vf)',x:'=P.DURACION(0.025,2000,2200)'},
+    {n:'RENDTO',e:'YIELD',d:'Rendimiento de un valor bursátil con intereses periódicos.',s:'RENDTO(liquidación; vencimiento; tasa; precio; reembolso; frecuencia; [base])',x:'=RENDTO("15/02/2026","15/11/2027",0.065,100,100,2)'},
+    {n:'RRI',e:'RRI',d:'Tasa de interés equivalente para el crecimiento de una inversión.',s:'RRI(nper; vp; vf)',x:'=RRI(96,10000,11000) → 0.001'},
+    {n:'SLN',e:'SLN',d:'Depreciación por método lineal (directo).',s:'SLN(costo; valor_residual; vida)',x:'=SLN(30000,7500,10) → 2250'},
+    {n:'TASA',e:'RATE',d:'Tasa de interés por período de un préstamo.',s:'TASA(nper; pago; va; [vf]; [tipo]; [estimar])',x:'=TASA(48,-200,8000)*12'},
+    {n:'TASA.NOMINAL',e:'NOMINAL',d:'Devuelve la tasa de interés nominal anual.',s:'TASA.NOMINAL(tasa_efectiva; núm_per_año)',x:'=TASA.NOMINAL(0.053543,4) → 5.25%'},
+    {n:'TIR',e:'IRR',d:'Tasa interna de retorno de una serie de flujos de caja.',s:'TIR(valores; [estimar])',x:'=TIR(A1:A6) donde A1=-10000, A2:A6=3000'},
+    {n:'TIR.NO.PER',e:'XIRR',d:'TIR para flujos de caja no periódicos.',s:'TIR.NO.PER(valores; fechas; [estimar])',x:'=TIR.NO.PER(A1:A5,B1:B5)'},
+    {n:'TIRM',e:'MIRR',d:'TIR considerando costo de inversión e interés de reinversión.',s:'TIRM(valores; tasa_financiamiento; tasa_reinversión)',x:'=TIRM(A1:A6,0.12,0.1)'},
+    {n:'VA',e:'PV',d:'Valor presente de una inversión.',s:'VA(tasa; nper; pago; [vf]; [tipo])',x:'=VA(0.08/12,48,-200)'},
+    {n:'VF',e:'FV',d:'Valor futuro de una inversión.',s:'VF(tasa; nper; pago; [va]; [tipo])',x:'=VF(0.05/12,60,-100)'},
+    {n:'VF.PLAN',e:'FVSCHEDULE',d:'Valor futuro con serie de tasas de interés compuesto.',s:'VF.PLAN(principal; programación)',x:'=VF.PLAN(1000,{0.09,0.11,0.1})'},
+    {n:'VNA',e:'NPV',d:'Valor neto actual de una inversión.',s:'VNA(tasa; valor1; [valor2]; ...)',x:'=VNA(0.1,A2:A6)+A1'},
+    {n:'VNA.NO.PER',e:'XNPV',d:'VNA para flujos de caja no periódicos.',s:'VNA.NO.PER(tasa; valores; fechas)',x:'=VNA.NO.PER(0.09,A2:A6,B2:B6)'},
+  ],
+  'Estadísticas': [
+    {n:'COEF.DE.CORREL',e:'CORREL',d:'Coeficiente de correlación de dos conjuntos de datos.',s:'COEF.DE.CORREL(matriz1; matriz2)',x:'=COEF.DE.CORREL(A1:A10,B1:B10)'},
+    {n:'CONTAR',e:'COUNT',d:'Cuenta celdas que contienen números.',s:'CONTAR(valor1; [valor2]; ...)',x:'=CONTAR(A1:A100)'},
+    {n:'CONTAR.BLANCO',e:'COUNTBLANK',d:'Cuenta celdas en blanco en un rango.',s:'CONTAR.BLANCO(rango)',x:'=CONTAR.BLANCO(A1:A100)'},
+    {n:'CONTAR.SI',e:'COUNTIF',d:'Cuenta celdas que coinciden con una condición.',s:'CONTAR.SI(rango; criterio)',x:'=CONTAR.SI(A1:A100,">0")'},
+    {n:'CONTAR.SI.CONJUNTO',e:'COUNTIFS',d:'Cuenta celdas que cumplen múltiples condiciones.',s:'CONTAR.SI.CONJUNTO(rango1; criterio1; [rango2; criterio2]; ...)',x:'=CONTAR.SI.CONJUNTO(A:A,"CR",B:B,">0")'},
+    {n:'CONTARA',e:'COUNTA',d:'Cuenta celdas no vacías.',s:'CONTARA(valor1; [valor2]; ...)',x:'=CONTARA(A1:A100)'},
+    {n:'CRECIMIENTO',e:'GROWTH',d:'Devuelve números en tendencia de crecimiento exponencial.',s:'CRECIMIENTO(y_conocidos; [x_conocidos]; [nuevas_x]; [constante])',x:'=CRECIMIENTO(B2:B6,A2:A6,A7:A10)'},
+    {n:'CURTOSIS',e:'KURT',d:'Devuelve la curtosis de un conjunto de datos.',s:'CURTOSIS(número1; [número2]; ...)',x:'=CURTOSIS(A1:A20)'},
+    {n:'DESVEST.M',e:'STDEV.S',d:'Desviación estándar de una muestra.',s:'DESVEST.M(número1; [número2]; ...)',x:'=DESVEST.M(A1:A30)'},
+    {n:'DESVEST.P',e:'STDEV.P',d:'Desviación estándar de la población total.',s:'DESVEST.P(número1; [número2]; ...)',x:'=DESVEST.P(A1:A30)'},
+    {n:'DISTR.NORM.N',e:'NORM.DIST',d:'Distribución normal para la media y desviación estándar.',s:'DISTR.NORM.N(x; media; desv_estándar; acumulado)',x:'=DISTR.NORM.N(42,40,1.5,VERDADERO)'},
+    {n:'ESTIMACION.LINEAL',e:'LINEST',d:'Estadísticas de tendencia lineal por mínimos cuadrados.',s:'ESTIMACION.LINEAL(y_conocidos; [x_conocidos]; [constante]; [estadística])',x:'=ESTIMACION.LINEAL(B1:B10,A1:A10,VERDADERO,VERDADERO)'},
+    {n:'FRECUENCIA',e:'FREQUENCY',d:'Frecuencia de valores en un rango (devuelve matriz vertical).',s:'FRECUENCIA(datos; grupos)',x:'=FRECUENCIA(A1:A50,{10,20,30,40})'},
+    {n:'GAMMA',e:'GAMMA',d:'Devuelve los valores de la función gamma.',s:'GAMMA(número)',x:'=GAMMA(2.5)'},
+    {n:'INTERSECCION.EJE',e:'INTERCEPT',d:'Punto donde la línea de regresión intersecta el eje Y.',s:'INTERSECCION.EJE(y_conocidos; x_conocidos)',x:'=INTERSECCION.EJE(B1:B10,A1:A10)'},
+    {n:'K.ESIMO.MAYOR',e:'LARGE',d:'Devuelve el k-ésimo valor mayor.',s:'K.ESIMO.MAYOR(matriz; k)',x:'=K.ESIMO.MAYOR(A1:A20,3) → tercer mayor'},
+    {n:'K.ESIMO.MENOR',e:'SMALL',d:'Devuelve el k-ésimo valor menor.',s:'K.ESIMO.MENOR(matriz; k)',x:'=K.ESIMO.MENOR(A1:A20,3) → tercer menor'},
+    {n:'MAX',e:'MAX',d:'Devuelve el valor máximo.',s:'MAX(número1; [número2]; ...)',x:'=MAX(A1:A100)'},
+    {n:'MAX.SI.CONJUNTO',e:'MAXIFS',d:'Máximo entre celdas que cumplen condiciones.',s:'MAX.SI.CONJUNTO(rango_max; rango1; criterio1; ...)',x:'=MAX.SI.CONJUNTO(C:C,A:A,"CR")'},
+    {n:'MEDIANA',e:'MEDIAN',d:'Devuelve el número central de un conjunto.',s:'MEDIANA(número1; [número2]; ...)',x:'=MEDIANA(A1:A50)'},
+    {n:'MIN',e:'MIN',d:'Devuelve el valor mínimo.',s:'MIN(número1; [número2]; ...)',x:'=MIN(A1:A100)'},
+    {n:'MIN.SI.CONJUNTO',e:'MINIFS',d:'Mínimo entre celdas que cumplen condiciones.',s:'MIN.SI.CONJUNTO(rango_min; rango1; criterio1; ...)',x:'=MIN.SI.CONJUNTO(C:C,A:A,"CR")'},
+    {n:'MODA.UNO',e:'MODE.SNGL',d:'Valor más frecuente de un conjunto.',s:'MODA.UNO(número1; [número2]; ...)',x:'=MODA.UNO(A1:A50)'},
+    {n:'PEARSON',e:'PEARSON',d:'Coeficiente de correlación producto-momento de Pearson.',s:'PEARSON(matriz1; matriz2)',x:'=PEARSON(A1:A10,B1:B10)'},
+    {n:'PENDIENTE',e:'SLOPE',d:'Pendiente de la línea de regresión lineal.',s:'PENDIENTE(y_conocidos; x_conocidos)',x:'=PENDIENTE(B1:B10,A1:A10)'},
+    {n:'PERCENTIL.INC',e:'PERCENTILE.INC',d:'Percentil k-ésimo (0..1 inclusive).',s:'PERCENTIL.INC(matriz; k)',x:'=PERCENTIL.INC(A1:A100,0.9)'},
+    {n:'PERMUTACIONES',e:'PERMUT',d:'Número de permutaciones para N objetos.',s:'PERMUTACIONES(número; tamaño)',x:'=PERMUTACIONES(6,2) → 30'},
+    {n:'PROBABILIDAD',e:'PROB',d:'Probabilidad de que valores estén entre dos límites.',s:'PROBABILIDAD(rango_x; rango_prob; límite_inf; [límite_sup])',x:'=PROBABILIDAD(A1:A5,B1:B5,2,3)'},
+    {n:'PROMEDIO',e:'AVERAGE',d:'Promedio (media aritmética) de los argumentos.',s:'PROMEDIO(número1; [número2]; ...)',x:'=PROMEDIO(A1:A50)'},
+    {n:'PROMEDIO.SI',e:'AVERAGEIF',d:'Promedio de celdas que cumplen una condición.',s:'PROMEDIO.SI(rango; criterio; [rango_promedio])',x:'=PROMEDIO.SI(A:A,">0",B:B)'},
+    {n:'PROMEDIO.SI.CONJUNTO',e:'AVERAGEIFS',d:'Promedio de celdas que cumplen múltiples condiciones.',s:'PROMEDIO.SI.CONJUNTO(rango_prom; rango1; criterio1; ...)',x:'=PROMEDIO.SI.CONJUNTO(C:C,A:A,"CR",B:B,">0")'},
+    {n:'TENDENCIA',e:'TREND',d:'Números en tendencia lineal por mínimos cuadrados.',s:'TENDENCIA(y_conocidos; [x_conocidos]; [nuevas_x]; [constante])',x:'=TENDENCIA(B2:B6,A2:A6,A7:A10)'},
+    {n:'VAR.P',e:'VAR.P',d:'Varianza de la población total.',s:'VAR.P(número1; [número2]; ...)',x:'=VAR.P(A1:A30)'},
+    {n:'VAR.S',e:'VAR.S',d:'Varianza de una muestra.',s:'VAR.S(número1; [número2]; ...)',x:'=VAR.S(A1:A30)'},
+  ],
+  'Información': [
+    {n:'CELDA',e:'CELL',d:'Devuelve información sobre formato, ubicación o contenido de una celda.',s:'CELDA(tipo_de_info; [referencia])',x:'=CELDA("address",A1) → "$A$1"'},
+    {n:'ES.IMPAR',e:'ISODD',d:'Devuelve VERDADERO si el número es impar.',s:'ES.IMPAR(número)',x:'=ES.IMPAR(3) → VERDADERO'},
+    {n:'ES.PAR',e:'ISEVEN',d:'Devuelve VERDADERO si el número es par.',s:'ES.PAR(número)',x:'=ES.PAR(4) → VERDADERO'},
+    {n:'ESBLANCO',e:'ISBLANK',d:'Comprueba si la celda está vacía.',s:'ESBLANCO(valor)',x:'=ESBLANCO(A1)'},
+    {n:'ESERR',e:'ISERR',d:'Comprueba si el valor es un error (excepto #N/A).',s:'ESERR(valor)',x:'=ESERR(A1/0)'},
+    {n:'ESERROR',e:'ISERROR',d:'Comprueba si el valor es cualquier error.',s:'ESERROR(valor)',x:'=ESERROR(A1/0)'},
+    {n:'ESFORMULA',e:'ISFORMULA',d:'Comprueba si la celda contiene una fórmula.',s:'ESFORMULA(referencia)',x:'=ESFORMULA(A1)'},
+    {n:'ESLOGICO',e:'ISLOGICAL',d:'Comprueba si el valor es lógico (VERDADERO/FALSO).',s:'ESLOGICO(valor)',x:'=ESLOGICO(VERDADERO) → VERDADERO'},
+    {n:'ESNOD',e:'ISNA',d:'Comprueba si el valor de error es #N/A.',s:'ESNOD(valor)',x:'=ESNOD(BUSCARV(A1,B:C,2,0))'},
+    {n:'ESNOTEXTO',e:'ISNONTEXT',d:'Comprueba si el valor no es texto.',s:'ESNOTEXTO(valor)',x:'=ESNOTEXTO(123) → VERDADERO'},
+    {n:'ESNUMERO',e:'ISNUMBER',d:'Comprueba si el valor es un número.',s:'ESNUMERO(valor)',x:'=ESNUMERO(A1)'},
+    {n:'ESREF',e:'ISREF',d:'Comprueba si el valor es una referencia.',s:'ESREF(valor)',x:'=ESREF(A1) → VERDADERO'},
+    {n:'ESTEXTO',e:'ISTEXT',d:'Comprueba si el valor es texto.',s:'ESTEXTO(valor)',x:'=ESTEXTO("Hola") → VERDADERO'},
+    {n:'HOJA',e:'SHEET',d:'Devuelve el número de la hoja referenciada.',s:'HOJA([valor])',x:'=HOJA() → 1'},
+    {n:'HOJAS',e:'SHEETS',d:'Devuelve la cantidad de hojas.',s:'HOJAS([referencia])',x:'=HOJAS() → 3'},
+    {n:'INFO',e:'INFO',d:'Información sobre el entorno operativo.',s:'INFO(tipo)',x:'=INFO("version")'},
+    {n:'N',e:'N',d:'Convierte valores no numéricos en números.',s:'N(valor)',x:'=N(VERDADERO) → 1'},
+    {n:'NOD',e:'NA',d:'Devuelve el valor de error #N/A.',s:'NOD()',x:'=NOD()'},
+    {n:'TIPO',e:'TYPE',d:'Devuelve un entero que representa el tipo de datos.',s:'TIPO(valor)',x:'=TIPO("Hola") → 2'},
+    {n:'TIPO.DE.ERROR',e:'ERROR.TYPE',d:'Devuelve un número que corresponde al tipo de error.',s:'TIPO.DE.ERROR(valor_error)',x:'=TIPO.DE.ERROR(#N/A) → 7'},
+  ],
+  'Ingeniería': [
+    {n:'BIN.A.DEC',e:'BIN2DEC',d:'Convierte un número binario en decimal.',s:'BIN.A.DEC(número)',x:'=BIN.A.DEC(1111) → 15'},
+    {n:'BIN.A.HEX',e:'BIN2HEX',d:'Convierte un número binario en hexadecimal.',s:'BIN.A.HEX(número; [lugares])',x:'=BIN.A.HEX(11111011) → "FB"'},
+    {n:'BIN.A.OCT',e:'BIN2OCT',d:'Convierte un número binario en octal.',s:'BIN.A.OCT(número; [lugares])',x:'=BIN.A.OCT(1111) → 17'},
+    {n:'BIT.O',e:'BITOR',d:'Devuelve un bit a bit "Or" de dos números.',s:'BIT.O(número1; número2)',x:'=BIT.O(23,10) → 31'},
+    {n:'BIT.XO',e:'BITXOR',d:'Devuelve un bit a bit "Exclusive Or".',s:'BIT.XO(número1; número2)',x:'=BIT.XO(5,3) → 6'},
+    {n:'BIT.Y',e:'BITAND',d:'Devuelve un bit a bit "And" de dos números.',s:'BIT.Y(número1; número2)',x:'=BIT.Y(23,10) → 2'},
+    {n:'COMPLEJO',e:'COMPLEX',d:'Convierte coeficientes real e imaginario en número complejo.',s:'COMPLEJO(real; imaginario; [sufijo])',x:'=COMPLEJO(3,4) → "3+4i"'},
+    {n:'CONVERTIR',e:'CONVERT',d:'Convierte un número de un sistema de medidas a otro.',s:'CONVERTIR(número; de_unidad; a_unidad)',x:'=CONVERTIR(1,"km","mi") → 0.621'},
+    {n:'DEC.A.BIN',e:'DEC2BIN',d:'Convierte un número decimal en binario.',s:'DEC.A.BIN(número; [lugares])',x:'=DEC.A.BIN(15) → "1111"'},
+    {n:'DEC.A.HEX',e:'DEC2HEX',d:'Convierte un número decimal en hexadecimal.',s:'DEC.A.HEX(número; [lugares])',x:'=DEC.A.HEX(255) → "FF"'},
+    {n:'DEC.A.OCT',e:'DEC2OCT',d:'Convierte un número decimal en octal.',s:'DEC.A.OCT(número; [lugares])',x:'=DEC.A.OCT(8) → "10"'},
+    {n:'DELTA',e:'DELTA',d:'Prueba si dos números son iguales (devuelve 1 o 0).',s:'DELTA(número1; [número2])',x:'=DELTA(5,4) → 0; =DELTA(5,5) → 1'},
+    {n:'FUN.ERROR',e:'ERF',d:'Devuelve la función de error entre límites.',s:'FUN.ERROR(límite_inf; [límite_sup])',x:'=FUN.ERROR(0.745)'},
+    {n:'FUN.ERROR.COMPL',e:'ERFC',d:'Devuelve la función de error complementaria.',s:'FUN.ERROR.COMPL(x)',x:'=FUN.ERROR.COMPL(1)'},
+    {n:'HEX.A.BIN',e:'HEX2BIN',d:'Convierte un número hexadecimal en binario.',s:'HEX.A.BIN(número; [lugares])',x:'=HEX.A.BIN("F") → "1111"'},
+    {n:'HEX.A.DEC',e:'HEX2DEC',d:'Convierte un número hexadecimal en decimal.',s:'HEX.A.DEC(número)',x:'=HEX.A.DEC("FF") → 255'},
+    {n:'HEX.A.OCT',e:'HEX2OCT',d:'Convierte un número hexadecimal en octal.',s:'HEX.A.OCT(número; [lugares])',x:'=HEX.A.OCT("F") → "17"'},
+    {n:'IM.ABS',e:'IMABS',d:'Valor absoluto (módulo) de un número complejo.',s:'IM.ABS(número_complejo)',x:'=IM.ABS("3+4i") → 5'},
+    {n:'IM.COS',e:'IMCOS',d:'Coseno de un número complejo.',s:'IM.COS(número_complejo)',x:'=IM.COS("1+i")'},
+    {n:'IM.DIV',e:'IMDIV',d:'Cociente de dos números complejos.',s:'IM.DIV(número_complejo1; número_complejo2)',x:'=IM.DIV("−238+240i","10+24i")'},
+    {n:'IM.EXP',e:'IMEXP',d:'Valor exponencial de un número complejo.',s:'IM.EXP(número_complejo)',x:'=IM.EXP("1+2i")'},
+    {n:'IM.LN',e:'IMLN',d:'Logaritmo natural de un número complejo.',s:'IM.LN(número_complejo)',x:'=IM.LN("3+4i")'},
+    {n:'IM.POT',e:'IMPOWER',d:'Número complejo elevado a una potencia.',s:'IM.POT(número_complejo; número)',x:'=IM.POT("2+3i",3)'},
+    {n:'IM.RAIZ2',e:'IMSQRT',d:'Raíz cuadrada de un número complejo.',s:'IM.RAIZ2(número_complejo)',x:'=IM.RAIZ2("1+i")'},
+    {n:'IM.SENO',e:'IMSIN',d:'Seno de un número complejo.',s:'IM.SENO(número_complejo)',x:'=IM.SENO("1+i")'},
+    {n:'IM.SUM',e:'IMSUM',d:'Suma de números complejos.',s:'IM.SUM(número_complejo1; [número_complejo2]; ...)',x:'=IM.SUM("3+4i","5-3i")'},
+    {n:'IMAGINARIO',e:'IMAGINARY',d:'Coeficiente imaginario de un número complejo.',s:'IMAGINARIO(número_complejo)',x:'=IMAGINARIO("3+4i") → 4'},
+    {n:'MAYOR.O.IGUAL',e:'GESTEP',d:'Prueba si un número es mayor o igual al valor de referencia.',s:'MAYOR.O.IGUAL(número; [paso])',x:'=MAYOR.O.IGUAL(5,4) → 1'},
+    {n:'OCT.A.BIN',e:'OCT2BIN',d:'Convierte un número octal en binario.',s:'OCT.A.BIN(número; [lugares])',x:'=OCT.A.BIN(7) → "111"'},
+    {n:'OCT.A.DEC',e:'OCT2DEC',d:'Convierte un número octal en decimal.',s:'OCT.A.DEC(número)',x:'=OCT.A.DEC(17) → 15'},
+    {n:'OCT.A.HEX',e:'OCT2HEX',d:'Convierte un número octal en hexadecimal.',s:'OCT.A.HEX(número; [lugares])',x:'=OCT.A.HEX(100) → "40"'},
+  ],
+  'Cubo': [
+    {n:'CONJUNTOCUBO',e:'CUBESET',d:'Define un conjunto calculado en el cubo OLAP.',s:'CONJUNTOCUBO(conexión; expresión_conjunto; [título]; [orden]; [ordenar_por])',x:'=CONJUNTOCUBO("ConexionOLAP","[Producto].[Todos]","Productos")'},
+    {n:'MIEMBROCUBO',e:'CUBEMEMBER',d:'Devuelve un miembro de un cubo OLAP.',s:'MIEMBROCUBO(conexión; expresión_miembro; [título])',x:'=MIEMBROCUBO("ConexionOLAP","[Medidas].[Ventas]")'},
+    {n:'MIEMBROKPICUBO',e:'CUBEKPIMEMBER',d:'Devuelve una propiedad KPI del cubo.',s:'MIEMBROKPICUBO(conexión; kpi_nombre; tipo_kpi; [título])',x:'=MIEMBROKPICUBO("ConexionOLAP","Ingresos",1)'},
+    {n:'MIEMBRORANGOCUBO',e:'CUBERANKEDMEMBER',d:'Devuelve el miembro N-ésimo de un conjunto.',s:'MIEMBRORANGOCUBO(conexión; expresión_conjunto; rango; [título])',x:'=MIEMBRORANGOCUBO("ConexionOLAP","[Producto].[Todos]",1)'},
+    {n:'PROPIEDADMIEMBROCUBO',e:'CUBEMEMBERPROPERTY',d:'Devuelve el valor de una propiedad de miembro en el cubo.',s:'PROPIEDADMIEMBROCUBO(conexión; expresión_miembro; propiedad)',x:'=PROPIEDADMIEMBROCUBO("ConexionOLAP","[Empleado].[E-02]","[Empleado].[E-02].[Nombre]")'},
+    {n:'RECUENTOCONJUNTOCUBO',e:'CUBESETCOUNT',d:'Devuelve el número de elementos de un conjunto.',s:'RECUENTOCONJUNTOCUBO(conjunto)',x:'=RECUENTOCONJUNTOCUBO(CONJUNTOCUBO("ConexionOLAP","[Producto].[Todos]"))'},
+    {n:'VALORCUBO',e:'CUBEVALUE',d:'Devuelve un valor agregado del cubo.',s:'VALORCUBO(conexión; [expresión_miembro1]; ...)',x:'=VALORCUBO("ConexionOLAP","[Medidas].[Ventas]","[Tiempo].[2026]")'},
+  ],
+  'Web': [
+    {n:'SERVICIOWEB',e:'WEBSERVICE',d:'Devuelve datos de un servicio web.',s:'SERVICIOWEB(url)',x:'=SERVICIOWEB("https://api.hacienda.go.cr/fe/ae?identificacion=3101000000")'},
+    {n:'URLCODIF',e:'ENCODEURL',d:'Devuelve una cadena codificada en URL.',s:'URLCODIF(texto)',x:'=URLCODIF("Costa Rica 2026") → "Costa%20Rica%202026"'},
+    {n:'XMLFILTRO',e:'FILTERXML',d:'Extrae datos XML usando XPath.',s:'XMLFILTRO(xml; xpath)',x:'=XMLFILTRO(SERVICIOWEB("https://api.ejemplo.cr/datos"),"//precio")'},
+  ],
+};
+
+// Colores por categoría
+const fnColors = {
+  'Búsqueda y Referencia':'#3a9e10','Texto':'#0e7490','Lógicas':'#7c3aed',
+  'Fecha y Hora':'#d97706','Base de Datos':'#dc2626','Matemáticas':'#059669',
+  'Financieras':'#1d4ed8','Estadísticas':'#9333ea','Información':'#64748b',
+  'Ingeniería':'#0f766e','Cubo':'#b45309','Web':'#0369a1'
+};
+
+let fnCurrentCat = 'Búsqueda y Referencia';
+let fnSelected = null;
+
+function renderFnTabs() {
+  const tabs = document.getElementById('fnTabs');
+  tabs.innerHTML = Object.keys(fnData).map(cat => `
+    <button onclick="selectFnCat('${cat}')" style="
+      padding:6px 12px; border-radius:20px; border:1.5px solid ${fnColors[cat]};
+      background:${fnCurrentCat===cat ? fnColors[cat] : 'var(--bg2)'};
+      color:${fnCurrentCat===cat ? '#fff' : fnColors[cat]};
+      font-size:12px; font-weight:700; cursor:pointer; font-family:inherit;
+      transition:all 0.15s;"
+    >${cat} <span style="opacity:0.7;font-weight:400;">(${fnData[cat].length})</span>
+    </button>`).join('');
+}
+
+function selectFnCat(cat) {
+  fnCurrentCat = cat;
+  fnSelected = null;
+  document.getElementById('fnDetail').style.display = 'none';
+  renderFnTabs();
+  renderFnList(fnData[cat]);
+}
+
+function renderFnList(list) {
+  const color = fnColors[fnCurrentCat];
+  document.getElementById('fnList').innerHTML = list.map(fn => `
+    <div onclick="selectFn('${fn.n.replace(/'/g,"\\'")}','${fnCurrentCat}')" style="
+      background:var(--bg3); border:1.5px solid var(--border);
+      border-radius:10px; padding:10px 12px; cursor:pointer;
+      transition:all 0.15s; border-left:3px solid ${color};"
+      onmouseover="this.style.borderColor='${color}';this.style.background='rgba(90,191,42,0.08)'"
+      onmouseout="this.style.borderColor='var(--border)';this.style.borderLeftColor='${color}';this.style.background='var(--bg3)'">
+      <div style="font-weight:700;font-size:13px;color:var(--accent);">${fn.n}</div>
+      <div style="font-size:11px;color:${color};font-family:'JetBrains Mono',monospace;">${fn.e}</div>
+      <div style="font-size:11px;color:var(--text2);margin-top:2px;line-height:1.4;">${fn.d.substring(0,70)}${fn.d.length>70?'…':''}</div>
+    </div>`).join('');
+}
+
+function selectFn(name, cat) {
+  const fn = fnData[cat].find(f => f.n === name);
+  if (!fn) return;
+  fnSelected = fn;
+  document.getElementById('fnDetailName').textContent = fn.n + '  ·  ' + fn.e;
+  document.getElementById('fnDetailSyntax').textContent = '=' + fn.s;
+  document.getElementById('fnDetailDesc').textContent = fn.d;
+  document.getElementById('fnDetailEx').textContent = fn.x;
+  document.getElementById('fnDetail').style.display = 'block';
+  document.getElementById('fnDetail').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function insertarFuncion() {
+  if (!fnSelected) return;
+  const canvas = document.getElementById('canvas');
+  canvas.innerHTML += `<div style="background:var(--bg3);border:1.5px solid var(--border2);border-radius:10px;padding:12px 14px;margin:6px 0;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--accent);">${fnSelected.x}</div>`;
+  closeModal('modalFunciones');
+}
+
+// Búsqueda global de funciones
+document.getElementById('fnSearch').addEventListener('input', function() {
+  const q = this.value.toLowerCase().trim();
+  if (!q) { renderFnList(fnData[fnCurrentCat]); return; }
+  const results = [];
+  Object.values(fnData).forEach(cat => cat.forEach(fn => {
+    if (fn.n.toLowerCase().includes(q) || fn.e.toLowerCase().includes(q) || fn.d.toLowerCase().includes(q))
+      results.push(fn);
+  }));
+  renderFnList(results);
+  if (results.length > 0) {
+    // ajustar color genérico para resultados mixtos
+    fnCurrentCat = Object.keys(fnData).find(c => fnData[c].includes(results[0])) || fnCurrentCat;
+  }
+});
+
+document.getElementById('btnFunciones').addEventListener('click', () => {
+  openModal('modalFunciones');
+  renderFnTabs();
+  renderFnList(fnData[fnCurrentCat]);
+});
+
+
+console.log('Matriz Contable CR v12 ✓ — verde lima edition');
 </script>
 </body>
 </html>
