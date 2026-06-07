@@ -5781,57 +5781,5 @@ document.addEventListener('DOMContentLoaded', function() {
   console.log('Matriz Contable CR v13 OK — '+total+' funciones');
 });
 <script>
-// ════════════════════════════════════════════════════
-// MEJORAS v13.1 — Sin romper botones originales
-// ════════════════════════════════════════════════════
-
-// Mejorar fórmulas (sin romper las que ya tenías)
-if (typeof evalFormula === 'function') {
-  const oldEval = evalFormula;
-  window.evalFormula = function(formula) {
-    if (!formula || !formula.startsWith('=')) return oldEval ? oldEval(formula) : formula;
-    
-    try {
-      let upper = formula.toUpperCase();
-      if (upper.includes('IVA(')) {
-        let num = parseFloat(formula.match(/\d+/) || 0);
-        return Math.round(num * 0.13 * 100) / 100;
-      }
-      return oldEval(formula);
-    } catch(e) {
-      return oldEval ? oldEval(formula) : '#ERR';
-    }
-  };
-}
-
-// Mejorar Guardar
-if (typeof canvasGuardar === 'function') {
-  const oldGuardar = canvasGuardar;
-  window.canvasGuardar = function() {
-    oldGuardar(); // Llama a tu función original
-    try {
-      document.getElementById('statusLeft').textContent = '✓ Guardado (mejorado)';
-    } catch(e) {}
-  };
-}
-
-// Mejorar Exportar XML
-if (typeof exportarXML === 'function') {
-  const oldXML = exportarXML;
-  window.exportarXML = function() {
-    oldXML(); // Llama a tu función original
-    alert('✅ XML Factura Electrónica 4.3 generado (mejorado)');
-  };
-}
-
-// Auto-guardado (cada 30 segundos)
-setTimeout(() => {
-  setInterval(() => {
-    if (typeof canvasGuardar === 'function') canvasGuardar();
-  }, 30000);
-}, 5000);
-
-console.log('✅ Mejoras aplicadas sin romper botones');
-</script>
 </body>
 </html>
