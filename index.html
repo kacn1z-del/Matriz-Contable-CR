@@ -12731,5 +12731,138 @@ console.log('✅ BugFix cargado: commitEdit + autosave + restore');
   }
 })();
 </script>
+<script>
+// ════════════════════════════════════════════════════
+// MATRIZ CONTABLE CR — PATCH v14.3 (GRÁFICOS AUTÓNOMO)
+// Trae su propio motor de dibujo. Pegá antes de </body>.
+// ════════════════════════════════════════════════════
+(function () {
+  function valOf(cid) {
+    var v = sheetData[(cid || '').toUpperCase()] || '';
+    if (typeof v === 'string' && v.charAt(0) === '=') {
+      try { v = window.evalFormula(v, 0, 0); } catch (e) { v = '#ERR'; }
+    }
+    return v;
+  }
+  function numOf(cid) { return parseFloat(String(valOf(cid)).replace(/[₡,\s]/g, '')) || 0; }
+
+  function aplicar() {
+    if (typeof cellId !== 'function' || typeof sheetData === 'undefined') return setTimeout(aplicar, 150);
+
+    function recolectar() {
+      var labels = [], values = [], values2 = [];
+      var r0 = (typeof activeCell !== 'undefined' && activeCell) ? activeCell.r : 0;
+      var c0 = (typeof activeCell !== 'undefined' && activeCell) ? activeCell.c : 0;
+      if (typeof selStart !== 'undefined' && selStart && selEnd) {
+        var r1 = Math.min(selStart.r, selEnd.r), r2 = Math.max(selStart.r, selEnd.r);
+        var c1 = Math.min(selStart.c, selEnd.c), c2 = Math.max(selStart.c, selEnd.c);
+        for (var ri = r1; ri <= r2; ri++) {
+          labels.push(String(sheetData[cellId(ri, c1)] || cellId(ri, c1)));
+          values.push(numOf(cellId(ri, c1 + 1)));
+          values2.push(c2 > c1 + 1 ? numOf(cellId(ri, c1 + 2)) : 0);
+        }
+      } else {
+        for (var ri2 = 0; ri2 < 8; ri2++) {
+          var lbl = sheetData[cellId(r0 + ri2, c0 > 0 ? c0 - 1 : 0)] || cellId(r0 + ri2, c0);
+          var v = numOf(cellId(r0 + ri2, c0));
+          if (v !== 0 || sheetData[cellId(r0 + ri2, c0)]) { labels.push(String(lbl)); values.push(v); }
+        }
+      }
+      if (values.length === 0) {
+        labels = ['Ventas', 'Compras', 'IVA', 'Gastos', 'Activos', 'Pasivos'];
+        values = [70000, 35000, 9700, 15000, 120000, 45000];
+        values2 = [65000, 30000, 8500, 12000, 110000, 40000];
+      }
+      return { labels: labels, values: values, values2: values2 };
+    }
+
+    function dibujar(canvas, type, title, labels, values, values2) {
+      var ctx = canvas.getContext('2d'), W = canvas.width, H = canvas.height;
+      var COL = ['#5abf2a', '#3a9e10', '#1d4ed8', '#dc2626', '#d97706', '#7c3aed', '#0891b2', '#be185d'];
+      ctx.clearRect(0, 0, W, H); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, W, H);
+      ctx.fillStyle = '#1e5208'; ctx.font = 'bold 12px sans-serif'; ctx.textAlign = 'center'; ctx.fillText(title, W / 2, 15);
+      var pL = 42, pR = 12, pT = 24, pB = 34, cW = W - pL - pR, cH = H - pT - pB;
+      var max = Math.max.apply(null, values.concat(values2.filter(function (v) { return v; }))) || 1;
+      function grid() {
+        ctx.strokeStyle = '#e2f2d4'; ctx.lineWidth = 1;
+        for (var g = 0; g <= 4; g++) { var gy = pT + cH - (g / 4) * cH; ctx.beginPath(); ctx.moveTo(pL, gy); ctx.lineTo(pL + cW, gy); ctx.stroke(); ctx.fillStyle = '#6b8f48'; ctx.font = '9px sans-serif'; ctx.textAlign = 'right'; var gv = max * g / 4; ctx.fillText(gv >= 1000 ? (gv / 1000).toFixed(1) + 'K' : gv.toFixed(0), pL - 3, gy + 3); }
+      }
+      if (type === 'bars') {
+        grid(); var bw = Math.min(40, cW / (values.length + 1));
+        values.forEach(function (v, i) { var h = (v / max) * cH, x = pL + i * (bw + 6); ctx.fillStyle = COL[i % COL.length]; ctx.fillRect(x, pT + cH - h, bw, h); ctx.fillStyle = '#1e5208'; ctx.font = '9px sans-serif'; ctx.textAlign = 'center'; ctx.fillText(v >= 1000 ? (v / 1000).toFixed(1) + 'K' : String(v), x + bw / 2, pT + cH - h - 3); ctx.fillStyle = '#3d6020'; ctx.fillText((labels[i] || '').substring(0, 6), x + bw / 2, pT + cH + 12); });
+      } else if (type === 'bars_h') {
+        var bh = Math.min(22, cH / (values.length + 1));
+        values.forEach(function (v, i) { var w = (v / max) * cW, y = pT + i * (bh + 5); ctx.fillStyle = COL[i % COL.length]; ctx.fillRect(pL, y, w, bh); ctx.fillStyle = '#1e5208'; ctx.font = '9px sans-serif'; ctx.textAlign = 'left'; ctx.fillText((labels[i] || '').substring(0, 8), 2, y + bh / 2 + 3); });
+      } else if (type === 'bars_g') {
+        grid(); var bw3 = Math.min(18, cW / (values.length * 2.5 + 1));
+        values.forEach(function (v, i) { var x = pL + i * (bw3 * 2 + 10); ctx.fillStyle = COL[0]; ctx.fillRect(x, pT + cH - (v / max) * cH, bw3, (v / max) * cH); if (values2[i]) { ctx.fillStyle = COL[2]; ctx.fillRect(x + bw3 + 2, pT + cH - (values2[i] / max) * cH, bw3, (values2[i] / max) * cH); } ctx.fillStyle = '#3d6020'; ctx.font = '9px sans-serif'; ctx.textAlign = 'center'; ctx.fillText((labels[i] || '').substring(0, 5), x + bw3, pT + cH + 12); });
+      } else if (type === 'line' || type === 'area') {
+        grid(); var pw = cW / (values.length - 1 || 1);
+        if (type === 'area') { ctx.beginPath(); ctx.moveTo(pL, pT + cH); values.forEach(function (v, i) { ctx.lineTo(pL + i * pw, pT + cH - (v / max) * cH); }); ctx.lineTo(pL + cW, pT + cH); ctx.closePath(); ctx.fillStyle = 'rgba(90,191,42,.18)'; ctx.fill(); }
+        ctx.beginPath(); ctx.strokeStyle = COL[0]; ctx.lineWidth = 2.5; values.forEach(function (v, i) { i === 0 ? ctx.moveTo(pL + i * pw, pT + cH - (v / max) * cH) : ctx.lineTo(pL + i * pw, pT + cH - (v / max) * cH); }); ctx.stroke();
+        values.forEach(function (v, i) { ctx.beginPath(); ctx.arc(pL + i * pw, pT + cH - (v / max) * cH, 3.5, 0, 6.3); ctx.fillStyle = COL[0]; ctx.fill(); });
+      } else if (type === 'pie' || type === 'donut') {
+        var tot = values.reduce(function (a, b) { return a + b; }, 0) || 1, sa = -Math.PI / 2, cx = W / 2, cy = H / 2 + 6, pr = Math.min(cW, cH) / 2 - 8;
+        values.forEach(function (v, i) { var sl = (v / tot) * 6.2832; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, pr, sa, sa + sl); ctx.closePath(); ctx.fillStyle = COL[i % COL.length]; ctx.fill(); ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke(); var m = sa + sl / 2; if (v / tot > 0.05) { ctx.fillStyle = '#fff'; ctx.font = 'bold 9px sans-serif'; ctx.textAlign = 'center'; ctx.fillText(Math.round(v / tot * 100) + '%', cx + Math.cos(m) * pr * 0.65, cy + Math.sin(m) * pr * 0.65 + 3); } sa += sl; });
+        if (type === 'donut') { ctx.beginPath(); ctx.arc(cx, cy, pr * 0.45, 0, 6.3); ctx.fillStyle = '#fff'; ctx.fill(); }
+      } else if (type === 'radar') {
+        var cx2 = W / 2, cy2 = H / 2 + 6, pr2 = Math.min(cW, cH) / 2 - 15, n = values.length;
+        for (var lv = 1; lv <= 4; lv++) { ctx.beginPath(); ctx.strokeStyle = '#e2f2d4'; for (var i = 0; i < n; i++) { var a = i * 6.2832 / n - 1.5708; var px = cx2 + Math.cos(a) * pr2 * (lv / 4), py = cy2 + Math.sin(a) * pr2 * (lv / 4); i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py); } ctx.closePath(); ctx.stroke(); }
+        ctx.beginPath(); ctx.fillStyle = 'rgba(90,191,42,.25)'; ctx.strokeStyle = COL[0]; ctx.lineWidth = 2; values.forEach(function (v, i) { var a = i * 6.2832 / n - 1.5708; var px = cx2 + Math.cos(a) * pr2 * (v / max), py = cy2 + Math.sin(a) * pr2 * (v / max); i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py); }); ctx.closePath(); ctx.fill(); ctx.stroke();
+      } else if (type === 'funnel') {
+        var sorted = values.slice().sort(function (a, b) { return b - a; }), bh2 = Math.min(26, cH / (sorted.length + 1));
+        sorted.forEach(function (v, i) { var w = (v / max) * cW, y = pT + i * (bh2 + 6), x = pL + (cW - w) / 2; ctx.fillStyle = COL[i % COL.length]; ctx.fillRect(x, y, w, bh2); ctx.fillStyle = '#fff'; ctx.font = 'bold 9px sans-serif'; ctx.textAlign = 'center'; ctx.fillText((labels[i] || ''), pL + cW / 2, y + bh2 / 2 + 3); });
+      } else { dibujar(canvas, 'bars', title, labels, values, values2); }
+    }
+
+    function insertarFlotante(type, title, d) {
+      var anchor = (typeof cellEl === 'function' && typeof activeCell !== 'undefined') ? cellEl(activeCell.r, activeCell.c) : null;
+      var wrap = document.createElement('div');
+      wrap.className = 'chart-float';
+      wrap.style.cssText = 'position:absolute;left:' + (anchor ? anchor.offsetLeft : 80) + 'px;top:' + (anchor ? anchor.offsetTop + anchor.offsetHeight + 4 : 80) + 'px;background:#fff;border:2px solid #aad98a;border-radius:12px;padding:10px;box-shadow:0 6px 28px rgba(0,0,0,.16);z-index:40;cursor:move;';
+      var bar = document.createElement('div');
+      bar.style.cssText = 'display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;';
+      bar.innerHTML = '<span style="font-size:11px;font-weight:700;color:#2d7a0c;">📊 ' + title + '</span>';
+      var x = document.createElement('button'); x.textContent = '✕'; x.style.cssText = 'background:none;border:none;font-size:14px;cursor:pointer;color:#6b8f48;'; x.onclick = function () { wrap.remove(); };
+      bar.appendChild(x);
+      var cv = document.createElement('canvas'); cv.width = 320; cv.height = 200; cv.style.cssText = 'display:block;border-radius:6px;';
+      wrap.appendChild(bar); wrap.appendChild(cv);
+      (document.getElementById('sheetOuter') || document.body).appendChild(wrap);
+      dibujar(cv, type, title, d.labels, d.values, d.values2);
+      var drag = false, dx = 0, dy = 0;
+      bar.addEventListener('mousedown', function (e) { drag = true; dx = e.clientX - wrap.offsetLeft; dy = e.clientY - wrap.offsetTop; });
+      bar.addEventListener('touchstart', function (e) { drag = true; var t = e.touches[0]; dx = t.clientX - wrap.offsetLeft; dy = t.clientY - wrap.offsetTop; });
+      document.addEventListener('mousemove', function (e) { if (drag) { wrap.style.left = (e.clientX - dx) + 'px'; wrap.style.top = (e.clientY - dy) + 'px'; } });
+      document.addEventListener('touchmove', function (e) { if (drag) { var t = e.touches[0]; wrap.style.left = (t.clientX - dx) + 'px'; wrap.style.top = (t.clientY - dy) + 'px'; } });
+      document.addEventListener('mouseup', function () { drag = false; });
+      document.addEventListener('touchend', function () { drag = false; });
+      var sl = document.getElementById('statusLeft'); if (sl) sl.textContent = 'Gráfico insertado: ' + type;
+    }
+
+    function modal() {
+      var d = recolectar();
+      var TYPES = [['bars', '📊 Barras'], ['bars_h', '📉 Horizontales'], ['bars_g', '📈 Agrupadas'], ['line', '📈 Línea'], ['area', '🏔 Área'], ['pie', '🥧 Torta'], ['donut', '🍩 Dona'], ['radar', '🕸 Radar'], ['funnel', '🔻 Embudo']];
+      var ov = document.createElement('div');
+      ov.style.cssText = 'position:fixed;inset:0;background:rgba(10,30,5,.55);z-index:9000;display:flex;align-items:center;justify-content:center;padding:14px;';
+      var box = document.createElement('div');
+      box.style.cssText = 'background:#fff;border-radius:16px;max-width:420px;width:100%;padding:18px;';
+      box.innerHTML = '<div style="font-size:15px;font-weight:800;color:#2d7a0c;margin-bottom:12px;">📊 Elegí el tipo de gráfico</div>';
+      var grid = document.createElement('div');
+      grid.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:14px;';
+      TYPES.forEach(function (t) { var b = document.createElement('button'); b.textContent = t[1]; b.style.cssText = 'padding:10px;border:1.5px solid #cce9ae;border-radius:8px;background:#f7fdf2;color:#3d6020;font-size:13px;font-weight:600;cursor:pointer;'; b.onclick = function () { document.body.removeChild(ov); insertarFlotante(t[0], 'Gráfico', d); }; grid.appendChild(b); });
+      box.appendChild(grid);
+      var c = document.createElement('button'); c.textContent = 'Cancelar'; c.style.cssText = 'width:100%;padding:10px;border:none;border-radius:8px;background:#eef8e4;color:#3d6020;font-size:13px;font-weight:600;cursor:pointer;'; c.onclick = function () { document.body.removeChild(ov); };
+      box.appendChild(c);
+      ov.appendChild(box); ov.addEventListener('click', function (e) { if (e.target === ov) document.body.removeChild(ov); }); document.body.appendChild(ov);
+    }
+
+    window.insertarGrafico = modal;
+    window.chartFromSelection = modal;
+    console.log('✅ Patch v14.3 cargado — motor de gráficos autónomo');
+  }
+  if (document.readyState === 'complete' || document.readyState === 'interactive') setTimeout(aplicar, 300);
+  else document.addEventListener('DOMContentLoaded', function () { setTimeout(aplicar, 300); });
+})();
+</script>
 </body>
 </html>
