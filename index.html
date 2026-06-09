@@ -12625,5 +12625,111 @@ console.log('✅ BugFix cargado: commitEdit + autosave + restore');
 
 
 </script>
+<script>
+// ════════════════════════════════════════════════════
+// MATRIZ CONTABLE CR — PATCH v14.2 (FIX GRÁFICOS)
+// Pegá ESTE bloque DESPUÉS del v14.1, antes de </body>
+// ════════════════════════════════════════════════════
+(function () {
+  function valOf(cid) {
+    var v = sheetData[(cid || '').toUpperCase()] || '';
+    if (typeof v === 'string' && v.charAt(0) === '=') {
+      try { v = window.evalFormula(v, 0, 0); } catch (e) { v = '#ERR'; }
+    }
+    return v;
+  }
+  function numOf(cid) {
+    return parseFloat(String(valOf(cid)).replace(/[₡,\s]/g, '')) || 0;
+  }
+
+  function aplicarFix() {
+    if (typeof window.insertarGrafico !== 'function' || typeof cellId !== 'function') {
+      return setTimeout(aplicarFix, 150);
+    }
+
+    window.insertarGrafico = function () {
+      var labels = [], values = [], values2 = [];
+      var r0 = (typeof activeCell !== 'undefined' && activeCell) ? activeCell.r : 0;
+      var c0 = (typeof activeCell !== 'undefined' && activeCell) ? activeCell.c : 0;
+
+      if (typeof selStart !== 'undefined' && selStart && selEnd) {
+        var r1 = Math.min(selStart.r, selEnd.r), r2 = Math.max(selStart.r, selEnd.r);
+        var c1 = Math.min(selStart.c, selEnd.c), c2 = Math.max(selStart.c, selEnd.c);
+        for (var ri = r1; ri <= r2; ri++) {
+          var lbl = sheetData[cellId(ri, c1)] || cellId(ri, c1);
+          var v1 = numOf(cellId(ri, c1 + 1));
+          var v2 = c2 > c1 + 1 ? numOf(cellId(ri, c1 + 2)) : 0;
+          labels.push(String(lbl)); values.push(v1); values2.push(v2);
+        }
+      } else {
+        for (var ri2 = 0; ri2 < 8; ri2++) {
+          var lbl2 = sheetData[cellId(r0 + ri2, c0 > 0 ? c0 - 1 : 0)] || cellId(r0 + ri2, c0);
+          var v3 = numOf(cellId(r0 + ri2, c0));
+          if (v3 !== 0 || sheetData[cellId(r0 + ri2, c0)]) { labels.push(String(lbl2)); values.push(v3); }
+        }
+      }
+      if (values.length === 0) {
+        labels = ['Ventas', 'Compras', 'IVA x Pagar', 'Gastos', 'Activos', 'Pasivos'];
+        values = [70000, 35000, 9700, 15000, 120000, 45000];
+        values2 = [65000, 30000, 8500, 12000, 110000, 40000];
+      }
+
+      if (typeof insertChartIntoSheet === 'function') {
+        mostrarModalGrafico(labels, values, values2);
+      } else {
+        alert('No se encontró el motor de gráficos.');
+      }
+    };
+
+    function mostrarModalGrafico(labels, values, values2) {
+      var TYPES = [
+        ['bars', '📊 Barras verticales'], ['bars_h', '📉 Barras horizontales'],
+        ['bars_g', '📈 Barras agrupadas'], ['line', '📈 Línea'],
+        ['area', '🏔 Área'], ['pie', '🥧 Torta'], ['donut', '🍩 Dona'],
+        ['radar', '🕸 Radar'], ['scatter', '✦ Dispersión'], ['funnel', '🔻 Embudo'],
+        ['waterfall', '💧 Cascada'], ['step', '📶 Escalón']
+      ];
+      var ov = document.createElement('div');
+      ov.style.cssText = 'position:fixed;inset:0;background:rgba(10,30,5,.55);backdrop-filter:blur(4px);z-index:9000;display:flex;align-items:center;justify-content:center;padding:14px;';
+      var box = document.createElement('div');
+      box.style.cssText = 'background:#fff;border-radius:16px;max-width:420px;width:100%;padding:18px;box-shadow:0 20px 60px rgba(0,0,0,.25);';
+      box.innerHTML = '<div style="font-size:15px;font-weight:800;color:#2d7a0c;margin-bottom:12px;">📊 Elegí el tipo de gráfico</div>';
+      var grid = document.createElement('div');
+      grid.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:14px;';
+      TYPES.forEach(function (t) {
+        var b = document.createElement('button');
+        b.textContent = t[1];
+        b.style.cssText = 'padding:9px;border:1.5px solid #cce9ae;border-radius:8px;background:#f7fdf2;color:#3d6020;font-size:12.5px;font-weight:600;cursor:pointer;text-align:left;';
+        b.onclick = function () {
+          document.body.removeChild(ov);
+          insertChartIntoSheet(t[0], 'Gráfico', 'green', labels, values, values2);
+        };
+        grid.appendChild(b);
+      });
+      box.appendChild(grid);
+      var cancel = document.createElement('button');
+      cancel.textContent = 'Cancelar';
+      cancel.style.cssText = 'width:100%;padding:9px;border:none;border-radius:8px;background:#eef8e4;color:#3d6020;font-size:13px;font-weight:600;cursor:pointer;';
+      cancel.onclick = function () { document.body.removeChild(ov); };
+      box.appendChild(cancel);
+      ov.appendChild(box);
+      ov.addEventListener('click', function (e) { if (e.target === ov) document.body.removeChild(ov); });
+      document.body.appendChild(ov);
+    }
+
+    if (typeof window.chartFromSelection === 'function') {
+      window.chartFromSelection = function () { window.insertarGrafico(); };
+    }
+
+    console.log('✅ Patch v14.2 cargado — gráficos reconectados');
+  }
+
+  if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    setTimeout(aplicarFix, 300);
+  } else {
+    document.addEventListener('DOMContentLoaded', function () { setTimeout(aplicarFix, 300); });
+  }
+})();
+</script>
 </body>
 </html>
