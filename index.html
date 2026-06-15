@@ -10545,5 +10545,1199 @@ console.log('✅ BugFix cargado: commitEdit + autosave + restore');
 })();
 
 </script>
+<script>
+// ════════════════════════════════════════════════════
+// MATRIZ CONTABLE CR — PATCH v14.0
+// 5 nuevas funcionalidades:
+//   1. 📒 Libro Mayor Automático (desde asientos del Diario)
+//   2. ⚖️  Balance de Comprobación en tiempo real
+//   3. 💰 Flujo de Efectivo (directo e indirecto)
+//   4. 🏦 Conciliación Bancaria Interactiva
+//   5. 📋 Declaración D-101 (Renta CR)
+//
+// INSTRUCCIONES:
+// Pegá este bloque completo ANTES de </body>
+// (justo después del </script> del patch v13.9)
+// ════════════════════════════════════════════════════
+(function(){
+
+// ════════════════════════════════════════════════════
+// CSS — estilos para los 5 módulos
+// ════════════════════════════════════════════════════
+var css = `
+/* ── Modal v14 base ─────────────────────────── */
+.modal-v14{display:none;position:fixed;inset:0;background:rgba(10,30,5,.55);
+  backdrop-filter:blur(6px);z-index:2100;align-items:center;justify-content:center;padding:12px;}
+.modal-v14.active{display:flex;}
+.mbox-v14{background:#fff;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.22);
+  width:100%;max-width:860px;max-height:93vh;overflow:hidden;display:flex;flex-direction:column;}
+.mbox-v14.sm{max-width:540px;}
+.mhead-v14{display:flex;align-items:center;justify-content:space-between;
+  padding:13px 18px;border-bottom:1px solid var(--border);
+  background:linear-gradient(120deg,var(--g4),var(--g3));color:#fff;flex-shrink:0;}
+.mhead-v14 h3{font-size:14px;font-weight:800;color:#fff;}
+.mcls-v14{background:rgba(255,255,255,.18);border:none;border-radius:6px;
+  width:28px;height:28px;font-size:16px;color:#fff;cursor:pointer;}
+.mbody-v14{overflow-y:auto;flex:1;padding:16px;}
+.mfoot-v14{padding:11px 18px;border-top:1px solid var(--border);
+  display:flex;gap:7px;justify-content:flex-end;background:var(--off);flex-shrink:0;}
+
+/* ── Tabs dentro de modal ────────────────────── */
+.v14-tabs{display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:14px;overflow-x:auto;}
+.v14-tab{padding:7px 16px;border:none;background:transparent;font-size:12.5px;font-weight:700;
+  color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;white-space:nowrap;}
+.v14-tab.active{color:var(--g2);border-bottom-color:var(--g2);}
+.v14-pane{display:none;}
+.v14-pane.active{display:block;}
+
+/* ── Tabla contable v14 ──────────────────────── */
+.tbl-v14{width:100%;border-collapse:collapse;font-size:12.5px;margin-bottom:10px;}
+.tbl-v14 th{background:var(--bg3);padding:7px 10px;text-align:left;font-weight:700;
+  color:var(--g3);font-size:11px;border-bottom:2px solid var(--border2);white-space:nowrap;}
+.tbl-v14 td{padding:6px 10px;border-bottom:1px solid var(--border);vertical-align:middle;}
+.tbl-v14 tbody tr:hover td{background:var(--off);}
+.tbl-v14 .num{text-align:right;font-family:monospace;font-weight:600;}
+.tbl-v14 .total-row td{font-weight:800;background:var(--bg2)!important;border-top:2px solid var(--border2);}
+.tbl-v14 .subtotal-row td{font-weight:700;background:#f0fce8!important;font-style:italic;}
+.tbl-v14 .section-row td{background:var(--bg3);font-weight:800;color:var(--g3);font-size:11px;
+  text-transform:uppercase;letter-spacing:.5px;padding:5px 10px;}
+.v14-inp{width:100%;border:1px solid var(--border2);border-radius:5px;padding:4px 7px;
+  font-size:12.5px;background:#fff;color:var(--text);font-family:inherit;}
+.v14-inp:focus{outline:none;border-color:var(--g1);box-shadow:0 0 0 2px rgba(90,191,42,.12);}
+
+/* ── KPI cards ───────────────────────────────── */
+.v14-kpis{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:9px;margin-bottom:14px;}
+.v14-kpi{background:var(--off);border:1.5px solid var(--border);border-radius:10px;
+  padding:10px 12px;text-align:center;}
+.v14-kpi-lbl{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;
+  letter-spacing:.6px;margin-bottom:4px;}
+.v14-kpi-val{font-size:18px;font-weight:800;color:var(--g3);font-family:monospace;}
+.v14-kpi-sub{font-size:10px;color:var(--text3);margin-top:2px;}
+.v14-kpi.ok .v14-kpi-val{color:#16a34a;}
+.v14-kpi.warn .v14-kpi-val{color:#d97706;}
+.v14-kpi.bad .v14-kpi-val{color:#dc2626;}
+
+/* ── Semáforo balance ────────────────────────── */
+.v14-balance-status{display:flex;align-items:center;gap:8px;padding:10px 14px;
+  border-radius:10px;margin-bottom:12px;font-weight:700;font-size:13px;}
+.v14-balance-status.ok{background:#dcfce7;color:#15803d;border:1.5px solid #86efac;}
+.v14-balance-status.bad{background:#fee2e2;color:#b91c1c;border:1.5px solid #fca5a5;}
+
+/* ── Conciliación ────────────────────────────── */
+.v14-conc-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.v14-conc-box{background:var(--off);border:1.5px solid var(--border);border-radius:10px;padding:12px;}
+.v14-conc-box h4{font-size:12px;font-weight:800;color:var(--g3);margin-bottom:8px;
+  text-transform:uppercase;letter-spacing:.5px;}
+.v14-add-row{display:flex;gap:5px;margin-top:6px;}
+.v14-add-row .v14-inp{flex:1;}
+
+/* ── D-101 secciones ─────────────────────────── */
+.v14-d101-sec{background:var(--off);border:1.5px solid var(--border);
+  border-radius:10px;padding:12px;margin-bottom:10px;}
+.v14-d101-sec h4{font-size:11px;font-weight:800;color:var(--g3);
+  text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px;}
+.v14-d101-row{display:grid;grid-template-columns:1fr 160px;gap:8px;
+  align-items:center;margin-bottom:6px;}
+.v14-d101-row label{font-size:12px;color:var(--text2);}
+
+/* ── Botones v14 ─────────────────────────────── */
+.btn-v14{padding:7px 14px;border-radius:7px;border:none;font-size:12.5px;
+  font-weight:700;cursor:pointer;transition:all .12s;}
+.btn-v14.p{background:linear-gradient(135deg,var(--g1),var(--g2));color:#fff;}
+.btn-v14.p:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(58,158,16,.3);}
+.btn-v14.s{background:var(--bg2);color:var(--text2);}
+.btn-v14.s:hover{background:var(--bg3);}
+.btn-v14.danger{background:#fee2e2;color:#b91c1c;}
+.btn-v14.danger:hover{background:#fecaca;}
+
+/* ── Sidebar nuevos botones ──────────────────── */
+.v14-sb-divider{height:1px;background:var(--border);margin:5px 10px;}
+.v14-sb-title{font-size:10px;font-weight:800;color:var(--text3);
+  text-transform:uppercase;letter-spacing:1px;padding:8px 14px 3px;}
+
+/* ── Flujo de efectivo ───────────────────────── */
+.v14-flujo-total{background:linear-gradient(135deg,var(--g3),var(--g4));
+  color:#fff;border-radius:10px;padding:12px 16px;text-align:center;margin-bottom:12px;}
+.v14-flujo-total .lbl{font-size:11px;opacity:.8;margin-bottom:4px;}
+.v14-flujo-total .val{font-size:24px;font-weight:800;font-family:monospace;}
+
+@media(max-width:599px){
+  .mbox-v14{max-width:100%!important;max-height:92vh;border-radius:18px 18px 0 0;
+    border-bottom:none;position:fixed;bottom:0;}
+  .modal-v14{align-items:flex-end;padding:0;}
+  .v14-conc-grid{grid-template-columns:1fr;}
+  .v14-d101-row{grid-template-columns:1fr;}
+}
+`;
+var styleEl = document.createElement('style');
+styleEl.textContent = css;
+document.head.appendChild(styleEl);
+
+// ════════════════════════════════════════════════════
+// HTML — 5 modales
+// ════════════════════════════════════════════════════
+var html = `
+
+<!-- ═══ MODAL 1: LIBRO MAYOR AUTOMÁTICO ═════════════ -->
+<div class="modal-v14" id="modalLibroMayor">
+  <div class="mbox-v14">
+    <div class="mhead-v14">
+      <h3>📗 Libro Mayor Automático</h3>
+      <button class="mcls-v14" onclick="cerrarV14('modalLibroMayor')">×</button>
+    </div>
+    <div class="mbody-v14">
+      <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
+        <button class="btn-v14 p" onclick="generarLibroMayor()">⟳ Generar desde Diario</button>
+        <button class="btn-v14 s" onclick="exportarLibroMayorCSV()">↓ CSV</button>
+        <button class="btn-v14 s" onclick="exportarLibroMayorPDF()">📕 PDF</button>
+        <span style="margin-left:auto;font-size:11px;color:var(--text3);align-self:center;" id="lmFecha"></span>
+      </div>
+      <div id="lmCuentaFiltro" style="margin-bottom:10px;display:none;">
+        <select class="v14-inp" id="lmSelectCuenta" onchange="filtrarCuentaMayor(this.value)" style="max-width:280px;">
+          <option value="">— Todas las cuentas —</option>
+        </select>
+      </div>
+      <div id="libroMayorBody">
+        <div style="text-align:center;padding:40px;color:var(--text3);">
+          <div style="font-size:32px;margin-bottom:8px;">📗</div>
+          <div style="font-size:13px;">Hacé clic en <strong>Generar desde Diario</strong> para procesar los asientos de la hoja activa.</div>
+          <div style="font-size:11px;margin-top:6px;color:var(--text3);">El sistema leerá columnas: Fecha · Cuenta · Debe · Haber</div>
+        </div>
+      </div>
+    </div>
+    <div class="mfoot-v14">
+      <button class="btn-v14 s" onclick="cerrarV14('modalLibroMayor')">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL 2: BALANCE DE COMPROBACIÓN ════════════ -->
+<div class="modal-v14" id="modalBalanceComp">
+  <div class="mbox-v14">
+    <div class="mhead-v14">
+      <h3>⚖️ Balance de Comprobación</h3>
+      <button class="mcls-v14" onclick="cerrarV14('modalBalanceComp')">×</button>
+    </div>
+    <div class="mbody-v14">
+      <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
+        <button class="btn-v14 p" onclick="generarBalanceComp()">⟳ Calcular en tiempo real</button>
+        <button class="btn-v14 s" onclick="exportarBalanceCSV()">↓ CSV</button>
+        <button class="btn-v14 s" onclick="exportarBalancePDF()">📕 PDF</button>
+      </div>
+      <div id="balanceStatus"></div>
+      <div id="balanceKPIs" class="v14-kpis"></div>
+      <div id="balanceCompBody">
+        <div style="text-align:center;padding:40px;color:var(--text3);">
+          <div style="font-size:32px;margin-bottom:8px;">⚖️</div>
+          <div style="font-size:13px;">Presioná <strong>Calcular en tiempo real</strong> para generar el Balance de Comprobación desde los datos de la hoja.</div>
+        </div>
+      </div>
+    </div>
+    <div class="mfoot-v14">
+      <button class="btn-v14 s" onclick="cerrarV14('modalBalanceComp')">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL 3: FLUJO DE EFECTIVO ══════════════════ -->
+<div class="modal-v14" id="modalFlujoEfectivo">
+  <div class="mbox-v14">
+    <div class="mhead-v14">
+      <h3>💰 Flujo de Efectivo</h3>
+      <button class="mcls-v14" onclick="cerrarV14('modalFlujoEfectivo')">×</button>
+    </div>
+    <div class="mbody-v14">
+      <div class="v14-tabs">
+        <button class="v14-tab active" onclick="switchFlujoTab('directo',this)">Método Directo</button>
+        <button class="v14-tab" onclick="switchFlujoTab('indirecto',this)">Método Indirecto</button>
+      </div>
+
+      <!-- DIRECTO -->
+      <div class="v14-pane active" id="flujoDirectoPane">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+          <div><label style="font-size:11px;font-weight:700;color:var(--text2);display:block;margin-bottom:3px;">Período</label>
+            <input class="v14-inp" type="month" id="flujoPeriodo" value=""></div>
+          <div><label style="font-size:11px;font-weight:700;color:var(--text2);display:block;margin-bottom:3px;">Moneda</label>
+            <select class="v14-inp" id="flujoMoneda"><option value="CRC">₡ Colones (CRC)</option><option value="USD">$ Dólares (USD)</option></select></div>
+        </div>
+        <div class="v14-flujo-total" id="flujoTotalBox">
+          <div class="lbl">Flujo Neto del Período</div>
+          <div class="val" id="flujoNetoVal">₡0</div>
+        </div>
+        <table class="tbl-v14" id="flujoDirectoTbl">
+          <thead><tr>
+            <th>Concepto</th><th class="num">Monto (₡)</th><th style="width:40px;"></th>
+          </tr></thead>
+          <tbody id="flujoDirectoBody"></tbody>
+        </table>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;">
+          <button class="btn-v14 p" onclick="agregarFilaFlujo('directo','entrada')">+ Entrada</button>
+          <button class="btn-v14 s" onclick="agregarFilaFlujo('directo','salida')">+ Salida</button>
+          <button class="btn-v14 s" onclick="calcularFlujoDirecto()">∑ Recalcular</button>
+          <button class="btn-v14 s" onclick="exportarFlujoPDF()">📕 PDF</button>
+        </div>
+      </div>
+
+      <!-- INDIRECTO -->
+      <div class="v14-pane" id="flujoIndirectoPane">
+        <div class="v14-flujo-total" id="flujoTotalIndBox">
+          <div class="lbl">Flujo Neto (Método Indirecto)</div>
+          <div class="val" id="flujoNetoIndVal">₡0</div>
+        </div>
+        <table class="tbl-v14" id="flujoIndirectoTbl">
+          <thead><tr><th>Concepto</th><th class="num">Monto (₡)</th></tr></thead>
+          <tbody id="flujoIndirectoBody"></tbody>
+        </table>
+        <div style="display:flex;gap:6px;margin-top:8px;">
+          <button class="btn-v14 p" onclick="calcularFlujoIndirecto()">⟳ Calcular desde hoja</button>
+          <button class="btn-v14 s" onclick="exportarFlujoPDF()">📕 PDF</button>
+        </div>
+      </div>
+    </div>
+    <div class="mfoot-v14">
+      <button class="btn-v14 s" onclick="cerrarV14('modalFlujoEfectivo')">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL 4: CONCILIACIÓN BANCARIA ══════════════ -->
+<div class="modal-v14" id="modalConciliacionV14">
+  <div class="mbox-v14">
+    <div class="mhead-v14">
+      <h3>🏦 Conciliación Bancaria Interactiva</h3>
+      <button class="mcls-v14" onclick="cerrarV14('modalConciliacionV14')">×</button>
+    </div>
+    <div class="mbody-v14">
+      <!-- Saldos iniciales -->
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px;">
+        <div>
+          <label style="font-size:11px;font-weight:700;color:var(--text2);display:block;margin-bottom:3px;">Saldo según Banco (₡)</label>
+          <input class="v14-inp" type="number" id="concSaldoBanco" placeholder="0.00" oninput="calcularConciliacion()">
+        </div>
+        <div>
+          <label style="font-size:11px;font-weight:700;color:var(--text2);display:block;margin-bottom:3px;">Saldo según Libros (₡)</label>
+          <input class="v14-inp" type="number" id="concSaldoLibros" placeholder="0.00" oninput="calcularConciliacion()">
+        </div>
+        <div>
+          <label style="font-size:11px;font-weight:700;color:var(--text2);display:block;margin-bottom:3px;">Fecha</label>
+          <input class="v14-inp" type="date" id="concFecha">
+        </div>
+      </div>
+      <!-- Estado conciliación -->
+      <div id="concStatus"></div>
+      <!-- KPIs -->
+      <div id="concKPIs" class="v14-kpis"></div>
+      <!-- Grids -->
+      <div class="v14-conc-grid">
+        <!-- Columna Banco -->
+        <div class="v14-conc-box">
+          <h4>📑 Ajustes al Saldo Bancario</h4>
+          <table class="tbl-v14" id="concBancoTbl">
+            <thead><tr><th>Concepto</th><th class="num">Monto (₡)</th><th style="width:34px;"></th></tr></thead>
+            <tbody id="concBancoBody"></tbody>
+          </table>
+          <div class="v14-add-row">
+            <input class="v14-inp" id="concBancoDesc" placeholder="Descripción">
+            <input class="v14-inp" id="concBancoMonto" type="number" placeholder="Monto" style="max-width:110px;">
+            <select class="v14-inp" id="concBancoTipo" style="max-width:80px;">
+              <option value="1">+ Suma</option><option value="-1">- Resta</option>
+            </select>
+            <button class="btn-v14 p" onclick="agregarAjusteBanco()">+</button>
+          </div>
+        </div>
+        <!-- Columna Libros -->
+        <div class="v14-conc-box">
+          <h4>📚 Ajustes al Saldo en Libros</h4>
+          <table class="tbl-v14" id="concLibrosTbl">
+            <thead><tr><th>Concepto</th><th class="num">Monto (₡)</th><th style="width:34px;"></th></tr></thead>
+            <tbody id="concLibrosBody"></tbody>
+          </table>
+          <div class="v14-add-row">
+            <input class="v14-inp" id="concLibrosDesc" placeholder="Descripción">
+            <input class="v14-inp" id="concLibrosMonto" type="number" placeholder="Monto" style="max-width:110px;">
+            <select class="v14-inp" id="concLibrosTipo" style="max-width:80px;">
+              <option value="1">+ Suma</option><option value="-1">- Resta</option>
+            </select>
+            <button class="btn-v14 p" onclick="agregarAjusteLibros()">+</button>
+          </div>
+        </div>
+      </div>
+      <!-- Resumen final -->
+      <div id="concResumen" style="margin-top:12px;"></div>
+    </div>
+    <div class="mfoot-v14">
+      <button class="btn-v14 s" onclick="limpiarConciliacion()">🗑 Limpiar</button>
+      <button class="btn-v14 p" onclick="exportarConciliacionPDF()">📕 PDF</button>
+      <button class="btn-v14 s" onclick="cerrarV14('modalConciliacionV14')">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL 5: DECLARACIÓN D-101 ══════════════════ -->
+<div class="modal-v14" id="modalD101">
+  <div class="mbox-v14">
+    <div class="mhead-v14">
+      <h3>📋 Declaración D-101 — Impuesto sobre la Renta CR</h3>
+      <button class="mcls-v14" onclick="cerrarV14('modalD101')">×</button>
+    </div>
+    <div class="mbody-v14">
+      <div class="v14-tabs">
+        <button class="v14-tab active" onclick="switchD101Tab('datos',this)">Datos Generales</button>
+        <button class="v14-tab" onclick="switchD101Tab('ingresos',this)">Ingresos</button>
+        <button class="v14-tab" onclick="switchD101Tab('gastos',this)">Gastos Deducibles</button>
+        <button class="v14-tab" onclick="switchD101Tab('calculo',this)">Cálculo</button>
+      </div>
+
+      <!-- DATOS GENERALES -->
+      <div class="v14-pane active" id="d101DatosPane">
+        <div class="v14-d101-sec">
+          <h4>Identificación del Declarante</h4>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+            <div><label style="font-size:11px;font-weight:600;color:var(--text2);display:block;margin-bottom:3px;">Nombre / Razón Social</label>
+              <input class="v14-inp" id="d101Nombre" placeholder="Nombre completo o razón social"></div>
+            <div><label style="font-size:11px;font-weight:600;color:var(--text2);display:block;margin-bottom:3px;">Cédula / Nº Jurídico</label>
+              <input class="v14-inp" id="d101Cedula" placeholder="000-000000-0000"></div>
+            <div><label style="font-size:11px;font-weight:600;color:var(--text2);display:block;margin-bottom:3px;">Actividad Económica</label>
+              <input class="v14-inp" id="d101Actividad" placeholder="Ej: Comercio al por menor"></div>
+            <div><label style="font-size:11px;font-weight:600;color:var(--text2);display:block;margin-bottom:3px;">Período Fiscal</label>
+              <select class="v14-inp" id="d101Periodo">
+                <option value="2025">2025</option>
+                <option value="2024">2024</option>
+                <option value="2023">2023</option>
+              </select></div>
+            <div><label style="font-size:11px;font-weight:600;color:var(--text2);display:block;margin-bottom:3px;">Tipo de Contribuyente</label>
+              <select class="v14-inp" id="d101TipoContrib" onchange="actualizarTramosRenta()">
+                <option value="persona_fisica">Persona Física</option>
+                <option value="empresa_micro">Microempresa (≤ ₡60M ventas)</option>
+                <option value="empresa_pequena">Empresa Pequeña (₡60M–₡120M)</option>
+                <option value="empresa_grande">Empresa Mediana/Grande</option>
+              </select></div>
+            <div><label style="font-size:11px;font-weight:600;color:var(--text2);display:block;margin-bottom:3px;">Teléfono</label>
+              <input class="v14-inp" id="d101Tel" placeholder="2222-2222"></div>
+          </div>
+        </div>
+        <div class="v14-d101-sec">
+          <h4>Información Fiscal</h4>
+          <div id="tramosRentaInfo" style="font-size:12px;color:var(--text2);background:var(--bg2);
+            border-radius:8px;padding:10px;line-height:1.6;"></div>
+        </div>
+      </div>
+
+      <!-- INGRESOS -->
+      <div class="v14-pane" id="d101IngresosPane">
+        <div class="v14-d101-sec">
+          <h4>Ingresos Gravables</h4>
+          <div id="d101IngresosRows"></div>
+          <button class="btn-v14 s" onclick="agregarFilaD101('ingresos')" style="margin-top:6px;">+ Agregar ingreso</button>
+        </div>
+        <div class="v14-d101-sec">
+          <h4>Ingresos No Gravables (Exentos)</h4>
+          <div id="d101ExentosRows"></div>
+          <button class="btn-v14 s" onclick="agregarFilaD101('exentos')" style="margin-top:6px;">+ Agregar exento</button>
+        </div>
+      </div>
+
+      <!-- GASTOS -->
+      <div class="v14-pane" id="d101GastosPane">
+        <div class="v14-d101-sec">
+          <h4>Gastos Deducibles según LISR CR</h4>
+          <div id="d101GastosRows"></div>
+          <button class="btn-v14 s" onclick="agregarFilaD101('gastos')" style="margin-top:6px;">+ Agregar gasto</button>
+        </div>
+        <div class="v14-d101-sec" style="background:#fffbeb;border-color:#fcd34d;">
+          <h4 style="color:#92400e;">⚠️ Gastos NO Deducibles (Referencia)</h4>
+          <ul style="font-size:12px;color:var(--text2);padding-left:16px;line-height:1.8;margin:0;">
+            <li>Multas y sanciones administrativas</li>
+            <li>Gastos personales del contribuyente</li>
+            <li>Depreciaciones sobre valores revaluados no autorizados</li>
+            <li>Donaciones (salvo las expresamente autorizadas)</li>
+            <li>Intereses sobre deudas de socios</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- CÁLCULO -->
+      <div class="v14-pane" id="d101CalculoPane">
+        <button class="btn-v14 p" onclick="calcularD101()" style="margin-bottom:12px;">⟳ Calcular Impuesto</button>
+        <div id="d101CalcBody">
+          <div style="text-align:center;padding:30px;color:var(--text3);">
+            <div style="font-size:28px;margin-bottom:8px;">📋</div>
+            <div>Completá los datos en las pestañas anteriores y presioná <strong>Calcular Impuesto</strong>.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="mfoot-v14">
+      <button class="btn-v14 s" onclick="limpiarD101()">🗑 Limpiar</button>
+      <button class="btn-v14 p" onclick="exportarD101PDF()">📕 Exportar PDF</button>
+      <button class="btn-v14 s" onclick="cerrarV14('modalD101')">Cerrar</button>
+    </div>
+  </div>
+</div>
+`;
+
+document.body.insertAdjacentHTML('beforeend', html);
+
+// ════════════════════════════════════════════════════
+// DATOS INTERNOS
+// ════════════════════════════════════════════════════
+var _mayorData = {};          // { cuenta: [{fecha,debe,haber,desc}] }
+var _balanceData = {};        // calculado desde mayorData
+var _flujoDirectoRows = [];   // [{desc, monto, tipo}]  tipo: 'entrada'|'salida'
+var _concBancoAjustes = [];   // [{desc, monto, signo}]
+var _concLibrosAjustes = [];
+var _d101Ingresos = [];
+var _d101Exentos  = [];
+var _d101Gastos   = [];
+
+// ════════════════════════════════════════════════════
+// UTILIDADES GENERALES
+// ════════════════════════════════════════════════════
+function abrirV14(id){ var el=document.getElementById(id); if(el) el.classList.add('active'); }
+function cerrarV14(id){ var el=document.getElementById(id); if(el) el.classList.remove('active'); }
+function fmtCRC(n){ return '₡' + Number(n).toLocaleString('es-CR',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function fmtN(n){ return Number(n).toLocaleString('es-CR',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+
+// Leer datos de la hoja activa (sheetData global de v13)
+function leerHojaActiva(){
+  // sheetData es el objeto global del spreadsheet v13
+  var data = window.sheetData || {};
+  var rows = [];
+  // Detectar automáticamente filas con: Fecha | Cuenta | Debe | Haber
+  // Buscar la fila de encabezados primero
+  var headerRow = -1;
+  var colFecha=-1, colCuenta=-1, colDebe=-1, colHaber=-1, colDesc=-1;
+  var maxRow = 200, maxCol = 15;
+  for(var r=0;r<maxRow && headerRow===-1;r++){
+    for(var c=0;c<maxCol;c++){
+      var v = (data[window.cellId ? window.cellId(r,c) : (String.fromCharCode(65+c)+(r+1))] || '').toString().toLowerCase().trim();
+      if(v.indexOf('cuenta')>=0){ colCuenta=c; headerRow=r; }
+      if(v.indexOf('debe')>=0) colDebe=c;
+      if(v.indexOf('haber')>=0) colHaber=c;
+      if(v.indexOf('fecha')>=0) colFecha=c;
+      if(v.indexOf('descripcion')>=0||v.indexOf('concepto')>=0||v.indexOf('detalle')>=0) colDesc=c;
+    }
+  }
+  if(headerRow===-1 || colCuenta===-1) return { rows:[], headerFound:false };
+  if(colDebe===-1) colDebe=colCuenta+1;
+  if(colHaber===-1) colHaber=colCuenta+2;
+
+  for(var r2=headerRow+1;r2<maxRow;r2++){
+    var cid = window.cellId ? window.cellId : function(rr,cc){ return String.fromCharCode(65+cc)+(rr+1); };
+    var cuenta=(data[cid(r2,colCuenta)]||'').toString().trim();
+    if(!cuenta) continue;
+    var debe=parseFloat((data[cid(r2,colDebe)]||'0').toString().replace(/[₡,\s]/g,''))||0;
+    var haber=parseFloat((data[cid(r2,colHaber)]||'0').toString().replace(/[₡,\s]/g,''))||0;
+    var fecha=colFecha>=0?(data[cid(r2,colFecha)]||''):'';
+    var desc=colDesc>=0?(data[cid(r2,colDesc)]||''):'';
+    rows.push({fecha:fecha,cuenta:cuenta,debe:debe,haber:haber,desc:desc});
+  }
+  return { rows:rows, headerFound:true };
+}
+
+// ════════════════════════════════════════════════════
+// 1. LIBRO MAYOR AUTOMÁTICO
+// ════════════════════════════════════════════════════
+function generarLibroMayor(){
+  var r = leerHojaActiva();
+  var body = document.getElementById('libroMayorBody');
+  var filtroDiv = document.getElementById('lmCuentaFiltro');
+  var fecha = document.getElementById('lmFecha');
+  if(fecha) fecha.textContent = 'Generado: ' + new Date().toLocaleDateString('es-CR');
+
+  if(!r.headerFound){
+    body.innerHTML = '<div style="padding:20px;background:#fff9c4;border-radius:8px;color:#92400e;font-size:13px;">' +
+      '⚠️ No se encontró una fila de encabezados con <strong>Cuenta · Debe · Haber</strong> en la hoja activa.<br>' +
+      '<small>Tip: Usá el Libro Diario desde el menú Plantillas para comenzar.</small></div>';
+    return;
+  }
+  if(!r.rows.length){
+    body.innerHTML = '<div style="padding:20px;color:var(--text3);text-align:center;">No hay asientos registrados en la hoja activa.</div>';
+    return;
+  }
+
+  // Agrupar por cuenta
+  _mayorData = {};
+  r.rows.forEach(function(row){
+    var c = row.cuenta;
+    if(!_mayorData[c]) _mayorData[c] = [];
+    _mayorData[c].push(row);
+  });
+
+  // Llenar select de cuentas
+  var sel = document.getElementById('lmSelectCuenta');
+  sel.innerHTML = '<option value="">— Todas las cuentas —</option>';
+  Object.keys(_mayorData).sort().forEach(function(c){
+    var opt = document.createElement('option'); opt.value=c; opt.textContent=c;
+    sel.appendChild(opt);
+  });
+  filtroDiv.style.display='block';
+  renderLibroMayor('');
+}
+
+function filtrarCuentaMayor(val){ renderLibroMayor(val); }
+
+function renderLibroMayor(filtro){
+  var body = document.getElementById('libroMayorBody');
+  var cuentas = filtro ? [filtro] : Object.keys(_mayorData).sort();
+  var html2 = '';
+  cuentas.forEach(function(cuenta){
+    var movs = _mayorData[cuenta];
+    var totalDebe=0, totalHaber=0, saldoAcum=0;
+    var filas='';
+    movs.forEach(function(m){
+      saldoAcum += m.debe - m.haber;
+      totalDebe += m.debe; totalHaber += m.haber;
+      filas += '<tr><td>'+m.fecha+'</td><td>'+m.desc+'</td>' +
+        '<td class="num">'+(m.debe?fmtCRC(m.debe):'')+'</td>' +
+        '<td class="num">'+(m.haber?fmtCRC(m.haber):'')+'</td>' +
+        '<td class="num" style="color:'+(saldoAcum>=0?'var(--g3)':'var(--danger)')+'">'+fmtCRC(saldoAcum)+'</td></tr>';
+    });
+    var saldoColor = saldoAcum>=0?'var(--g3)':'var(--danger)';
+    html2 += '<div style="margin-bottom:16px;">' +
+      '<div style="background:linear-gradient(90deg,var(--g3),var(--g2));color:#fff;padding:8px 12px;border-radius:8px 8px 0 0;font-weight:800;font-size:13px;">'+cuenta+'</div>' +
+      '<table class="tbl-v14"><thead><tr><th>Fecha</th><th>Descripción</th><th class="num">Debe (₡)</th><th class="num">Haber (₡)</th><th class="num">Saldo (₡)</th></tr></thead>' +
+      '<tbody>'+filas+'</tbody>' +
+      '<tfoot><tr class="total-row"><td></td><td><strong>TOTALES</strong></td>' +
+      '<td class="num">'+fmtCRC(totalDebe)+'</td><td class="num">'+fmtCRC(totalHaber)+'</td>' +
+      '<td class="num" style="color:'+saldoColor+'">'+fmtCRC(saldoAcum)+'</td></tr></tfoot>' +
+      '</table></div>';
+  });
+  body.innerHTML = html2;
+}
+
+function exportarLibroMayorCSV(){
+  var csv='Cuenta,Fecha,Descripción,Debe,Haber,Saldo\n';
+  var saldo=0;
+  Object.keys(_mayorData).sort().forEach(function(cuenta){
+    saldo=0;
+    (_mayorData[cuenta]||[]).forEach(function(m){
+      saldo+=m.debe-m.haber;
+      csv+='"'+cuenta+'","'+m.fecha+'","'+m.desc+'",'+m.debe+','+m.haber+','+saldo+'\n';
+    });
+  });
+  descargarCSV(csv,'libro-mayor-cr');
+}
+
+function exportarLibroMayorPDF(){
+  var lib = window.jspdf && window.jspdf.jsPDF;
+  if(!lib){ window.print(); return; }
+  var doc = new lib({orientation:'landscape',unit:'mm',format:'a4'});
+  doc.setFillColor(45,122,12); doc.rect(0,0,297,18,'F');
+  doc.setTextColor(255,255,255); doc.setFontSize(14); doc.setFont('helvetica','bold');
+  doc.text('Libro Mayor — Matriz Contable CR',10,12);
+  doc.text(new Date().toLocaleDateString('es-CR'),287,12,{align:'right'});
+  var y=24; doc.setTextColor(0,0,0);
+  Object.keys(_mayorData).sort().forEach(function(cuenta){
+    if(y>170){doc.addPage();y=10;}
+    doc.setFillColor(58,158,16); doc.rect(8,y,281,8,'F');
+    doc.setTextColor(255,255,255); doc.setFontSize(10); doc.setFont('helvetica','bold');
+    doc.text(cuenta,11,y+5.5); y+=10;
+    doc.setTextColor(0,0,0); doc.setFont('helvetica','normal'); doc.setFontSize(9);
+    var saldo=0;
+    (_mayorData[cuenta]||[]).forEach(function(m){
+      saldo+=m.debe-m.haber;
+      doc.text(String(m.fecha).substring(0,10),11,y+5);
+      doc.text(String(m.desc).substring(0,50),35,y+5);
+      doc.text(m.debe?fmtN(m.debe):'',180,y+5,{align:'right'});
+      doc.text(m.haber?fmtN(m.haber):'',220,y+5,{align:'right'});
+      doc.text(fmtN(saldo),280,y+5,{align:'right'});
+      y+=7; if(y>185){doc.addPage();y=10;}
+    });
+    y+=4;
+  });
+  doc.save('libro-mayor-cr.pdf');
+}
+
+// ════════════════════════════════════════════════════
+// 2. BALANCE DE COMPROBACIÓN
+// ════════════════════════════════════════════════════
+function generarBalanceComp(){
+  var r = leerHojaActiva();
+  var body = document.getElementById('balanceCompBody');
+  var statusEl = document.getElementById('balanceStatus');
+  var kpisEl = document.getElementById('balanceKPIs');
+
+  if(!r.headerFound || !r.rows.length){
+    body.innerHTML='<div style="padding:16px;background:#fff9c4;border-radius:8px;color:#92400e;">⚠️ Cargá primero el Libro Diario en la hoja activa (Plantillas → Libro Diario).</div>';
+    statusEl.innerHTML=''; kpisEl.innerHTML=''; return;
+  }
+
+  // Consolidar por cuenta
+  var cuentas={};
+  r.rows.forEach(function(row){
+    if(!cuentas[row.cuenta]) cuentas[row.cuenta]={debe:0,haber:0};
+    cuentas[row.cuenta].debe += row.debe;
+    cuentas[row.cuenta].haber += row.haber;
+  });
+
+  var totalDebe=0, totalHaber=0;
+  var filas='';
+  Object.keys(cuentas).sort().forEach(function(c){
+    var d=cuentas[c].debe, h=cuentas[c].haber;
+    var saldoD=d>h?d-h:0, saldoH=h>d?h-d:0;
+    totalDebe+=d; totalHaber+=h;
+    filas+='<tr><td>'+c+'</td><td class="num">'+fmtCRC(d)+'</td><td class="num">'+fmtCRC(h)+'</td>' +
+      '<td class="num">'+(saldoD?fmtCRC(saldoD):'')+'</td><td class="num">'+(saldoH?fmtCRC(saldoH):'')+'</td></tr>';
+  });
+
+  var balanceado = Math.abs(totalDebe-totalHaber)<0.01;
+  statusEl.innerHTML='<div class="v14-balance-status '+(balanceado?'ok':'bad')+'">' +
+    (balanceado?'✅ La contabilidad está CUADRADA — Debe = Haber':'❌ DESCUADRE DETECTADO — Debe ≠ Haber') +
+    '<span style="margin-left:auto;font-family:monospace;font-size:14px;">'+
+    (balanceado?fmtCRC(totalDebe):('Δ = '+fmtCRC(Math.abs(totalDebe-totalHaber))))+'</span></div>';
+
+  kpisEl.innerHTML='<div class="v14-kpi '+(balanceado?'ok':'bad')+'"><div class="v14-kpi-lbl">Total Debe</div><div class="v14-kpi-val">'+fmtCRC(totalDebe)+'</div></div>' +
+    '<div class="v14-kpi '+(balanceado?'ok':'bad')+'"><div class="v14-kpi-lbl">Total Haber</div><div class="v14-kpi-val">'+fmtCRC(totalHaber)+'</div></div>' +
+    '<div class="v14-kpi '+(balanceado?'ok':'bad')+'"><div class="v14-kpi-lbl">Diferencia</div><div class="v14-kpi-val">'+fmtCRC(Math.abs(totalDebe-totalHaber))+'</div><div class="v14-kpi-sub">'+(balanceado?'Cuadrado ✓':'¡Revisar!')+'</div></div>' +
+    '<div class="v14-kpi"><div class="v14-kpi-lbl">Cuentas</div><div class="v14-kpi-val">'+Object.keys(cuentas).length+'</div></div>';
+
+  body.innerHTML='<table class="tbl-v14"><thead><tr>' +
+    '<th>Cuenta</th><th class="num">Débitos (₡)</th><th class="num">Créditos (₡)</th>' +
+    '<th class="num">Saldo Deudor</th><th class="num">Saldo Acreedor</th></tr></thead>' +
+    '<tbody>'+filas+'</tbody>' +
+    '<tfoot><tr class="total-row"><td><strong>TOTALES</strong></td>' +
+    '<td class="num">'+fmtCRC(totalDebe)+'</td><td class="num">'+fmtCRC(totalHaber)+'</td>' +
+    '<td class="num"></td><td class="num"></td></tr></tfoot></table>';
+
+  _balanceData = cuentas;
+}
+
+function exportarBalanceCSV(){
+  var csv='Cuenta,Debe,Haber,Saldo Deudor,Saldo Acreedor\n';
+  Object.keys(_balanceData).sort().forEach(function(c){
+    var d=_balanceData[c].debe, h=_balanceData[c].haber;
+    csv+='"'+c+'",'+d+','+h+','+(d>h?d-h:0)+','+(h>d?h-d:0)+'\n';
+  });
+  descargarCSV(csv,'balance-comprobacion-cr');
+}
+
+function exportarBalancePDF(){
+  var lib = window.jspdf && window.jspdf.jsPDF;
+  if(!lib){ window.print(); return; }
+  var doc = new lib({orientation:'portrait',unit:'mm',format:'a4'});
+  doc.setFillColor(45,122,12); doc.rect(0,0,210,22,'F');
+  doc.setTextColor(255,255,255); doc.setFontSize(14); doc.setFont('helvetica','bold');
+  doc.text('Balance de Comprobación — CR',10,14);
+  doc.text(new Date().toLocaleDateString('es-CR'),200,14,{align:'right'});
+  var y=28; doc.setTextColor(0,0,0); doc.setFontSize(9); doc.setFont('helvetica','normal');
+  doc.setFillColor(226,242,212); doc.rect(8,y,194,7,'F');
+  doc.setFont('helvetica','bold');
+  doc.text('Cuenta',10,y+5); doc.text('Debe',100,y+5,{align:'right'});
+  doc.text('Haber',135,y+5,{align:'right'}); doc.text('S.Deudor',165,y+5,{align:'right'});
+  doc.text('S.Acreedor',200,y+5,{align:'right'}); y+=9;
+  doc.setFont('helvetica','normal');
+  Object.keys(_balanceData).sort().forEach(function(c,i){
+    var d=_balanceData[c].debe, h=_balanceData[c].haber;
+    if(i%2===0){doc.setFillColor(247,253,242);doc.rect(8,y,194,6,'F');}
+    doc.text(c.substring(0,35),10,y+4.5);
+    doc.text(fmtN(d),100,y+4.5,{align:'right'});
+    doc.text(fmtN(h),135,y+4.5,{align:'right'});
+    doc.text(d>h?fmtN(d-h):'',165,y+4.5,{align:'right'});
+    doc.text(h>d?fmtN(h-d):'',200,y+4.5,{align:'right'});
+    y+=6; if(y>270){doc.addPage();y=10;}
+  });
+  doc.save('balance-comprobacion-cr.pdf');
+}
+
+// ════════════════════════════════════════════════════
+// 3. FLUJO DE EFECTIVO
+// ════════════════════════════════════════════════════
+function switchFlujoTab(tab, btn){
+  document.querySelectorAll('#modalFlujoEfectivo .v14-tab').forEach(function(b){b.classList.remove('active');});
+  document.querySelectorAll('#modalFlujoEfectivo .v14-pane').forEach(function(p){p.classList.remove('active');});
+  btn.classList.add('active');
+  document.getElementById('flujo'+cap(tab)+'Pane').classList.add('active');
+}
+function cap(s){return s.charAt(0).toUpperCase()+s.slice(1);}
+
+function abrirFlujoEfectivo(){
+  // Setear período actual
+  var now=new Date();
+  var inp=document.getElementById('flujoPeriodo');
+  if(inp && !inp.value) inp.value=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
+  // Cargar datos desde hoja si hay
+  if(!_flujoDirectoRows.length) inicializarFlujoDefecto();
+  renderFlujoDirecto();
+  abrirV14('modalFlujoEfectivo');
+}
+
+function inicializarFlujoDefecto(){
+  _flujoDirectoRows=[
+    {desc:'Ventas cobradas a clientes', monto:0, tipo:'entrada', seccion:'operacion'},
+    {desc:'Cobros por servicios', monto:0, tipo:'entrada', seccion:'operacion'},
+    {desc:'Pago a proveedores', monto:0, tipo:'salida', seccion:'operacion'},
+    {desc:'Pago de planilla', monto:0, tipo:'salida', seccion:'operacion'},
+    {desc:'Pago de CCSS patronal', monto:0, tipo:'salida', seccion:'operacion'},
+    {desc:'Pago de impuestos (IVA)', monto:0, tipo:'salida', seccion:'operacion'},
+    {desc:'Compra de activos fijos', monto:0, tipo:'salida', seccion:'inversion'},
+    {desc:'Venta de activos', monto:0, tipo:'entrada', seccion:'inversion'},
+    {desc:'Préstamos obtenidos', monto:0, tipo:'entrada', seccion:'financiamiento'},
+    {desc:'Pago de préstamos', monto:0, tipo:'salida', seccion:'financiamiento'},
+  ];
+}
+
+function renderFlujoDirecto(){
+  var body=document.getElementById('flujoDirectoBody');
+  if(!body) return;
+  var secciones={operacion:'🔄 Actividades de Operación',inversion:'🏗 Actividades de Inversión',financiamiento:'💳 Actividades de Financiamiento'};
+  var html2=''; var lastSec='';
+  _flujoDirectoRows.forEach(function(row,i){
+    if(row.seccion!==lastSec){
+      html2+='<tr class="section-row"><td colspan="3">'+secciones[row.seccion||'operacion']+'</td></tr>';
+      lastSec=row.seccion;
+    }
+    html2+='<tr><td><input class="v14-inp" value="'+escH(row.desc)+'" onchange="_flujoDirectoRows['+i+'].desc=this.value"></td>' +
+      '<td><input class="v14-inp" type="number" value="'+row.monto+'" style="text-align:right;" onchange="_flujoDirectoRows['+i+'].monto=parseFloat(this.value)||0;calcularFlujoDirecto()"></td>' +
+      '<td style="text-align:center;"><span style="color:'+(row.tipo==='entrada'?'var(--g3)':'var(--danger)')+';">'+(row.tipo==='entrada'?'▲':'▼')+'</span>' +
+      ' <button onclick="_flujoDirectoRows.splice('+i+',1);renderFlujoDirecto();calcularFlujoDirecto()" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:12px;">×</button></td></tr>';
+  });
+  body.innerHTML=html2;
+  calcularFlujoDirecto();
+}
+
+function agregarFilaFlujo(metodo, tipo){
+  var sec=prompt('Sección:\n1 = Operación\n2 = Inversión\n3 = Financiamiento','1');
+  var secMap={'1':'operacion','2':'inversion','3':'financiamiento'};
+  _flujoDirectoRows.push({desc:'Nueva partida',monto:0,tipo:tipo,seccion:secMap[sec]||'operacion'});
+  renderFlujoDirecto();
+}
+
+function calcularFlujoDirecto(){
+  var neto=0;
+  _flujoDirectoRows.forEach(function(r){ neto += r.tipo==='entrada' ? r.monto : -r.monto; });
+  var el=document.getElementById('flujoNetoVal');
+  if(el){ el.textContent=fmtCRC(neto); el.style.color=neto>=0?'#fff':'#fca5a5'; }
+  var box=document.getElementById('flujoTotalBox');
+  if(box) box.style.background=neto>=0?'linear-gradient(135deg,var(--g3),var(--g4))':'linear-gradient(135deg,#b91c1c,#7f1d1d)';
+}
+
+function calcularFlujoIndirecto(){
+  var r=leerHojaActiva();
+  var body=document.getElementById('flujoIndirectoBody');
+  if(!body) return;
+  // Estimación desde los datos de la hoja
+  var util=0, deprec=0, cxc=0, inv=0, cxp=0;
+  if(r.rows.length){
+    r.rows.forEach(function(row){
+      var c=row.cuenta.toLowerCase();
+      if(c.indexOf('utilidad')>=0||c.indexOf('ingreso')>=0||c.indexOf('venta')>=0) util+=row.haber-row.debe;
+      if(c.indexOf('deprec')>=0||c.indexOf('amort')>=0) deprec+=row.debe;
+      if(c.indexOf('cuentas por cobrar')>=0||c.indexOf('clientes')>=0) cxc+=row.debe-row.haber;
+      if(c.indexOf('inventario')>=0||c.indexOf('mercanc')>=0) inv+=row.debe-row.haber;
+      if(c.indexOf('cuentas por pagar')>=0||c.indexOf('proveed')>=0) cxp+=row.haber-row.debe;
+    });
+  }
+  var neto=util+deprec-cxc-inv+cxp;
+  var filas=[
+    {label:'Utilidad Neta del Período',val:util,seccion:'Actividades de Operación'},
+    {label:'(+) Depreciaciones y amortizaciones',val:deprec,seccion:null},
+    {label:'(−) Aumento en Cuentas por Cobrar',val:-cxc,seccion:null},
+    {label:'(−) Aumento en Inventarios',val:-inv,seccion:null},
+    {label:'(+) Aumento en Cuentas por Pagar',val:cxp,seccion:null},
+  ];
+  var html2='<tr class="section-row"><td colspan="2">🔄 Actividades de Operación (estimado)</td></tr>';
+  filas.forEach(function(f){
+    if(f.seccion&&f.label!==filas[0].label) html2+='<tr class="section-row"><td colspan="2">'+f.seccion+'</td></tr>';
+    html2+='<tr><td>'+f.label+'</td><td class="num" style="color:'+(f.val>=0?'var(--g3)':'var(--danger)')+'">'+fmtCRC(f.val)+'</td></tr>';
+  });
+  body.innerHTML=html2;
+  var el=document.getElementById('flujoNetoIndVal');
+  if(el) el.textContent=fmtCRC(neto);
+}
+
+function exportarFlujoPDF(){
+  var lib=window.jspdf&&window.jspdf.jsPDF;
+  if(!lib){window.print();return;}
+  var doc=new lib({orientation:'portrait',unit:'mm',format:'a4'});
+  doc.setFillColor(45,122,12);doc.rect(0,0,210,22,'F');
+  doc.setTextColor(255,255,255);doc.setFontSize(14);doc.setFont('helvetica','bold');
+  doc.text('Estado de Flujo de Efectivo — CR',10,14);
+  doc.text(new Date().toLocaleDateString('es-CR'),200,14,{align:'right'});
+  var y=28;doc.setTextColor(0,0,0);doc.setFontSize(9);doc.setFont('helvetica','normal');
+  var neto=0;
+  _flujoDirectoRows.forEach(function(row){
+    var v=row.tipo==='entrada'?row.monto:-row.monto; neto+=v;
+    doc.text((row.tipo==='entrada'?'  ▲ ':'  ▼ ')+row.desc.substring(0,60),10,y);
+    doc.text((row.tipo==='entrada'?'+':'-')+fmtN(row.monto),200,y,{align:'right'});
+    y+=6;if(y>270){doc.addPage();y=10;}
+  });
+  doc.setDrawColor(58,158,16);doc.line(10,y,200,y);y+=6;
+  doc.setFont('helvetica','bold');
+  doc.text('FLUJO NETO',10,y);doc.text((neto>=0?'+':'')+fmtN(neto),200,y,{align:'right'});
+  doc.save('flujo-efectivo-cr.pdf');
+}
+
+// ════════════════════════════════════════════════════
+// 4. CONCILIACIÓN BANCARIA INTERACTIVA
+// ════════════════════════════════════════════════════
+function abrirConciliacionV14(){
+  var fi=document.getElementById('concFecha');
+  if(fi&&!fi.value) fi.value=new Date().toISOString().split('T')[0];
+  renderConciliacion();
+  abrirV14('modalConciliacionV14');
+}
+
+function agregarAjusteBanco(){
+  var desc=(document.getElementById('concBancoDesc')||{}).value||'';
+  var monto=parseFloat((document.getElementById('concBancoMonto')||{}).value)||0;
+  var signo=parseInt((document.getElementById('concBancoTipo')||{}).value)||1;
+  if(!desc||!monto) return;
+  _concBancoAjustes.push({desc:desc,monto:monto,signo:signo});
+  document.getElementById('concBancoDesc').value='';
+  document.getElementById('concBancoMonto').value='';
+  renderConciliacion();
+}
+
+function agregarAjusteLibros(){
+  var desc=(document.getElementById('concLibrosDesc')||{}).value||'';
+  var monto=parseFloat((document.getElementById('concLibrosMonto')||{}).value)||0;
+  var signo=parseInt((document.getElementById('concLibrosTipo')||{}).value)||1;
+  if(!desc||!monto) return;
+  _concLibrosAjustes.push({desc:desc,monto:monto,signo:signo});
+  document.getElementById('concLibrosDesc').value='';
+  document.getElementById('concLibrosMonto').value='';
+  renderConciliacion();
+}
+
+function renderConciliacion(){
+  renderTablaAjustes('concBancoBody',_concBancoAjustes,'banco');
+  renderTablaAjustes('concLibrosBody',_concLibrosAjustes,'libros');
+  calcularConciliacion();
+}
+
+function renderTablaAjustes(bodyId,arr,tipo){
+  var body=document.getElementById(bodyId);
+  if(!body) return;
+  if(!arr.length){body.innerHTML='<tr><td colspan="3" style="text-align:center;color:var(--text3);font-size:11px;padding:8px;">Sin ajustes</td></tr>';return;}
+  body.innerHTML=arr.map(function(a,i){
+    return '<tr><td>'+escH(a.desc)+'</td><td class="num" style="color:'+(a.signo>0?'var(--g3)':'var(--danger)')+'">'+
+      (a.signo>0?'+':'-')+fmtCRC(a.monto)+'</td>' +
+      '<td style="text-align:center;"><button onclick="_conc'+cap(tipo)+'Ajustes.splice('+i+',1);renderConciliacion()" style="background:none;border:none;color:var(--text3);cursor:pointer;">×</button></td></tr>';
+  }).join('');
+}
+
+function calcularConciliacion(){
+  var saldoBanco=parseFloat((document.getElementById('concSaldoBanco')||{}).value)||0;
+  var saldoLibros=parseFloat((document.getElementById('concSaldoLibros')||{}).value)||0;
+  var ajBanco=0; _concBancoAjustes.forEach(function(a){ajBanco+=a.signo*a.monto;});
+  var ajLibros=0; _concLibrosAjustes.forEach(function(a){ajLibros+=a.signo*a.monto;});
+  var saldoAjBanco=saldoBanco+ajBanco;
+  var saldoAjLibros=saldoLibros+ajLibros;
+  var diff=Math.abs(saldoAjBanco-saldoAjLibros);
+  var cuadrada=diff<0.01;
+
+  var statusEl=document.getElementById('concStatus');
+  if(statusEl) statusEl.innerHTML='<div class="v14-balance-status '+(cuadrada?'ok':'bad')+'">' +
+    (cuadrada?'✅ CONCILIACIÓN CUADRADA':'❌ DIFERENCIA DETECTADA: '+fmtCRC(diff)) +
+    '</div>';
+
+  var kpisEl=document.getElementById('concKPIs');
+  if(kpisEl) kpisEl.innerHTML=
+    '<div class="v14-kpi"><div class="v14-kpi-lbl">Saldo Banco Ajustado</div><div class="v14-kpi-val" style="font-size:15px;">'+fmtCRC(saldoAjBanco)+'</div></div>' +
+    '<div class="v14-kpi"><div class="v14-kpi-lbl">Saldo Libros Ajustado</div><div class="v14-kpi-val" style="font-size:15px;">'+fmtCRC(saldoAjLibros)+'</div></div>' +
+    '<div class="v14-kpi '+(cuadrada?'ok':'bad')+'"><div class="v14-kpi-lbl">Diferencia</div><div class="v14-kpi-val" style="font-size:15px;">'+fmtCRC(diff)+'</div><div class="v14-kpi-sub">'+(cuadrada?'OK ✓':'Revisar')+'</div></div>';
+
+  var res=document.getElementById('concResumen');
+  if(res) res.innerHTML='<div style="background:var(--off);border:1.5px solid var(--border);border-radius:10px;padding:12px;">' +
+    '<strong style="font-size:12px;color:var(--g3);display:block;margin-bottom:8px;">📊 Resumen de Conciliación</strong>' +
+    '<table class="tbl-v14" style="margin:0;"><tbody>' +
+    '<tr><td>Saldo según Estado de Cuenta Bancario</td><td class="num">'+fmtCRC(saldoBanco)+'</td></tr>' +
+    '<tr><td>Ajustes al Saldo Bancario</td><td class="num">'+fmtCRC(ajBanco)+'</td></tr>' +
+    '<tr class="subtotal-row"><td>Saldo Bancario Ajustado</td><td class="num">'+fmtCRC(saldoAjBanco)+'</td></tr>' +
+    '<tr><td colspan="2" style="height:6px;"></td></tr>' +
+    '<tr><td>Saldo según Libros Contables</td><td class="num">'+fmtCRC(saldoLibros)+'</td></tr>' +
+    '<tr><td>Ajustes al Saldo en Libros</td><td class="num">'+fmtCRC(ajLibros)+'</td></tr>' +
+    '<tr class="subtotal-row"><td>Saldo en Libros Ajustado</td><td class="num">'+fmtCRC(saldoAjLibros)+'</td></tr>' +
+    '<tr class="total-row"><td>DIFERENCIA</td><td class="num" style="color:'+(cuadrada?'var(--g3)':'var(--danger)')+'">'+fmtCRC(diff)+'</td></tr>' +
+    '</tbody></table></div>';
+}
+
+function limpiarConciliacion(){
+  _concBancoAjustes=[];_concLibrosAjustes=[];
+  ['concSaldoBanco','concSaldoLibros'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+  renderConciliacion();
+  ['concStatus','concKPIs','concResumen'].forEach(function(id){var el=document.getElementById(id);if(el)el.innerHTML='';});
+}
+
+function exportarConciliacionPDF(){
+  var lib=window.jspdf&&window.jspdf.jsPDF;
+  if(!lib){window.print();return;}
+  var doc=new lib({orientation:'portrait',unit:'mm',format:'a4'});
+  doc.setFillColor(45,122,12);doc.rect(0,0,210,22,'F');
+  doc.setTextColor(255,255,255);doc.setFontSize(14);doc.setFont('helvetica','bold');
+  doc.text('Conciliación Bancaria — CR',10,14);
+  var fi=(document.getElementById('concFecha')||{}).value||new Date().toLocaleDateString('es-CR');
+  doc.text(fi,200,14,{align:'right'});
+  var saldoBanco=parseFloat((document.getElementById('concSaldoBanco')||{}).value)||0;
+  var saldoLibros=parseFloat((document.getElementById('concSaldoLibros')||{}).value)||0;
+  var ajBanco=0;_concBancoAjustes.forEach(function(a){ajBanco+=a.signo*a.monto;});
+  var ajLibros=0;_concLibrosAjustes.forEach(function(a){ajLibros+=a.signo*a.monto;});
+  var y=28;doc.setTextColor(0,0,0);doc.setFontSize(10);doc.setFont('helvetica','bold');
+  doc.text('SALDO SEGÚN BANCO',10,y);doc.text(fmtN(saldoBanco),200,y,{align:'right'});y+=7;
+  doc.setFont('helvetica','normal');doc.setFontSize(9);
+  _concBancoAjustes.forEach(function(a){doc.text((a.signo>0?'  + ':' - ')+a.desc,12,y);doc.text(fmtN(a.monto),200,y,{align:'right'});y+=6;});
+  doc.setFont('helvetica','bold');doc.setFontSize(10);
+  doc.text('Saldo Banco Ajustado',10,y);doc.text(fmtN(saldoBanco+ajBanco),200,y,{align:'right'});y+=10;
+  doc.text('SALDO SEGÚN LIBROS',10,y);doc.text(fmtN(saldoLibros),200,y,{align:'right'});y+=7;
+  doc.setFont('helvetica','normal');doc.setFontSize(9);
+  _concLibrosAjustes.forEach(function(a){doc.text((a.signo>0?'  + ':' - ')+a.desc,12,y);doc.text(fmtN(a.monto),200,y,{align:'right'});y+=6;});
+  doc.setFont('helvetica','bold');doc.setFontSize(10);
+  doc.text('Saldo Libros Ajustado',10,y);doc.text(fmtN(saldoLibros+ajLibros),200,y,{align:'right'});
+  doc.save('conciliacion-bancaria-cr.pdf');
+}
+
+// ════════════════════════════════════════════════════
+// 5. DECLARACIÓN D-101
+// ════════════════════════════════════════════════════
+var _tramosRenta = {
+  persona_fisica: [
+    {desde:0,hasta:3031000,tasa:0,desc:'Exento'},
+    {desde:3031001,hasta:4549000,tasa:0.10,desc:'10%'},
+    {desde:4549001,hasta:7581000,tasa:0.15,desc:'15%'},
+    {desde:7581001,hasta:15163000,tasa:0.20,desc:'20%'},
+    {desde:15163001,hasta:Infinity,tasa:0.25,desc:'25%'},
+  ],
+  empresa_micro: [
+    {desde:0,hasta:5765000,tasa:0,desc:'Exento (base 2025)'},
+    {desde:5765001,hasta:8647000,tasa:0.05,desc:'5%'},
+    {desde:8647001,hasta:Infinity,tasa:0.10,desc:'10%'},
+  ],
+  empresa_pequena: [
+    {desde:0,hasta:Infinity,tasa:0.20,desc:'20% (PyME)'},
+  ],
+  empresa_grande: [
+    {desde:0,hasta:Infinity,tasa:0.30,desc:'30% (tarifa general)'},
+  ],
+};
+
+function actualizarTramosRenta(){
+  var tipo=(document.getElementById('d101TipoContrib')||{}).value||'persona_fisica';
+  var tramos=_tramosRenta[tipo]||[];
+  var info=document.getElementById('tramosRentaInfo');
+  if(!info) return;
+  var txt='<strong>Tramos aplicables (2025):</strong><br>';
+  tramos.forEach(function(t){
+    txt+='• '+(t.desde===0?'₡0':fmtCRC(t.desde))+' – '+(t.hasta===Infinity?'en adelante':fmtCRC(t.hasta))+' → <strong>'+t.desc+'</strong><br>';
+  });
+  txt+='<small style="color:var(--text3);margin-top:4px;display:block;">Referencia aproximada. Verificá en Hacienda CR: <a href="https://www.hacienda.go.cr" target="_blank" style="color:var(--g2);">hacienda.go.cr</a></small>';
+  info.innerHTML=txt;
+}
+
+function switchD101Tab(tab,btn){
+  document.querySelectorAll('#modalD101 .v14-tab').forEach(function(b){b.classList.remove('active');});
+  document.querySelectorAll('#modalD101 .v14-pane').forEach(function(p){p.classList.remove('active');});
+  btn.classList.add('active');
+  document.getElementById('d101'+cap(tab)+'Pane').classList.add('active');
+}
+
+function agregarFilaD101(tipo){
+  var arr=tipo==='ingresos'?_d101Ingresos:tipo==='exentos'?_d101Exentos:_d101Gastos;
+  arr.push({desc:'',monto:0});
+  renderD101Filas(tipo);
+}
+
+function renderD101Filas(tipo){
+  var arr=tipo==='ingresos'?_d101Ingresos:tipo==='exentos'?_d101Exentos:_d101Gastos;
+  var containerId='d101'+cap(tipo)+'Rows';
+  var container=document.getElementById(containerId);
+  if(!container) return;
+  if(!arr.length){container.innerHTML='<div style="text-align:center;padding:12px;color:var(--text3);font-size:12px;">Sin partidas. Agregá usando el botón.</div>';return;}
+  container.innerHTML=arr.map(function(row,i){
+    return '<div class="v14-d101-row" style="margin-bottom:6px;">' +
+      '<input class="v14-inp" placeholder="Descripción" value="'+escH(row.desc)+'" onchange="_d101'+cap(tipo)+'['+i+'].desc=this.value">' +
+      '<div style="display:flex;gap:5px;">' +
+      '<input class="v14-inp" type="number" placeholder="Monto ₡" value="'+row.monto+'" style="text-align:right;" onchange="_d101'+cap(tipo)+'['+i+'].monto=parseFloat(this.value)||0">' +
+      '<button onclick="_d101'+cap(tipo)+'.splice('+i+',1);renderD101Filas(\''+tipo+'\')" style="background:var(--bg3);border:none;border-radius:5px;padding:4px 8px;cursor:pointer;color:var(--text3);">×</button>' +
+      '</div></div>';
+  }).join('');
+}
+
+function calcularD101(){
+  var tipo=(document.getElementById('d101TipoContrib')||{}).value||'persona_fisica';
+  var nombre=(document.getElementById('d101Nombre')||{}).value||'—';
+  var cedula=(document.getElementById('d101Cedula')||{}).value||'—';
+  var periodo=(document.getElementById('d101Periodo')||{}).value||'2025';
+
+  var totalIngresos=0; _d101Ingresos.forEach(function(r){totalIngresos+=r.monto;});
+  var totalExentos=0; _d101Exentos.forEach(function(r){totalExentos+=r.monto;});
+  var totalGastos=0; _d101Gastos.forEach(function(r){totalGastos+=r.monto;});
+
+  var rentaGravable=Math.max(0,totalIngresos-totalGastos);
+  var tramos=_tramosRenta[tipo]||[];
+
+  // Cálculo progresivo
+  var impuesto=0;
+  if(tipo==='persona_fisica'){
+    tramos.forEach(function(t,i){
+      var prev=i>0?tramos[i-1].hasta:0;
+      if(rentaGravable>t.desde){
+        var base=Math.min(rentaGravable,t.hasta)-t.desde;
+        if(base>0) impuesto+=base*t.tasa;
+      }
+    });
+  } else {
+    impuesto=rentaGravable*tramos[tramos.length-1].tasa;
+  }
+
+  var body=document.getElementById('d101CalcBody');
+  if(!body) return;
+  body.innerHTML='<div class="v14-kpis">' +
+    '<div class="v14-kpi"><div class="v14-kpi-lbl">Ingresos Gravables</div><div class="v14-kpi-val" style="font-size:15px;">'+fmtCRC(totalIngresos)+'</div></div>' +
+    '<div class="v14-kpi"><div class="v14-kpi-lbl">Gastos Deducibles</div><div class="v14-kpi-val" style="font-size:15px;">'+fmtCRC(totalGastos)+'</div></div>' +
+    '<div class="v14-kpi"><div class="v14-kpi-lbl">Renta Gravable</div><div class="v14-kpi-val" style="font-size:15px;">'+fmtCRC(rentaGravable)+'</div></div>' +
+    '<div class="v14-kpi bad"><div class="v14-kpi-lbl">Impuesto Estimado</div><div class="v14-kpi-val" style="font-size:15px;">'+fmtCRC(impuesto)+'</div><div class="v14-kpi-sub">D-101 Período '+periodo+'</div></div>' +
+    '</div>' +
+    '<div style="background:var(--off);border:1.5px solid var(--border);border-radius:10px;padding:14px;margin-top:10px;">' +
+    '<strong style="font-size:12px;color:var(--g3);display:block;margin-bottom:10px;">📋 Resumen D-101 · '+nombre+' · '+cedula+'</strong>' +
+    '<table class="tbl-v14" style="margin:0;"><tbody>' +
+    '<tr><td>Total Ingresos Gravables</td><td class="num">'+fmtCRC(totalIngresos)+'</td></tr>' +
+    '<tr><td>Total Ingresos Exentos</td><td class="num">'+fmtCRC(totalExentos)+'</td></tr>' +
+    '<tr><td>Total Gastos Deducibles</td><td class="num">('+fmtCRC(totalGastos)+')</td></tr>' +
+    '<tr class="subtotal-row"><td>Renta Neta Gravable</td><td class="num">'+fmtCRC(rentaGravable)+'</td></tr>' +
+    '<tr class="total-row"><td>IMPUESTO ESTIMADO ('+periodo+')</td><td class="num" style="color:var(--danger);">'+fmtCRC(impuesto)+'</td></tr>' +
+    '</tbody></table>' +
+    '<div style="margin-top:10px;padding:8px;background:#fff9c4;border-radius:6px;font-size:11px;color:#92400e;">'+
+    '⚠️ Este cálculo es referencial. Presentá tu D-101 en la plataforma ATV de Ministerio de Hacienda: '+
+    '<a href="https://www.atv.hacienda.go.cr" target="_blank" style="color:var(--g2);">atv.hacienda.go.cr</a></div>' +
+    '</div>';
+}
+
+function limpiarD101(){
+  _d101Ingresos=[];_d101Exentos=[];_d101Gastos=[];
+  ['d101Nombre','d101Cedula','d101Actividad','d101Tel'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+  ['ingresos','exentos','gastos'].forEach(renderD101Filas);
+  var b=document.getElementById('d101CalcBody');
+  if(b) b.innerHTML='<div style="text-align:center;padding:30px;color:var(--text3);">Datos limpiados. Ingresá la información nuevamente.</div>';
+}
+
+function exportarD101PDF(){
+  calcularD101(); // asegurar cálculo actualizado
+  var lib=window.jspdf&&window.jspdf.jsPDF;
+  if(!lib){window.print();return;}
+  var doc=new lib({orientation:'portrait',unit:'mm',format:'a4'});
+  doc.setFillColor(45,122,12);doc.rect(0,0,210,22,'F');
+  doc.setTextColor(255,255,255);doc.setFontSize(13);doc.setFont('helvetica','bold');
+  doc.text('Declaración D-101 — Impuesto sobre la Renta CR',10,14);
+  var y=28;doc.setTextColor(0,0,0);doc.setFontSize(9);doc.setFont('helvetica','normal');
+  var nombre=(document.getElementById('d101Nombre')||{}).value||'—';
+  var cedula=(document.getElementById('d101Cedula')||{}).value||'—';
+  var periodo=(document.getElementById('d101Periodo')||{}).value||'2025';
+  doc.text('Contribuyente: '+nombre,10,y);doc.text('Cédula: '+cedula,200,y,{align:'right'});y+=6;
+  doc.text('Período Fiscal: '+periodo,10,y);y+=10;
+  var totalI=0;_d101Ingresos.forEach(function(r){totalI+=r.monto;});
+  var totalG=0;_d101Gastos.forEach(function(r){totalG+=r.monto;});
+  var renta=Math.max(0,totalI-totalG);
+  var tipo=(document.getElementById('d101TipoContrib')||{}).value||'persona_fisica';
+  var tramos=_tramosRenta[tipo]||[];
+  var imp=0;
+  if(tipo==='persona_fisica'){tramos.forEach(function(t,i){var prev=i>0?tramos[i-1].hasta:0;if(renta>t.desde){var base=Math.min(renta,t.hasta)-t.desde;if(base>0)imp+=base*t.tasa;}});}
+  else{imp=renta*tramos[tramos.length-1].tasa;}
+  [['Total Ingresos Gravables',totalI],['Total Gastos Deducibles',totalG],['Renta Gravable',renta],['IMPUESTO ESTIMADO',imp]]
+    .forEach(function(row){
+      doc.setFont('helvetica',row[0].startsWith('IMP')?'bold':'normal');
+      doc.text(row[0],10,y);doc.text(fmtN(row[1]),200,y,{align:'right'});y+=7;
+    });
+  doc.setFontSize(8);doc.setTextColor(120,120,120);
+  doc.text('Referencial. Presentá en ATV Hacienda CR: atv.hacienda.go.cr',10,y+10);
+  doc.save('d101-renta-cr.pdf');
+}
+
+// ════════════════════════════════════════════════════
+// UTILIDADES COMPARTIDAS
+// ════════════════════════════════════════════════════
+function descargarCSV(csv,nombre){
+  var blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
+  var a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download=nombre+'-'+new Date().toISOString().split('T')[0]+'.csv';a.click();
+}
+function escH(s){ return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// ════════════════════════════════════════════════════
+// INYECCIÓN EN SIDEBAR Y MENÚ
+// ════════════════════════════════════════════════════
+// Agregar botones al sidebar
+window.addEventListener('load',function(){
+  // Sidebar: nueva sección v14
+  var sb=document.querySelector('.sidebar .sb-sec:first-child');
+  if(sb){
+    var div=document.createElement('div');
+    div.innerHTML='<div class="sb-div"></div>' +
+      '<div class="sb-title" style="font-size:10px;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:1px;padding:8px 14px 3px;">v14 — Nuevas herramientas</div>' +
+      '<button class="sb-btn" onclick="generarLibroMayor();abrirV14(\'modalLibroMayor\');closeSidebar&&closeSidebar()"><span class="si">📗</span>Libro Mayor Auto</button>' +
+      '<button class="sb-btn" onclick="generarBalanceComp();abrirV14(\'modalBalanceComp\');closeSidebar&&closeSidebar()"><span class="si">⚖️</span>Balance Comprobación</button>' +
+      '<button class="sb-btn" onclick="abrirFlujoEfectivo();closeSidebar&&closeSidebar()"><span class="si">💰</span>Flujo de Efectivo</button>' +
+      '<button class="sb-btn" onclick="abrirConciliacionV14();closeSidebar&&closeSidebar()"><span class="si">🏦</span>Conciliación Bancaria</button>' +
+      '<button class="sb-btn" onclick="actualizarTramosRenta();abrirV14(\'modalD101\');closeSidebar&&closeSidebar()"><span class="si">📋</span>Declaración D-101</button>';
+    sb.parentNode.insertBefore(div,sb.nextSibling);
+  }
+
+  // Cerrar modales v14 al hacer clic en backdrop
+  document.querySelectorAll('.modal-v14').forEach(function(m){
+    m.addEventListener('click',function(e){if(e.target===m) m.classList.remove('active');});
+  });
+
+  // Inyectar items en menú Plantillas (m-plantillas)
+  var mPlant=document.getElementById('m-plantillas');
+  if(mPlant){
+    var sep=document.createElement('div'); sep.className='dd-sep';
+    var tit=document.createElement('div'); tit.className='dd-section-title'; tit.textContent='v14 · Nuevas herramientas';
+    mPlant.appendChild(sep); mPlant.appendChild(tit);
+    [
+      {ico:'📗',txt:'Libro Mayor Automático',fn:"closeMenu&&closeMenu();generarLibroMayor();abrirV14('modalLibroMayor')"},
+      {ico:'⚖️',txt:'Balance de Comprobación',fn:"closeMenu&&closeMenu();generarBalanceComp();abrirV14('modalBalanceComp')"},
+      {ico:'💰',txt:'Flujo de Efectivo',fn:"closeMenu&&closeMenu();abrirFlujoEfectivo()"},
+      {ico:'🏦',txt:'Conciliación Bancaria Interactiva',fn:"closeMenu&&closeMenu();abrirConciliacionV14()"},
+      {ico:'📋',txt:'Declaración D-101 (Renta)',fn:"closeMenu&&closeMenu();actualizarTramosRenta();abrirV14('modalD101')"},
+    ].forEach(function(item){
+      var el=document.createElement('div'); el.className='dd-item';
+      el.innerHTML='<span class="di">'+item.ico+'</span>'+item.txt;
+      el.setAttribute('onclick',item.fn);
+      mPlant.appendChild(el);
+    });
+  }
+
+  // Inicializar D-101
+  actualizarTramosRenta();
+  // Inicializar filas D-101 por defecto
+  if(!_d101Ingresos.length){
+    _d101Ingresos=[{desc:'Ventas de bienes y servicios',monto:0},{desc:'Otros ingresos gravables',monto:0}];
+    _d101Gastos=[
+      {desc:'Costo de ventas / mercancías',monto:0},
+      {desc:'Sueldos y salarios',monto:0},
+      {desc:'Cargas sociales (CCSS patronal)',monto:0},
+      {desc:'Alquiler de local',monto:0},
+      {desc:'Servicios públicos',monto:0},
+      {desc:'Depreciaciones',monto:0},
+    ];
+    renderD101Filas('ingresos');renderD101Filas('exentos');renderD101Filas('gastos');
+  }
+
+  console.log('✅ Patch v14.0 cargado — 5 nuevas herramientas contables CR');
+});
+
+// Exponer funciones globalmente
+window.abrirV14=abrirV14; window.cerrarV14=cerrarV14;
+window.generarLibroMayor=generarLibroMayor; window.filtrarCuentaMayor=filtrarCuentaMayor;
+window.exportarLibroMayorCSV=exportarLibroMayorCSV; window.exportarLibroMayorPDF=exportarLibroMayorPDF;
+window.generarBalanceComp=generarBalanceComp;
+window.exportarBalanceCSV=exportarBalanceCSV; window.exportarBalancePDF=exportarBalancePDF;
+window.abrirFlujoEfectivo=abrirFlujoEfectivo;
+window.switchFlujoTab=switchFlujoTab; window.agregarFilaFlujo=agregarFilaFlujo;
+window.calcularFlujoDirecto=calcularFlujoDirecto; window.calcularFlujoIndirecto=calcularFlujoIndirecto;
+window.exportarFlujoPDF=exportarFlujoPDF;
+window.abrirConciliacionV14=abrirConciliacionV14;
+window.agregarAjusteBanco=agregarAjusteBanco; window.agregarAjusteLibros=agregarAjusteLibros;
+window.calcularConciliacion=calcularConciliacion; window.limpiarConciliacion=limpiarConciliacion;
+window.exportarConciliacionPDF=exportarConciliacionPDF;
+window._concBancoAjustes=_concBancoAjustes; window._concLibrosAjustes=_concLibrosAjustes;
+window.actualizarTramosRenta=actualizarTramosRenta; window.switchD101Tab=switchD101Tab;
+window.agregarFilaD101=agregarFilaD101; window.renderD101Filas=renderD101Filas;
+window.calcularD101=calcularD101; window.limpiarD101=limpiarD101;
+window.exportarD101PDF=exportarD101PDF;
+window._d101Ingresos=_d101Ingresos; window._d101Exentos=_d101Exentos; window._d101Gastos=_d101Gastos;
+
+})();
+</script>
 </body>
 </html>
