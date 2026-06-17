@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -827,6 +826,47 @@ button{cursor:pointer;}
   body { background: #fff; }
 }
 
+/* ═══ PATCH v14.5 — 5 módulos contables ═══ */
+.v14-tabs{display:flex;gap:2px;padding:0 16px;border-bottom:1.5px solid var(--border);background:var(--off);overflow-x:auto;}
+.v14-tabs::-webkit-scrollbar{height:0;}
+.v14-tab{padding:8px 14px;border:none;background:transparent;color:var(--text3);font-size:12.5px;font-weight:700;cursor:pointer;white-space:nowrap;border-bottom:2.5px solid transparent;}
+.v14-tab.active{color:var(--g3);border-bottom-color:var(--g2);}
+.v14-tab:hover{color:var(--g2);}
+.v14-pane{display:none;padding:14px 16px;}
+.v14-pane.active{display:block;}
+.tbl-v14{width:100%;border-collapse:collapse;font-size:12.5px;margin-bottom:10px;}
+.tbl-v14 th{background:var(--bg3);padding:7px 9px;text-align:left;font-weight:700;color:var(--g3);font-size:10.5px;border-bottom:2px solid var(--border2);position:sticky;top:0;}
+.tbl-v14 td{padding:6px 9px;border-bottom:1px solid var(--border);}
+.tbl-v14 tbody tr:hover td{background:var(--off);}
+.tbl-v14 .num{text-align:right;font-family:monospace;}
+.tbl-v14 .total-row{font-weight:800;background:var(--bg2);}
+.v14-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-bottom:12px;}
+.v14-kpi{background:var(--off);border:1.5px solid var(--border);border-radius:var(--r2);padding:10px 12px;}
+.v14-kpi-label{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;}
+.v14-kpi-value{font-size:16px;font-weight:800;color:var(--g3);}
+.v14-kpi.ok{border-color:#7fc97f;background:rgba(90,191,42,.08);}
+.v14-kpi.ok .v14-kpi-value{color:var(--g3);}
+.v14-kpi.bad{border-color:#f3a6a6;background:rgba(220,38,38,.06);}
+.v14-kpi.bad .v14-kpi-value{color:var(--danger);}
+.v14-conc-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px;}
+@media (max-width:599px){.v14-conc-grid{grid-template-columns:1fr;}}
+.v14-conc-card{background:var(--off);border:1.5px solid var(--border);border-radius:var(--r2);padding:11px;}
+.v14-conc-card h4{font-size:12px;font-weight:800;color:var(--g3);margin-bottom:8px;}
+.v14-conc-row{display:flex;align-items:center;gap:6px;margin-bottom:6px;}
+.v14-conc-row input[type=text]{flex:1;}
+.v14-conc-row input[type=number]{width:110px;text-align:right;}
+.v14-conc-row button{background:none;border:none;color:var(--danger);font-size:15px;cursor:pointer;flex-shrink:0;}
+.v14-add-row{padding:4px 10px;border-radius:6px;border:1.5px dashed var(--border2);background:var(--bg2);color:var(--g2);font-size:11.5px;font-weight:700;cursor:pointer;margin-top:4px;}
+.v14-d101-sec{background:var(--off);border:1.5px solid var(--border);border-radius:var(--r2);padding:11px;margin-bottom:10px;}
+.v14-d101-sec h4{font-size:12px;font-weight:800;color:var(--g3);margin-bottom:8px;}
+.btn-v14{padding:6px 12px;border-radius:var(--r1);border:none;font-size:12px;font-weight:700;cursor:pointer;background:var(--bg2);color:var(--text2);}
+.btn-v14.prim{background:linear-gradient(135deg,var(--g1),var(--g2));color:#fff;}
+.btn-v14:hover{opacity:.88;}
+.v14-toolbar{display:flex;gap:6px;flex-wrap:wrap;padding:10px 16px;border-top:1px solid var(--border);background:var(--off);}
+.v14-status{font-size:11px;color:var(--text3);padding:0 16px 8px;}
+.v14-select-inline{padding:4px 7px;border:1.5px solid var(--border2);border-radius:6px;font-size:12px;background:#fff;color:var(--text2);}
+.v14-grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+@media (max-width:599px){.v14-grid2{grid-template-columns:1fr;}}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -1329,6 +1369,158 @@ button{cursor:pointer;}
     </div>
   </div>
 </div>
+
+<!-- ═══ PATCH v14.5 — MODALES 5 MÓDULOS CONTABLES ═══ -->
+
+<!-- MODAL: LIBRO MAYOR AUTOMÁTICO -->
+<div class="modal" id="modalLibroMayor">
+  <div class="mbox" style="max-width:760px;">
+    <div class="mhead"><h3>📗 Libro Mayor Automático</h3><button class="mcls" onclick="closeModal('modalLibroMayor')">×</button></div>
+    <div class="mbody">
+      <div style="padding:10px 16px 0;display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+        <span style="font-size:11.5px;color:var(--text2);font-weight:600;">Hoja activa:</span>
+        <select class="v14-select-inline" id="lm-sheet-sel" onchange="generarLibroMayor()"></select>
+        <span style="font-size:11px;color:var(--text3);">Detecta columnas Fecha / Cuenta / Debe / Haber automáticamente</span>
+      </div>
+      <div id="lmContenido" style="padding:12px 16px;"></div>
+    </div>
+    <div class="v14-toolbar">
+      <button class="btn-v14" onclick="generarLibroMayor()">🔄 Regenerar</button>
+      <button class="btn-v14" onclick="exportarLibroMayorCSV()">↓ CSV</button>
+      <button class="btn-v14" onclick="exportarLibroMayorPDF()">↓ PDF</button>
+      <button class="btn-v14 prim" onclick="closeModal('modalLibroMayor')" style="margin-left:auto;">✓ Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: BALANCE DE COMPROBACIÓN -->
+<div class="modal" id="modalBalanceComp">
+  <div class="mbox" style="max-width:760px;">
+    <div class="mhead"><h3>📊 Balance de Comprobación (en tiempo real)</h3><button class="mcls" onclick="closeModal('modalBalanceComp')">×</button></div>
+    <div class="mbody">
+      <div style="padding:10px 16px 0;display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+        <span style="font-size:11.5px;color:var(--text2);font-weight:600;">Hoja activa:</span>
+        <select class="v14-select-inline" id="bc-sheet-sel" onchange="generarBalanceComp()"></select>
+      </div>
+      <div id="bcKpis" style="padding:12px 16px 0;"></div>
+      <div id="bcContenido" style="padding:0 16px 12px;"></div>
+    </div>
+    <div class="v14-toolbar">
+      <button class="btn-v14" onclick="generarBalanceComp()">🔄 Regenerar</button>
+      <button class="btn-v14" onclick="exportarBalanceCompCSV()">↓ CSV</button>
+      <button class="btn-v14" onclick="exportarBalanceCompPDF()">↓ PDF</button>
+      <button class="btn-v14 prim" onclick="closeModal('modalBalanceComp')" style="margin-left:auto;">✓ Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: FLUJO DE EFECTIVO -->
+<div class="modal" id="modalFlujoEfectivo">
+  <div class="mbox" style="max-width:780px;">
+    <div class="mhead"><h3>💧 Flujo de Efectivo</h3><button class="mcls" onclick="closeModal('modalFlujoEfectivo')">×</button></div>
+    <div class="v14-tabs">
+      <button class="v14-tab active" id="feTab-directo" onclick="switchFlujoTab('directo')">Método Directo</button>
+      <button class="v14-tab" id="feTab-indirecto" onclick="switchFlujoTab('indirecto')">Método Indirecto</button>
+    </div>
+    <div class="mbody">
+      <div class="v14-pane active" id="fePane-directo">
+        <div id="feDirectoBody"></div>
+        <button class="v14-add-row" onclick="agregarFilaFlujoDirecto()">+ Agregar línea</button>
+      </div>
+      <div class="v14-pane" id="fePane-indirecto">
+        <div id="feIndirectoBody" style="padding-top:10px;"></div>
+      </div>
+    </div>
+    <div class="v14-toolbar">
+      <button class="btn-v14" onclick="recalcularFlujoEfectivo()">∑ Recalcular</button>
+      <button class="btn-v14" onclick="exportarFlujoCSV()">↓ CSV</button>
+      <button class="btn-v14" onclick="exportarFlujoPDF()">↓ PDF</button>
+      <button class="btn-v14 prim" onclick="closeModal('modalFlujoEfectivo')" style="margin-left:auto;">✓ Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: CONCILIACIÓN BANCARIA INTERACTIVA -->
+<div class="modal" id="modalConciliacionV14">
+  <div class="mbox" style="max-width:760px;">
+    <div class="mhead"><h3>🏦 Conciliación Bancaria Interactiva</h3><button class="mcls" onclick="closeModal('modalConciliacionV14')">×</button></div>
+    <div class="mbody">
+      <div style="padding:12px 16px 0;">
+        <div class="v14-conc-grid">
+          <div class="v14-conc-card">
+            <h4>Según Banco</h4>
+            <div class="field"><label class="lbl">Saldo según estado de cuenta</label><input class="inp" type="number" id="conc-saldo-banco" value="0" oninput="recalcularConciliacionV14()"></div>
+            <div id="concBancoAjustes"></div>
+            <button class="v14-add-row" onclick="agregarAjusteConc('banco')">+ Ajuste</button>
+          </div>
+          <div class="v14-conc-card">
+            <h4>Según Libros</h4>
+            <div class="field"><label class="lbl">Saldo según libros</label><input class="inp" type="number" id="conc-saldo-libros" value="0" oninput="recalcularConciliacionV14()"></div>
+            <div id="concLibrosAjustes"></div>
+            <button class="v14-add-row" onclick="agregarAjusteConc('libros')">+ Ajuste</button>
+          </div>
+        </div>
+        <div class="v14-kpis" style="margin-top:12px;" id="concKpis"></div>
+      </div>
+    </div>
+    <div class="v14-toolbar">
+      <button class="btn-v14" onclick="exportarConciliacionCSV()">↓ CSV</button>
+      <button class="btn-v14" onclick="exportarConciliacionPDF()">↓ PDF</button>
+      <button class="btn-v14 prim" onclick="closeModal('modalConciliacionV14')" style="margin-left:auto;">✓ Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: DECLARACIÓN D-101 (RENTA CR) -->
+<div class="modal" id="modalD101">
+  <div class="mbox" style="max-width:780px;">
+    <div class="mhead"><h3>🇨🇷 Declaración D-101 — Impuesto sobre la Renta</h3><button class="mcls" onclick="closeModal('modalD101')">×</button></div>
+    <div class="v14-tabs">
+      <button class="v14-tab active" id="d101Tab-datos" onclick="switchD101Tab('datos')">Datos</button>
+      <button class="v14-tab" id="d101Tab-ingresos" onclick="switchD101Tab('ingresos')">Ingresos</button>
+      <button class="v14-tab" id="d101Tab-gastos" onclick="switchD101Tab('gastos')">Gastos deducibles</button>
+      <button class="v14-tab" id="d101Tab-calculo" onclick="switchD101Tab('calculo')">Cálculo</button>
+    </div>
+    <div class="mbody">
+      <div class="v14-pane active" id="d101Pane-datos">
+        <div class="v14-d101-sec">
+          <h4>Datos del contribuyente</h4>
+          <div class="v14-grid2">
+            <div class="field"><label class="lbl">Nombre / Razón Social</label><input class="inp" id="d101-nombre" placeholder="Mi Empresa S.A."></div>
+            <div class="field"><label class="lbl">Cédula Jurídica/Física</label><input class="inp" id="d101-cedula" placeholder="3-101-000000"></div>
+            <div class="field"><label class="lbl">Período fiscal</label><input class="inp" id="d101-periodo" placeholder="2026"></div>
+            <div class="field"><label class="lbl">Tipo de contribuyente</label>
+              <select class="inp" id="d101-tipo" onchange="calcularD101()">
+                <option value="persona_fisica">Persona Física con actividad lucrativa</option>
+                <option value="empresa_micro">Empresa — Ingresos hasta ₡122,145,000 (micro)</option>
+                <option value="empresa_pequena">Empresa — Ingresos hasta ₡283,673,000 (pequeña)</option>
+                <option value="empresa_grande">Empresa — Ingresos mayores (régimen general 30%)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="v14-pane" id="d101Pane-ingresos">
+        <div id="d101IngresosBody" style="padding-top:10px;"></div>
+        <button class="v14-add-row" onclick="agregarFilaD101('ingresos')">+ Agregar ingreso</button>
+      </div>
+      <div class="v14-pane" id="d101Pane-gastos">
+        <div id="d101GastosBody" style="padding-top:10px;"></div>
+        <button class="v14-add-row" onclick="agregarFilaD101('gastos')">+ Agregar gasto</button>
+      </div>
+      <div class="v14-pane" id="d101Pane-calculo">
+        <div id="d101CalculoBody" style="padding-top:10px;"></div>
+      </div>
+    </div>
+    <div class="v14-toolbar">
+      <button class="btn-v14" onclick="calcularD101()">∑ Calcular impuesto</button>
+      <button class="btn-v14" onclick="exportarD101CSV()">↓ CSV</button>
+      <button class="btn-v14" onclick="exportarD101PDF()">↓ PDF</button>
+      <button class="btn-v14 prim" onclick="closeModal('modalD101')" style="margin-left:auto;">✓ Cerrar</button>
+    </div>
+  </div>
+</div>
+
 
 <script>
 
@@ -2649,277 +2841,123 @@ var translations = {
     'status.funciones': 'yö',
   },
 
-  guaymi: {
-    'logo.name': 'Matriz Contable CR',
-    'btn.sibo': 'Sibö ✦',
-    'hero.badge': 'Kugwe 12 — Offline',
-    'hero.title': 'Matriz Contable CR v12',
-    'hero.title.span': 'Matriz Contable',
-    'hero.desc': '300+ Kugwe | Factura 4.3 | Canvas | Sibö ✦',
-    'hero.start': 'Näin',
-    'hero.templates': 'Kugwe Tök',
-    'feat1.title': 'Factura Electrónica 4.3',
-    'feat1.desc': 'Kugwe tök XML + PDF QR Hacienda CR.',
-    'feat2.title': 'Canvas Kugwe',
-    'feat2.desc': 'Diario, Mayor, Balance. Kugwe =SUMA.',
-    'feat3.title': 'Sibö ✦ Kugwe',
-    'feat3.desc': 'Kugwe ie 10 niere. Kugwe tök asientos.',
-    'feat4.title': '10 Niere CR',
-    'feat4.desc': 'Español, English, Bribri, Cabécar, Ngäbe, Boruca, Térraba, Maleku, Guaymí, Brunca.',
-    'feat5.title': '6 Kugwe Tök',
-    'feat5.desc': 'Diario, Mayor, Balance, Conciliación, Factura, Compras.',
-    'feat6.title': 'Kugwe Näin',
-    'feat6.desc': 'PDF, Excel, XML 4.3. Kugwe offline.',
-    'canvas.label': 'Kugwe Tök',
-    'btn.tabla': 'Kugwe',
-    'btn.nota': 'Niere',
-    'btn.grafico': 'Kugwe Kö',
-    'btn.plantillas2': 'Kugwe Tök',
-    'btn.factura': 'Factura',
-    'btn.exportar': 'Kugwe Näin',
-    'btn.guardar': 'Kugwe Ie',
-    'modal.factura.title': 'Factura Electrónica — Hacienda CR',
-    'factura.label': 'FACTURA ELECTRÓNICA',
-    'factura.emisor': 'Emisor',
-    'factura.receptor': 'Receptor',
-    'factura.col.cant': 'Kugwe',
-    'factura.col.desc': 'Kugwe Tök',
-    'factura.col.unit': 'Precio',
-    'factura.col.total': 'Näin',
-    'factura.subtotal': 'Subtotal:',
-    'factura.iva': 'IVA 13%:',
-    'factura.total': 'Näin:',
-    'btn.enviar': 'Kugwe Hacienda',
-    'btn.pdf': 'PDF',
-    'btn.xml': 'XML',
-    'templates.title': 'Kugwe Tök Contable CR',
-    'tpl.diario.title': '📘 Libro Diario',
-    'tpl.diario.desc': 'Kugwe Debe/Haber',
-    'tpl.mayor.title': '📗 Libro Mayor',
-    'tpl.mayor.desc': 'Kugwe saldos',
-    'tpl.balance.title': '📊 Balance',
-    'tpl.balance.desc': 'Kugwe sumas',
-    'tpl.conciliacion.title': '🏦 Conciliación',
-    'tpl.conciliacion.desc': 'Banco ie Libros',
-    'tpl.factura.title': '📄 Factura CR',
-    'tpl.factura.desc': 'XML 4.3 + QR',
-    'tpl.compras.title': '🛒 Compras/Ventas',
-    'tpl.compras.desc': 'D-151',
-    'sibo.placeholder': 'Kugwe niere...',
-    'sibo.welcome': 'Näin! Soy Sibö ✦, kugwe tök contable CR. ¿Kugwe näin?',
-    'sibo.r.quien': 'Kugwe Sibö ✦, asistente CR. Kugwe tök facturas, IVA.',
-    'sibo.r.factura': 'Factura: Kugwe tök Factura, datos, IVA 13%.',
-    'sibo.r.iva': 'IVA CR: 13%, 4%, 2%. Kugwe: Monto × 0.13',
-    'sibo.r.diario': 'Diario: Plantillas → Diario.',
-    'sibo.r.idioma': 'Niere: arriba derecha.',
-    'sibo.r.balance': 'Balance: Debe = Haber.',
-    'sibo.r.banco': 'Conciliación: Banco ie libros.',
-    'sibo.r.default': 'Kugwe tök: Facturas, Diario, Balance. ¿Kugwe näin?',
-    'alert.guardado': '✓ Kugwe Ie',
-    'alert.copiado': 'Kugwe portapapeles.',
-    'alert.hacienda': '✓ Factura Hacienda CR\nNo. 001-00001-00000001',
-    'alert.pdf': 'Kugwe PDF...',
-    'credit': 'Kugwe niere: Keny Chinchilla Navarro',
-  
-    'menu.archivo': '📁 Kugwe',
-    'menu.inicio': '🏠 Näin',
-    'menu.insertar': '➕ Tö',
-    'menu.plantillas': '📋 Kugwe',
-    'menu.formulas': 'fx Tö',
-    'menu.factura': '🧾 Kugwe',
-    'menu.lenguajes': '🌐 Ngäbere',
-    'menu.ia': '🦙 IA',
-    'sidebar.plantillas': 'Kugwe',
-    'sidebar.formulas': 'Tö',
-    'status.listo': 'Näin tö',
-    'sibo.name': 'Sibö',
-    'tb.ver': 'v13',
-    'sibo.input.placeholder': 'Tö kugwe...',
-    'canvas.label': 'ÁREA DE TRABAJO',
-    'canvas.toolbar': 'ÁREA DE TRABAJO',
-    'canvas.empty': 'Tö kugwe...',
-    'dd.nuevo': 'Näin Tö',
-    'dd.guardar': 'Tö Kugwe',
-    'dd.restaurar': 'Tö näin',
-    'dd.limpiar': 'Tö',
-    'dd.exportar': 'Tö kugwe',
-    'dd.compartir': 'Tö näin',
-    'dd.tabla': 'Kugwe tö',
-    'dd.nota': 'Tö kugwe',
-    'dd.grafico': 'Kugwe tö',
-    'dd.diario': 'Libro Diario',
-    'dd.mayor': 'Libro Mayor',
-    'dd.balance': 'Balance',
-    'dd.conciliacion': 'Conciliación',
-    'dd.d151': 'D-151',
-    'dd.factura': 'Factura',
-    'dd.insertar.fn': 'fx Tö...',
-    'dd.autosuma': '∑ Tö',
-    'dd.agregar.fila': '+ Tö',
-    'dd.quitar.fila': '- Tö',
-    'dd.calcular': '∑ Näin',
-    'dd.apps.todas': 'Apps CR',
-    'fe.emisor': 'Emisor',
-    'fe.receptor': 'Receptor',
-    'fe.btn.cerrar': '✓ Tö',
-    'modal.factura.title': '🧾 Factura CR',
-    'modal.fn.fns': 'tö',
-    'apps.todas': 'Todas',
-    'apps.gratis': '🆓 Tö',
-    'chip.iva': 'IVA',
-    'chip.diario': 'Diario',
-    'chip.factura': 'Factura',
-    'chip.apps': 'Apps',
-    'chip.niif': 'NIIF',
-    'chip.bancaria': 'Bancaria',
-    'sb.libro.diario': 'Libro Diario',
-    'sb.libro.mayor': 'Libro Mayor',
-    'sb.balance': 'Balance',
-    'sb.conciliacion': 'Conciliación',
-    'sb.d151': 'D-151',
-    'sb.factura': 'Factura',
-    'sb.biblioteca': 'Biblioteca (452)',
-    'sb.financieras': 'Financieras',
-    'sb.estadisticas': 'Estadísticas',
-    'formula.placeholder': 'Tö kugwe o fx...',
-    'sec.portapapeles': 'Kugwe',
-    'sec.edicion': 'Tö',
-    'sec.celdas': 'Kugwe tö',
-    'sec.elementos': 'Tö näin',
-    'sec.libros': 'Kugwe Libros',
-    'sec.reportes': 'Tö CR',
-    'sec.funcion': 'fx Tö',
-    'sec.categorias': 'Kugwe tö',
-    'sec.especiales': 'Tö',
-    'sec.factura.cr': 'Factura CR',
-    'sec.sibo': 'Sibö ✦ IA',
-    'sec.capacidades': 'Sibö IA',
-    'sec.atajos': 'Kugwe tö',
-    'cv.tabla': '📋 Kugwe',
-    'cv.nota': '📝 Tö',
-    'cv.grafico': '📊 Kugwe',
-    'cv.calcular': '∑ Tö',
-    'cv.guardar': '💾 Kugwe',
-    'status.funciones': 'tö',
-  },
-
   brunca: {
     'logo.name': 'Matriz Contable CR',
     'btn.sibo': 'Sibö ✦',
-    'hero.badge': 'Di 12 — Offline',
+    'hero.badge': 'Ró 12 — Offline',
     'hero.title': 'Matriz Contable CR v12',
     'hero.title.span': 'Matriz Contable',
-    'hero.desc': '300+ Di | Factura 4.3 | Canvas | Sibö ✦',
-    'hero.start': 'I',
-    'hero.templates': 'Di Tök',
+    'hero.desc': '300+ Ró | Factura 4.3 | Canvas | Sibö ✦',
+    'hero.start': 'Ísh',
+    'hero.templates': 'Ró Tök',
     'feat1.title': 'Factura Electrónica 4.3',
-    'feat1.desc': 'Di tök XML + PDF QR Hacienda CR.',
-    'feat2.title': 'Canvas Di',
-    'feat2.desc': 'Diario, Mayor, Balance. Di =SUMA.',
-    'feat3.title': 'Sibö ✦ Di',
-    'feat3.desc': 'Di ie 10 ish. Di tök asientos.',
-    'feat4.title': '10 Ish CR',
+    'feat1.desc': 'Ró tök XML + PDF QR Hacienda CR.',
+    'feat2.title': 'Canvas Ró',
+    'feat2.desc': 'Diario, Mayor, Balance. Ró =SUMA.',
+    'feat3.title': 'Sibö ✦ Ró',
+    'feat3.desc': 'Ró ie 10 shú. Ró tök asientos.',
+    'feat4.title': '10 Shú CR',
     'feat4.desc': 'Español, English, Bribri, Cabécar, Ngäbe, Boruca, Térraba, Maleku, Guaymí, Brunca.',
-    'feat5.title': '6 Di Tök',
+    'feat5.title': '6 Ró Tök',
     'feat5.desc': 'Diario, Mayor, Balance, Conciliación, Factura, Compras.',
-    'feat6.title': 'Di I',
-    'feat6.desc': 'PDF, Excel, XML 4.3. Di offline.',
-    'canvas.label': 'Di Tök',
-    'btn.tabla': 'Di',
-    'btn.nota': 'Ish',
-    'btn.grafico': 'Di Kö',
-    'btn.plantillas2': 'Di Tök',
+    'feat6.title': 'Ró Ísh',
+    'feat6.desc': 'PDF, Excel, XML 4.3. Ró offline.',
+    'canvas.label': 'Ró Tök',
+    'btn.tabla': 'Ró',
+    'btn.nota': 'Shú',
+    'btn.grafico': 'Ró Kö',
+    'btn.plantillas2': 'Ró Tök',
     'btn.factura': 'Factura',
-    'btn.exportar': 'Di I',
-    'btn.guardar': 'Di Ie',
+    'btn.exportar': 'Ró Ísh',
+    'btn.guardar': 'Ró Ie',
     'modal.factura.title': 'Factura Electrónica — Hacienda CR',
     'factura.label': 'FACTURA ELECTRÓNICA',
     'factura.emisor': 'Emisor',
     'factura.receptor': 'Receptor',
-    'factura.col.cant': 'Di',
-    'factura.col.desc': 'Di Tök',
+    'factura.col.cant': 'Ró',
+    'factura.col.desc': 'Ró Tök',
     'factura.col.unit': 'Precio',
-    'factura.col.total': 'I',
+    'factura.col.total': 'Ísh',
     'factura.subtotal': 'Subtotal:',
     'factura.iva': 'IVA 13%:',
-    'factura.total': 'I:',
-    'btn.enviar': 'Di Hacienda',
+    'factura.total': 'Ísh:',
+    'btn.enviar': 'Ró Hacienda',
     'btn.pdf': 'PDF',
     'btn.xml': 'XML',
-    'templates.title': 'Di Tök Contable CR',
+    'templates.title': 'Ró Tök Contable CR',
     'tpl.diario.title': '📘 Libro Diario',
-    'tpl.diario.desc': 'Di Debe/Haber',
+    'tpl.diario.desc': 'Ró Debe/Haber',
     'tpl.mayor.title': '📗 Libro Mayor',
-    'tpl.mayor.desc': 'Di saldos',
+    'tpl.mayor.desc': 'Ró saldos',
     'tpl.balance.title': '📊 Balance',
-    'tpl.balance.desc': 'Di sumas',
+    'tpl.balance.desc': 'Ró sumas',
     'tpl.conciliacion.title': '🏦 Conciliación',
     'tpl.conciliacion.desc': 'Banco ie Libros',
     'tpl.factura.title': '📄 Factura CR',
     'tpl.factura.desc': 'XML 4.3 + QR',
     'tpl.compras.title': '🛒 Compras/Ventas',
     'tpl.compras.desc': 'D-151',
-    'sibo.placeholder': 'Di ish...',
-    'sibo.welcome': 'I! Soy Sibö ✦, di tök contable CR. ¿Di i?',
-    'sibo.r.quien': 'Di Sibö ✦, asistente CR. Di tök facturas, IVA.',
-    'sibo.r.factura': 'Factura: Di tök Factura, datos, IVA 13%.',
-    'sibo.r.iva': 'IVA CR: 13%, 4%, 2%. Di: Monto × 0.13',
+    'sibo.placeholder': 'Ró shú...',
+    'sibo.welcome': 'Ísh! Soy Sibö ✦, ró tök contable CR. ¿Ró ísh?',
+    'sibo.r.quien': 'Ró Sibö ✦, asistente CR. Ró tök facturas, IVA.',
+    'sibo.r.factura': 'Factura: Ró tök Factura, datos, IVA 13%.',
+    'sibo.r.iva': 'IVA CR: 13%, 4%, 2%. Ró: Monto × 0.13',
     'sibo.r.diario': 'Diario: Plantillas → Diario.',
-    'sibo.r.idioma': 'Ish: arriba derecha.',
+    'sibo.r.idioma': 'Shú: arriba derecha.',
     'sibo.r.balance': 'Balance: Debe = Haber.',
     'sibo.r.banco': 'Conciliación: Banco ie libros.',
-    'sibo.r.default': 'Di tök: Facturas, Diario, Balance. ¿Di i?',
-    'alert.guardado': '✓ Di Ie',
-    'alert.copiado': 'Di portapapeles.',
+    'sibo.r.default': 'Ró tök: Facturas, Diario, Balance. ¿Ró ísh?',
+    'alert.guardado': '✓ Ró Ie',
+    'alert.copiado': 'Ró shú portapapeles.',
     'alert.hacienda': '✓ Factura Hacienda CR\nNo. 001-00001-00000001',
-    'alert.pdf': 'Di PDF...',
-    'credit': 'Ish ki: Keny Chinchilla Navarro',
+    'alert.pdf': 'Ró PDF...',
+    'credit': 'Shú ki: Keny Chinchilla Navarro',
   
-    'menu.archivo': '📁 Di Chom',
-    'menu.inicio': '🏠 Di',
-    'menu.insertar': '➕ Chom',
-    'menu.plantillas': '📋 Di Chom',
-    'menu.formulas': 'fx Chom',
-    'menu.factura': '🧾 Di',
-    'menu.lenguajes': '🌐 Brunca',
+    'menu.archivo': '📁 Boro',
+    'menu.inicio': '🏠 Bö',
+    'menu.insertar': '➕ Ísh',
+    'menu.plantillas': '📋 Boro',
+    'menu.formulas': 'fx Ísh',
+    'menu.factura': '🧾 Boro',
+    'menu.lenguajes': '🌐 Boruca',
     'menu.ia': '🦙 IA',
-    'sidebar.plantillas': 'Di Chom',
-    'sidebar.formulas': 'Chom',
-    'status.listo': 'Di chom',
+    'sidebar.plantillas': 'Boro',
+    'sidebar.formulas': 'Ísh',
+    'status.listo': 'Bö ísh',
     'sibo.name': 'Sibö',
     'tb.ver': 'v13',
-    'sibo.input.placeholder': 'Chom di...',
+    'sibo.input.placeholder': 'Ísh boro...',
     'canvas.label': 'ÁREA DE TRABAJO',
     'canvas.toolbar': 'ÁREA DE TRABAJO',
-    'canvas.empty': 'Chom di...',
-    'dd.nuevo': 'Di Chom',
-    'dd.guardar': 'Chom Di',
-    'dd.restaurar': 'Chom di',
-    'dd.limpiar': 'Chom',
-    'dd.exportar': 'Chom di',
-    'dd.compartir': 'Chom di',
-    'dd.tabla': 'Di chom',
-    'dd.nota': 'Chom di',
-    'dd.grafico': 'Di chom',
+    'canvas.empty': 'Ísh boro...',
+    'dd.nuevo': 'Bö Ísh',
+    'dd.guardar': 'Ísh Boro',
+    'dd.restaurar': 'Ísh bö',
+    'dd.limpiar': 'Ísh',
+    'dd.exportar': 'Ísh boro',
+    'dd.compartir': 'Ísh bö',
+    'dd.tabla': 'Boro ísh',
+    'dd.nota': 'Ísh boro',
+    'dd.grafico': 'Boro ísh',
     'dd.diario': 'Libro Diario',
     'dd.mayor': 'Libro Mayor',
     'dd.balance': 'Balance',
     'dd.conciliacion': 'Conciliación',
     'dd.d151': 'D-151',
     'dd.factura': 'Factura',
-    'dd.insertar.fn': 'fx Chom...',
-    'dd.autosuma': '∑ Chom',
-    'dd.agregar.fila': '+ Chom',
-    'dd.quitar.fila': '- Chom',
-    'dd.calcular': '∑ Di',
+    'dd.insertar.fn': 'fx Ísh...',
+    'dd.autosuma': '∑ Ísh',
+    'dd.agregar.fila': '+ Ísh',
+    'dd.quitar.fila': '- Ísh',
+    'dd.calcular': '∑ Bö',
     'dd.apps.todas': 'Apps CR',
     'fe.emisor': 'Emisor',
     'fe.receptor': 'Receptor',
-    'fe.btn.cerrar': '✓ Chom',
+    'fe.btn.cerrar': '✓ Ísh',
     'modal.factura.title': '🧾 Factura CR',
-    'modal.fn.fns': 'chom',
+    'modal.fn.fns': 'ísh',
     'apps.todas': 'Todas',
-    'apps.gratis': '🆓 Chom',
+    'apps.gratis': '🆓 Ísh',
     'chip.iva': 'IVA',
     'chip.diario': 'Diario',
     'chip.factura': 'Factura',
@@ -2935,26 +2973,26 @@ var translations = {
     'sb.biblioteca': 'Biblioteca (452)',
     'sb.financieras': 'Financieras',
     'sb.estadisticas': 'Estadísticas',
-    'formula.placeholder': 'Chom di o fx...',
-    'sec.portapapeles': 'Di Chom',
-    'sec.edicion': 'Chom',
-    'sec.celdas': 'Di chom',
-    'sec.elementos': 'Chom di',
-    'sec.libros': 'Di Libros',
-    'sec.reportes': 'Chom CR',
-    'sec.funcion': 'fx Chom',
-    'sec.categorias': 'Di chom',
-    'sec.especiales': 'Chom',
+    'formula.placeholder': 'Ísh boro o fx...',
+    'sec.portapapeles': 'Boro',
+    'sec.edicion': 'Ísh',
+    'sec.celdas': 'Boro ísh',
+    'sec.elementos': 'Ísh boro',
+    'sec.libros': 'Boro Libros',
+    'sec.reportes': 'Ísh CR',
+    'sec.funcion': 'fx Ísh',
+    'sec.categorias': 'Boro ísh',
+    'sec.especiales': 'Ísh',
     'sec.factura.cr': 'Factura CR',
     'sec.sibo': 'Sibö ✦ IA',
     'sec.capacidades': 'Sibö IA',
-    'sec.atajos': 'Di chom',
-    'cv.tabla': '📋 Di',
-    'cv.nota': '📝 Chom',
-    'cv.grafico': '📊 Di',
-    'cv.calcular': '∑ Chom',
-    'cv.guardar': '💾 Di',
-    'status.funciones': 'chom',
+    'sec.atajos': 'Boro ísh',
+    'cv.tabla': '📋 Boro',
+    'cv.nota': '📝 Ísh',
+    'cv.grafico': '📊 Boro',
+    'cv.calcular': '∑ Ísh',
+    'cv.guardar': '💾 Boro',
+    'status.funciones': 'ísh',
   }
 };
 
@@ -9709,8 +9747,7 @@ console.log('✅ BugFix cargado: commitEdit + autosave + restore');
     // ═══════════════════════════════════════════
     return _prev ? _prev(formula, row, col) : '#FUNC?';
   };
-
-  console.log('✅ Patch v13.8 cargado — +85 fórmulas (~430 total, 84% Excel)');
+  console.log('✅ Patch v13.8b cargado');
 })();
 
 // ═══════ v13.9 ═══════
@@ -10124,9 +10161,9 @@ console.log('✅ BugFix cargado: commitEdit + autosave + restore');
       args=splitArgs(inner);
       var salario=resolveNum(args[0]);
       var tipo=args[1]?String(resolveArg(args[1])).toLowerCase():'total';
-      // Tasas CCSS 2024 CR
-      var patronal=0.2617; // 26.17% patronal
-      var obrero=0.1067;   // 10.67% obrero
+      // Tasas CCSS 2026 CR (vigentes desde 1° enero 2026, ajuste IVM)
+      var patronal=0.2683; // 26.83% patronal
+      var obrero=0.1083;   // 10.83% obrero
       if(tipo==='patronal')return fmtNum(salario*patronal);
       if(tipo==='obrero')return fmtNum(salario*obrero);
       return fmtNum(salario*(patronal+obrero));
@@ -10138,32 +10175,38 @@ console.log('✅ BugFix cargado: commitEdit + autosave + restore');
       var meses=args[1]?resolveNum(args[1]):12;
       return fmtNum(salario2*meses/12);
     }
-    // PREAVISO (preaviso laboral CR)
+    // PREAVISO (preaviso laboral CR — Art. 28 Código de Trabajo)
     if((inner=matchFn('PREAVISO'))!==null){
       args=splitArgs(inner);
       var salario3=resolveNum(args[0]),anios=resolveNum(args[1]);
-      if(anios<0.5)return '0';
-      if(anios<1)return fmtNum(salario3/30*7);
-      if(anios<2)return fmtNum(salario3/30*14);
-      if(anios<3)return fmtNum(salario3/30*21);
-      return fmtNum(salario3/30*28);
+      if(anios<0.25)return '0';                    // menos de 3 meses: no aplica
+      if(anios<0.5)return fmtNum(salario3/30*7);    // 3-6 meses: 1 semana (7 días)
+      if(anios<1)return fmtNum(salario3/30*15);     // 6 meses-1 año: 15 días
+      return fmtNum(salario3);                       // 1 año o más: 1 mes completo (fijo)
     }
-    // CESANTIA (cálculo cesantía CR — tope 8 años)
+    // CESANTIA (cálculo cesantía CR — Art. 29 Código de Trabajo, tabla oficial, tope 8 años)
     if((inner=matchFn('CESANTIA'))!==null){
       args=splitArgs(inner);
-      var salario4=resolveNum(args[0]),anios2=Math.min(resolveNum(args[1]),8);
-      return fmtNum(salario4*anios2);
+      var salario4=resolveNum(args[0]),anios2=resolveNum(args[1]);
+      if(anios2<0.25)return '0';                    // menos de 3 meses: no aplica
+      if(anios2<0.5)return fmtNum(salario4/30*7);    // 3-6 meses: 7 días
+      if(anios2<1)return fmtNum(salario4/30*14);     // 6 meses-1 año: 14 días
+      var tablaCesantia=[19.5,20,20.5,21,21.24,21.5,22,22]; // días por año, años 1-8 (Art. 29)
+      var aniosCompletos=Math.min(Math.floor(anios2),8);
+      var diasTotal=0;
+      for(var ic=0;ic<aniosCompletos;ic++)diasTotal+=tablaCesantia[ic];
+      return fmtNum(salario4/30*diasTotal);
     }
-    // RENTA.TRABAJO (renta del trabajo CR)
+    // RENTA.TRABAJO (renta del trabajo CR — Decreto 45333-H, tramos mensuales 2026)
     if((inner=matchFn('RENTA\\.TRABAJO|IMPUESTO\\.RENTA'))!==null){
       args=splitArgs(inner);
-      var ingreso=resolveNum(args[0])*12; // anualizar
-      // Tramos IR 2024 CR (anual)
-      if(ingreso<=3031000)return fmtNum(0);
-      if(ingreso<=4549000)return fmtNum(Math.max(0,(ingreso-3031000)*0.10)/12);
-      if(ingreso<=7581000)return fmtNum((151800+(ingreso-4549000)*0.15)/12);
-      if(ingreso<=15163000)return fmtNum((606600+(ingreso-7581000)*0.20)/12);
-      return fmtNum((2123000+(ingreso-15163000)*0.25)/12);
+      var ingresoMensual=resolveNum(args[0]);
+      // Tramos IR 2026 CR (mensual, asalariados — Decreto Ejecutivo 45333-H)
+      if(ingresoMensual<=918000)return fmtNum(0);
+      if(ingresoMensual<=1347000)return fmtNum((ingresoMensual-918000)*0.10);
+      if(ingresoMensual<=2364000)return fmtNum(42900+(ingresoMensual-1347000)*0.15);
+      if(ingresoMensual<=4727000)return fmtNum(195450+(ingresoMensual-2364000)*0.20);
+      return fmtNum(668050+(ingresoMensual-4727000)*0.25);
     }
     // TIPO.CAMBIO.CRC (TC referencial)
     if((inner=matchFn('TIPO\\.CAMBIO|TC\\.BCCR'))!==null){
@@ -10293,1452 +10336,778 @@ console.log('✅ BugFix cargado: commitEdit + autosave + restore');
   console.log('✅ Patch v13.9 cargado — motor ~490 fórmulas (96% Excel)');
 })();
 
-</script>
-<script>
-
-// ═══════════ v14.0 — 14 fórmulas nuevas ═══════════
-// ════════════════════════════════════════════════════
-// MATRIZ CONTABLE CR — PATCH v14.0
-// +14 fórmulas → motor ~504 fórmulas (98% Excel)
-// ════════════════════════════════════════════════════
-
-(function() {
-  var _prev = window.evalFormula;
-
-  window.evalFormula = function(formula, row, col) {
-    if (!formula || !formula.startsWith('=')) return formula;
-    var expr = formula.substring(1).trim();
-    var exprUp = expr.toUpperCase();
-
-    function getVal(cid){var v=sheetData[(cid||'').toUpperCase()]||'';if(typeof v==='string'&&v.startsWith('='))v=window.evalFormula(v,0,0);return v;}
-    function toNum(v){if(v===''||v==null)return 0;var n=parseFloat(String(v).replace(/[₡,\s]/g,''));return isNaN(n)?0:n;}
-    function fmtNum(n){if(n===null||n===undefined||isNaN(n))return '#VALOR!';return Number(n).toLocaleString('es-CR',{maximumFractionDigits:10});}
-    function colIdx(s){var n=0;s=(s||'').toUpperCase();for(var i=0;i<s.length;i++)n=n*26+s.charCodeAt(i)-64;return n-1;}
-    function getCells(from,to){var fc=colIdx((from.match(/[A-Za-z]+/)||['A'])[0]);var fr=parseInt((from.match(/\d+/)||[1])[0])-1;var tc=colIdx((to.match(/[A-Za-z]+/)||['A'])[0]);var tr=parseInt((to.match(/\d+/)||[1])[0])-1;var out=[];for(var r=fr;r<=tr;r++)for(var c=fc;c<=tc;c++)out.push(cellId(r,c));return out;}
-    function getMatrix(rng){var p=rng.trim().split(':');var fc=colIdx(p[0].match(/[A-Za-z]+/)[0]);var fr=parseInt(p[0].match(/\d+/)[0])-1;var tc=colIdx(p[1].match(/[A-Za-z]+/)[0]);var tr=parseInt(p[1].match(/\d+/)[0])-1;var m=[];for(var r=fr;r<=tr;r++){var row2=[];for(var c=fc;c<=tc;c++)row2.push(toNum(getVal(cellId(r,c))));m.push(row2);}return m;}
-    function rangeNums(a){var p=a.trim().split(':');return getCells(p[0],p[1]).map(function(c){return toNum(getVal(c));});}
-    function rangeVals(a){var p=a.trim().split(':');return getCells(p[0],p[1]).map(function(c){return getVal(c);});}
-    function isRange(a){return /^[A-Za-z]+\d+:[A-Za-z]+\d+$/.test((a||'').trim());}
-    function splitArgs(s){var args=[],depth=0,cur='',inStr=false,sc='';for(var i=0;i<s.length;i++){var ch=s[i];if(!inStr&&(ch==='"'||ch==="'")){inStr=true;sc=ch;cur+=ch;continue;}if(inStr&&ch===sc){inStr=false;cur+=ch;continue;}if(!inStr&&ch==='(')depth++;if(!inStr&&ch===')')depth--;if(!inStr&&(ch===';'||ch===',')&&depth===0){args.push(cur.trim());cur='';continue;}cur+=ch;}if(cur.trim())args.push(cur.trim());return args;}
-    function resolveArg(a){a=(a||'').trim();if((a.startsWith('"')&&a.endsWith('"'))||(a.startsWith("'")&&a.endsWith("'")))return a.slice(1,-1);if(isRange(a))return a;if(/^[A-Za-z]+\d+$/.test(a))return getVal(a);if(!isNaN(a))return parseFloat(a);return a;}
-    function resolveNum(a){return toNum(resolveArg(a));}
-    function matchFn(pat){var re=new RegExp('^(?:'+pat+')\\((.*)\\)$','i');if(!re.test(exprUp))return null;var fl=expr.indexOf('(');var d=0,e=fl;for(var i=fl+1;i<expr.length;i++){if(expr[i]==='(')d++;if(expr[i]===')'){if(d===0){e=i;break;}d--;}}return expr.substring(fl+1,e);}
-
-    var inner, args;
-
-    // MINVERSA / MINVERSE
-    if((inner=matchFn('MINVERSA|MINVERSE'))!==null){
-      args=splitArgs(inner);
-      if(!isRange(args[0]))return '#VALOR!';
-      var M=getMatrix(args[0]);
-      var n=M.length;
-      if(n!==M[0].length)return '#VALOR!';
-      var A=M.map(function(row2,i){return row2.concat(row2.map(function(_,j){return i===j?1:0;}));});
-      for(var col2=0;col2<n;col2++){
-        var piv=A[col2][col2];
-        if(Math.abs(piv)<1e-12)return '#NUM!';
-        for(var k=0;k<2*n;k++)A[col2][k]/=piv;
-        for(var r=0;r<n;r++){
-          if(r!==col2){
-            var factor=A[r][col2];
-            for(var k2=0;k2<2*n;k2++)A[r][k2]-=factor*A[col2][k2];
-          }
-        }
-      }
-      var inv=A.map(function(row2){return row2.slice(n).map(function(v){return fmtNum(Math.round(v*1e10)/1e10);});});
-      return inv.map(function(row2){return row2.join('\t');}).join(' | ');
-    }
-
-    // MMULT.MATRIZ / MMULTM
-    if((inner=matchFn('MMULT\\.MATRIZ|MMULTM'))!==null){
-      args=splitArgs(inner);
-      if(!isRange(args[0])||!isRange(args[1]))return '#VALOR!';
-      var A1=getMatrix(args[0]),B1=getMatrix(args[1]);
-      if(A1[0].length!==B1.length)return '#VALOR!';
-      var result=[];
-      for(var i=0;i<A1.length;i++){
-        var row2=[];
-        for(var j=0;j<B1[0].length;j++){
-          var sum=0;
-          for(var k=0;k<B1.length;k++)sum+=A1[i][k]*B1[k][j];
-          row2.push(fmtNum(sum));
-        }
-        result.push(row2.join('\t'));
-      }
-      return result.join(' | ');
-    }
-
-    // MDETERM.N / MDETERMN
-    if((inner=matchFn('MDETERM\\.N|MDETERMN'))!==null){
-      args=splitArgs(inner);
-      if(!isRange(args[0]))return '#VALOR!';
-      var Md=getMatrix(args[0]);
-      var nd=Md.length;
-      if(nd!==Md[0].length)return '#VALOR!';
-      var det=1;
-      var Mc=Md.map(function(r){return r.slice();});
-      for(var ci=0;ci<nd;ci++){
-        var maxRow=ci;
-        for(var ri=ci+1;ri<nd;ri++)if(Math.abs(Mc[ri][ci])>Math.abs(Mc[maxRow][ci]))maxRow=ri;
-        if(Math.abs(Mc[maxRow][ci])<1e-12)return '0';
-        if(maxRow!==ci){var tmp=Mc[ci];Mc[ci]=Mc[maxRow];Mc[maxRow]=tmp;det=-det;}
-        det*=Mc[ci][ci];
-        for(var ri2=ci+1;ri2<nd;ri2++){
-          var f=Mc[ri2][ci]/Mc[ci][ci];
-          for(var k3=ci;k3<nd;k3++)Mc[ri2][k3]-=f*Mc[ci][k3];
-        }
-      }
-      return fmtNum(Math.round(det*1e10)/1e10);
-    }
-
-    // AGRUPARPOR / GROUPBY
-    if((inner=matchFn('AGRUPARPOR|GROUPBY'))!==null){
-      args=splitArgs(inner);
-      if(!isRange(args[0])||!isRange(args[1]))return '#VALOR!';
-      var grupos=rangeVals(args[0]);
-      var valores=rangeNums(args[1]);
-      var func=args[2]?String(resolveArg(args[2])).toUpperCase():'SUMA';
-      var map={};
-      grupos.forEach(function(g,i){
-        var key=String(g);
-        if(!map[key])map[key]={sum:0,count:0,max:-Infinity,min:Infinity,vals:[]};
-        map[key].sum+=valores[i]||0;
-        map[key].count++;
-        map[key].max=Math.max(map[key].max,valores[i]||0);
-        map[key].min=Math.min(map[key].min,valores[i]||0);
-        map[key].vals.push(valores[i]||0);
-      });
-      var lines=[];
-      Object.keys(map).forEach(function(k){
-        var v=map[k],res;
-        if(func.includes('PROMEDIO')||func.includes('AVERAGE'))res=v.sum/v.count;
-        else if(func.includes('CONTAR')||func.includes('COUNT'))res=v.count;
-        else if(func.includes('MAX'))res=v.max;
-        else if(func.includes('MIN'))res=v.min;
-        else res=v.sum;
-        lines.push(k+': '+fmtNum(res));
-      });
-      return lines.join(' | ');
-    }
-
-    // PIVOTAR / PIVOTBY
-    if((inner=matchFn('PIVOTAR|PIVOTBY'))!==null){
-      args=splitArgs(inner);
-      if(!isRange(args[0])||!isRange(args[1]))return '#VALOR!';
-      var filas=rangeVals(args[0]);
-      var valores2=rangeNums(args[1]);
-      var map2={};
-      filas.forEach(function(f,i){var key=String(f);map2[key]=(map2[key]||0)+(valores2[i]||0);});
-      return Object.keys(map2).map(function(k){return k+': '+fmtNum(map2[k]);}).join(' | ');
-    }
-
-    // ORDENARPOR / SORTBY
-    if((inner=matchFn('ORDENARPOR|SORTBY'))!==null){
-      args=splitArgs(inner);
-      if(!isRange(args[0])||!isRange(args[1]))return '#VALOR!';
-      var datos=rangeVals(args[0]);
-      var clave=rangeNums(args[1]);
-      var order=args[2]?parseInt(resolveNum(args[2])):1;
-      var pares=datos.map(function(d,i){return {d:d,k:clave[i]};});
-      pares.sort(function(a,b){return order>=0?a.k-b.k:b.k-a.k;});
-      return pares.map(function(p){return p.d;}).join('; ');
-    }
-
-    // EXTRAERNUMEROS
-    if((inner=matchFn('EXTRAERNUMEROS|EXTRACTNUMBERS'))!==null){
-      var txt=String(resolveArg(splitArgs(inner)[0]));
-      var nums=txt.match(/-?\d+\.?\d*/g);
-      return nums?nums.join('; '):'';
-    }
-
-    // EXTRAERTEXTO
-    if((inner=matchFn('EXTRAERTEXTO|EXTRACTTEXT'))!==null){
-      var txt2=String(resolveArg(splitArgs(inner)[0]));
-      return txt2.replace(/[0-9]/g,'');
-    }
-
-    // MAYUSC.PARCIAL
-    if((inner=matchFn('MAYUSC\\.PARCIAL|TITLECASE'))!==null){
-      return String(resolveArg(splitArgs(inner)[0])).replace(/\w\S*/g,function(w){return w.charAt(0).toUpperCase()+w.substr(1).toLowerCase();});
-    }
-
-    // LIMPIAR.ESPACIOS
-    if((inner=matchFn('LIMPIAR\\.ESPACIOS|NORMALIZESPACES'))!==null){
-      return String(resolveArg(splitArgs(inner)[0])).replace(/\s+/g,' ').trim();
-    }
-
-    // AMORTIZ.PROGRE
-    if((inner=matchFn('AMORTIZ\\.PROGRE|AMORPROGRE'))!==null){
-      args=splitArgs(inner);
-      var monto=resolveNum(args[0]),tasa=resolveNum(args[1]),n=parseInt(resolveNum(args[2]));
-      var periodo=args[3]?parseInt(resolveNum(args[3])):1;
-      var cuota=tasa===0?monto/n:monto*tasa/(1-Math.pow(1+tasa,-n));
-      var saldo=monto;
-      for(var p=1;p<periodo;p++){var int1=saldo*tasa;saldo-=cuota-int1;}
-      var interes=saldo*tasa;
-      var capital=cuota-interes;
-      return 'Cuota: '+fmtNum(cuota)+' | Capital: '+fmtNum(capital)+' | Interés: '+fmtNum(interes)+' | Saldo: '+fmtNum(saldo-capital);
-    }
-
-    // AMORTIZ.LIN
-    if((inner=matchFn('AMORTIZ\\.LIN|AMORLIN'))!==null){
-      args=splitArgs(inner);
-      var monto2=resolveNum(args[0]),tasa2=resolveNum(args[1]),n2=parseInt(resolveNum(args[2]));
-      var periodo2=args[3]?parseInt(resolveNum(args[3])):1;
-      var capital2=monto2/n2;
-      var saldo2=monto2-capital2*(periodo2-1);
-      var interes2=saldo2*tasa2;
-      return 'Capital: '+fmtNum(capital2)+' | Interés: '+fmtNum(interes2)+' | Cuota: '+fmtNum(capital2+interes2)+' | Saldo: '+fmtNum(saldo2-capital2);
-    }
-
-    // PROMEDIO.MOVIL
-    if((inner=matchFn('PROMEDIO\\.MOVIL|MOVAVG'))!==null){
-      args=splitArgs(inner);
-      if(!isRange(args[0]))return '#VALOR!';
-      var serie=rangeNums(args[0]);
-      var ventana=parseInt(resolveNum(args[1]));
-      var resultados=[];
-      for(var i=ventana-1;i<serie.length;i++){
-        var suma=0;
-        for(var j=0;j<ventana;j++)suma+=serie[i-j];
-        resultados.push(fmtNum(suma/ventana));
-      }
-      return resultados.join('; ');
-    }
-
-    return _prev ? _prev(formula, row, col) : '#FUNC?';
-  };
-
-  console.log('✅ Patch v14.0 cargado — motor ~504 fórmulas (98% Excel)');
-})();
-
-
-
-// ════════════════════════════════════════════════════
-// COPYRIGHT — Pie de página
-// ════════════════════════════════════════════════════
-(function() {
-  function insertarCopyright() {
-    if (document.getElementById('crCopyright')) return;
-    var year = new Date().getFullYear();
-    var footer = document.createElement('div');
-    footer.id = 'crCopyright';
-    footer.style.cssText = [
-      'position:fixed','bottom:0','left:0','right:0','text-align:center',
-      'padding:4px 8px','font-size:10.5px','color:var(--text3, #889)',
-      'background:var(--off, rgba(245,248,242,.92))','border-top:1px solid var(--border, #dde)',
-      'z-index:30','backdrop-filter:blur(6px)','font-family:system-ui,-apple-system,sans-serif',
-      'user-select:none','pointer-events:none'
-    ].join(';');
-    footer.innerHTML = '© ' + year + ' <strong style="color:var(--g3,#2d7a0c);">Keny Chinchilla Navarro</strong> · Matriz Contable CR · Todos los derechos reservados';
-    document.body.appendChild(footer);
-    var sheetOuter = document.getElementById('sheetOuter');
-    if (sheetOuter) sheetOuter.style.paddingBottom = '28px';
-    document.body.style.paddingBottom = '24px';
-  }
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', insertarCopyright);
-  } else {
-    insertarCopyright();
-  }
-  setTimeout(insertarCopyright, 500);
-  console.log('✅ Copyright Keny Chinchilla Navarro insertado');
-})();
 
 </script>
 <script>
-// ════════════════════════════════════════════════════
-// MATRIZ CONTABLE CR — PATCH v14.0
-// 5 nuevas funcionalidades:
-//   1. 📒 Libro Mayor Automático (desde asientos del Diario)
-//   2. ⚖️  Balance de Comprobación en tiempo real
-//   3. 💰 Flujo de Efectivo (directo e indirecto)
-//   4. 🏦 Conciliación Bancaria Interactiva
-//   5. 📋 Declaración D-101 (Renta CR)
-//
-// INSTRUCCIONES:
-// Pegá este bloque completo ANTES de </body>
-// (justo después del </script> del patch v13.9)
-// ════════════════════════════════════════════════════
 (function(){
-
 // ════════════════════════════════════════════════════
-// CSS — estilos para los 5 módulos
+// PATCH v14.5 — 5 MÓDULOS CONTABLES NUEVOS (TODO EN UN SOLO IIFE)
+// Libro Mayor · Balance Comprobación · Flujo de Efectivo
+// Conciliación Bancaria · Declaración D-101 (Renta CR)
 // ════════════════════════════════════════════════════
-var css = `
-/* ── Modal v14 base ─────────────────────────── */
-.modal-v14{display:none;position:fixed;inset:0;background:rgba(10,30,5,.55);
-  backdrop-filter:blur(6px);z-index:2100;align-items:center;justify-content:center;padding:12px;}
-.modal-v14.active{display:flex;}
-.mbox-v14{background:#fff;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.22);
-  width:100%;max-width:860px;max-height:93vh;overflow:hidden;display:flex;flex-direction:column;}
-.mbox-v14.sm{max-width:540px;}
-.mhead-v14{display:flex;align-items:center;justify-content:space-between;
-  padding:13px 18px;border-bottom:1px solid var(--border);
-  background:linear-gradient(120deg,var(--g4),var(--g3));color:#fff;flex-shrink:0;}
-.mhead-v14 h3{font-size:14px;font-weight:800;color:#fff;}
-.mcls-v14{background:rgba(255,255,255,.18);border:none;border-radius:6px;
-  width:28px;height:28px;font-size:16px;color:#fff;cursor:pointer;}
-.mbody-v14{overflow-y:auto;flex:1;padding:16px;}
-.mfoot-v14{padding:11px 18px;border-top:1px solid var(--border);
-  display:flex;gap:7px;justify-content:flex-end;background:var(--off);flex-shrink:0;}
 
-/* ── Tabs dentro de modal ────────────────────── */
-.v14-tabs{display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:14px;overflow-x:auto;}
-.v14-tab{padding:7px 16px;border:none;background:transparent;font-size:12.5px;font-weight:700;
-  color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;white-space:nowrap;}
-.v14-tab.active{color:var(--g2);border-bottom-color:var(--g2);}
-.v14-pane{display:none;}
-.v14-pane.active{display:block;}
-
-/* ── Tabla contable v14 ──────────────────────── */
-.tbl-v14{width:100%;border-collapse:collapse;font-size:12.5px;margin-bottom:10px;}
-.tbl-v14 th{background:var(--bg3);padding:7px 10px;text-align:left;font-weight:700;
-  color:var(--g3);font-size:11px;border-bottom:2px solid var(--border2);white-space:nowrap;}
-.tbl-v14 td{padding:6px 10px;border-bottom:1px solid var(--border);vertical-align:middle;}
-.tbl-v14 tbody tr:hover td{background:var(--off);}
-.tbl-v14 .num{text-align:right;font-family:monospace;font-weight:600;}
-.tbl-v14 .total-row td{font-weight:800;background:var(--bg2)!important;border-top:2px solid var(--border2);}
-.tbl-v14 .subtotal-row td{font-weight:700;background:#f0fce8!important;font-style:italic;}
-.tbl-v14 .section-row td{background:var(--bg3);font-weight:800;color:var(--g3);font-size:11px;
-  text-transform:uppercase;letter-spacing:.5px;padding:5px 10px;}
-.v14-inp{width:100%;border:1px solid var(--border2);border-radius:5px;padding:4px 7px;
-  font-size:12.5px;background:#fff;color:var(--text);font-family:inherit;}
-.v14-inp:focus{outline:none;border-color:var(--g1);box-shadow:0 0 0 2px rgba(90,191,42,.12);}
-
-/* ── KPI cards ───────────────────────────────── */
-.v14-kpis{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:9px;margin-bottom:14px;}
-.v14-kpi{background:var(--off);border:1.5px solid var(--border);border-radius:10px;
-  padding:10px 12px;text-align:center;}
-.v14-kpi-lbl{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;
-  letter-spacing:.6px;margin-bottom:4px;}
-.v14-kpi-val{font-size:18px;font-weight:800;color:var(--g3);font-family:monospace;}
-.v14-kpi-sub{font-size:10px;color:var(--text3);margin-top:2px;}
-.v14-kpi.ok .v14-kpi-val{color:#16a34a;}
-.v14-kpi.warn .v14-kpi-val{color:#d97706;}
-.v14-kpi.bad .v14-kpi-val{color:#dc2626;}
-
-/* ── Semáforo balance ────────────────────────── */
-.v14-balance-status{display:flex;align-items:center;gap:8px;padding:10px 14px;
-  border-radius:10px;margin-bottom:12px;font-weight:700;font-size:13px;}
-.v14-balance-status.ok{background:#dcfce7;color:#15803d;border:1.5px solid #86efac;}
-.v14-balance-status.bad{background:#fee2e2;color:#b91c1c;border:1.5px solid #fca5a5;}
-
-/* ── Conciliación ────────────────────────────── */
-.v14-conc-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-.v14-conc-box{background:var(--off);border:1.5px solid var(--border);border-radius:10px;padding:12px;}
-.v14-conc-box h4{font-size:12px;font-weight:800;color:var(--g3);margin-bottom:8px;
-  text-transform:uppercase;letter-spacing:.5px;}
-.v14-add-row{display:flex;gap:5px;margin-top:6px;}
-.v14-add-row .v14-inp{flex:1;}
-
-/* ── D-101 secciones ─────────────────────────── */
-.v14-d101-sec{background:var(--off);border:1.5px solid var(--border);
-  border-radius:10px;padding:12px;margin-bottom:10px;}
-.v14-d101-sec h4{font-size:11px;font-weight:800;color:var(--g3);
-  text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px;}
-.v14-d101-row{display:grid;grid-template-columns:1fr 160px;gap:8px;
-  align-items:center;margin-bottom:6px;}
-.v14-d101-row label{font-size:12px;color:var(--text2);}
-
-/* ── Botones v14 ─────────────────────────────── */
-.btn-v14{padding:7px 14px;border-radius:7px;border:none;font-size:12.5px;
-  font-weight:700;cursor:pointer;transition:all .12s;}
-.btn-v14.p{background:linear-gradient(135deg,var(--g1),var(--g2));color:#fff;}
-.btn-v14.p:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(58,158,16,.3);}
-.btn-v14.s{background:var(--bg2);color:var(--text2);}
-.btn-v14.s:hover{background:var(--bg3);}
-.btn-v14.danger{background:#fee2e2;color:#b91c1c;}
-.btn-v14.danger:hover{background:#fecaca;}
-
-/* ── Sidebar nuevos botones ──────────────────── */
-.v14-sb-divider{height:1px;background:var(--border);margin:5px 10px;}
-.v14-sb-title{font-size:10px;font-weight:800;color:var(--text3);
-  text-transform:uppercase;letter-spacing:1px;padding:8px 14px 3px;}
-
-/* ── Flujo de efectivo ───────────────────────── */
-.v14-flujo-total{background:linear-gradient(135deg,var(--g3),var(--g4));
-  color:#fff;border-radius:10px;padding:12px 16px;text-align:center;margin-bottom:12px;}
-.v14-flujo-total .lbl{font-size:11px;opacity:.8;margin-bottom:4px;}
-.v14-flujo-total .val{font-size:24px;font-weight:800;font-family:monospace;}
-
-@media(max-width:599px){
-  .mbox-v14{max-width:100%!important;max-height:92vh;border-radius:18px 18px 0 0;
-    border-bottom:none;position:fixed;bottom:0;}
-  .modal-v14{align-items:flex-end;padding:0;}
-  .v14-conc-grid{grid-template-columns:1fr;}
-  .v14-d101-row{grid-template-columns:1fr;}
-}
-`;
-var styleEl = document.createElement('style');
-styleEl.textContent = css;
-document.head.appendChild(styleEl);
-
-// ════════════════════════════════════════════════════
-// HTML — 5 modales
-// ════════════════════════════════════════════════════
-var html = `
-
-<!-- ═══ MODAL 1: LIBRO MAYOR AUTOMÁTICO ═════════════ -->
-<div class="modal-v14" id="modalLibroMayor">
-  <div class="mbox-v14">
-    <div class="mhead-v14">
-      <h3>📗 Libro Mayor Automático</h3>
-      <button class="mcls-v14" onclick="cerrarV14('modalLibroMayor')">×</button>
-    </div>
-    <div class="mbody-v14">
-      <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
-        <button class="btn-v14 p" onclick="generarLibroMayor()">⟳ Generar desde Diario</button>
-        <button class="btn-v14 s" onclick="exportarLibroMayorCSV()">↓ CSV</button>
-        <button class="btn-v14 s" onclick="exportarLibroMayorPDF()">📕 PDF</button>
-        <span style="margin-left:auto;font-size:11px;color:var(--text3);align-self:center;" id="lmFecha"></span>
-      </div>
-      <div id="lmCuentaFiltro" style="margin-bottom:10px;display:none;">
-        <select class="v14-inp" id="lmSelectCuenta" onchange="filtrarCuentaMayor(this.value)" style="max-width:280px;">
-          <option value="">— Todas las cuentas —</option>
-        </select>
-      </div>
-      <div id="libroMayorBody">
-        <div style="text-align:center;padding:40px;color:var(--text3);">
-          <div style="font-size:32px;margin-bottom:8px;">📗</div>
-          <div style="font-size:13px;">Hacé clic en <strong>Generar desde Diario</strong> para procesar los asientos de la hoja activa.</div>
-          <div style="font-size:11px;margin-top:6px;color:var(--text3);">El sistema leerá columnas: Fecha · Cuenta · Debe · Haber</div>
-        </div>
-      </div>
-    </div>
-    <div class="mfoot-v14">
-      <button class="btn-v14 s" onclick="cerrarV14('modalLibroMayor')">Cerrar</button>
-    </div>
-  </div>
-</div>
-
-<!-- ═══ MODAL 2: BALANCE DE COMPROBACIÓN ════════════ -->
-<div class="modal-v14" id="modalBalanceComp">
-  <div class="mbox-v14">
-    <div class="mhead-v14">
-      <h3>⚖️ Balance de Comprobación</h3>
-      <button class="mcls-v14" onclick="cerrarV14('modalBalanceComp')">×</button>
-    </div>
-    <div class="mbody-v14">
-      <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
-        <button class="btn-v14 p" onclick="generarBalanceComp()">⟳ Calcular en tiempo real</button>
-        <button class="btn-v14 s" onclick="exportarBalanceCSV()">↓ CSV</button>
-        <button class="btn-v14 s" onclick="exportarBalancePDF()">📕 PDF</button>
-      </div>
-      <div id="balanceStatus"></div>
-      <div id="balanceKPIs" class="v14-kpis"></div>
-      <div id="balanceCompBody">
-        <div style="text-align:center;padding:40px;color:var(--text3);">
-          <div style="font-size:32px;margin-bottom:8px;">⚖️</div>
-          <div style="font-size:13px;">Presioná <strong>Calcular en tiempo real</strong> para generar el Balance de Comprobación desde los datos de la hoja.</div>
-        </div>
-      </div>
-    </div>
-    <div class="mfoot-v14">
-      <button class="btn-v14 s" onclick="cerrarV14('modalBalanceComp')">Cerrar</button>
-    </div>
-  </div>
-</div>
-
-<!-- ═══ MODAL 3: FLUJO DE EFECTIVO ══════════════════ -->
-<div class="modal-v14" id="modalFlujoEfectivo">
-  <div class="mbox-v14">
-    <div class="mhead-v14">
-      <h3>💰 Flujo de Efectivo</h3>
-      <button class="mcls-v14" onclick="cerrarV14('modalFlujoEfectivo')">×</button>
-    </div>
-    <div class="mbody-v14">
-      <div class="v14-tabs">
-        <button class="v14-tab active" onclick="switchFlujoTab('directo',this)">Método Directo</button>
-        <button class="v14-tab" onclick="switchFlujoTab('indirecto',this)">Método Indirecto</button>
-      </div>
-
-      <!-- DIRECTO -->
-      <div class="v14-pane active" id="flujoDirectoPane">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
-          <div><label style="font-size:11px;font-weight:700;color:var(--text2);display:block;margin-bottom:3px;">Período</label>
-            <input class="v14-inp" type="month" id="flujoPeriodo" value=""></div>
-          <div><label style="font-size:11px;font-weight:700;color:var(--text2);display:block;margin-bottom:3px;">Moneda</label>
-            <select class="v14-inp" id="flujoMoneda"><option value="CRC">₡ Colones (CRC)</option><option value="USD">$ Dólares (USD)</option></select></div>
-        </div>
-        <div class="v14-flujo-total" id="flujoTotalBox">
-          <div class="lbl">Flujo Neto del Período</div>
-          <div class="val" id="flujoNetoVal">₡0</div>
-        </div>
-        <table class="tbl-v14" id="flujoDirectoTbl">
-          <thead><tr>
-            <th>Concepto</th><th class="num">Monto (₡)</th><th style="width:40px;"></th>
-          </tr></thead>
-          <tbody id="flujoDirectoBody"></tbody>
-        </table>
-        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;">
-          <button class="btn-v14 p" onclick="agregarFilaFlujo('directo','entrada')">+ Entrada</button>
-          <button class="btn-v14 s" onclick="agregarFilaFlujo('directo','salida')">+ Salida</button>
-          <button class="btn-v14 s" onclick="calcularFlujoDirecto()">∑ Recalcular</button>
-          <button class="btn-v14 s" onclick="exportarFlujoPDF()">📕 PDF</button>
-        </div>
-      </div>
-
-      <!-- INDIRECTO -->
-      <div class="v14-pane" id="flujoIndirectoPane">
-        <div class="v14-flujo-total" id="flujoTotalIndBox">
-          <div class="lbl">Flujo Neto (Método Indirecto)</div>
-          <div class="val" id="flujoNetoIndVal">₡0</div>
-        </div>
-        <table class="tbl-v14" id="flujoIndirectoTbl">
-          <thead><tr><th>Concepto</th><th class="num">Monto (₡)</th></tr></thead>
-          <tbody id="flujoIndirectoBody"></tbody>
-        </table>
-        <div style="display:flex;gap:6px;margin-top:8px;">
-          <button class="btn-v14 p" onclick="calcularFlujoIndirecto()">⟳ Calcular desde hoja</button>
-          <button class="btn-v14 s" onclick="exportarFlujoPDF()">📕 PDF</button>
-        </div>
-      </div>
-    </div>
-    <div class="mfoot-v14">
-      <button class="btn-v14 s" onclick="cerrarV14('modalFlujoEfectivo')">Cerrar</button>
-    </div>
-  </div>
-</div>
-
-<!-- ═══ MODAL 4: CONCILIACIÓN BANCARIA ══════════════ -->
-<div class="modal-v14" id="modalConciliacionV14">
-  <div class="mbox-v14">
-    <div class="mhead-v14">
-      <h3>🏦 Conciliación Bancaria Interactiva</h3>
-      <button class="mcls-v14" onclick="cerrarV14('modalConciliacionV14')">×</button>
-    </div>
-    <div class="mbody-v14">
-      <!-- Saldos iniciales -->
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px;">
-        <div>
-          <label style="font-size:11px;font-weight:700;color:var(--text2);display:block;margin-bottom:3px;">Saldo según Banco (₡)</label>
-          <input class="v14-inp" type="number" id="concSaldoBanco" placeholder="0.00" oninput="calcularConciliacion()">
-        </div>
-        <div>
-          <label style="font-size:11px;font-weight:700;color:var(--text2);display:block;margin-bottom:3px;">Saldo según Libros (₡)</label>
-          <input class="v14-inp" type="number" id="concSaldoLibros" placeholder="0.00" oninput="calcularConciliacion()">
-        </div>
-        <div>
-          <label style="font-size:11px;font-weight:700;color:var(--text2);display:block;margin-bottom:3px;">Fecha</label>
-          <input class="v14-inp" type="date" id="concFecha">
-        </div>
-      </div>
-      <!-- Estado conciliación -->
-      <div id="concStatus"></div>
-      <!-- KPIs -->
-      <div id="concKPIs" class="v14-kpis"></div>
-      <!-- Grids -->
-      <div class="v14-conc-grid">
-        <!-- Columna Banco -->
-        <div class="v14-conc-box">
-          <h4>📑 Ajustes al Saldo Bancario</h4>
-          <table class="tbl-v14" id="concBancoTbl">
-            <thead><tr><th>Concepto</th><th class="num">Monto (₡)</th><th style="width:34px;"></th></tr></thead>
-            <tbody id="concBancoBody"></tbody>
-          </table>
-          <div class="v14-add-row">
-            <input class="v14-inp" id="concBancoDesc" placeholder="Descripción">
-            <input class="v14-inp" id="concBancoMonto" type="number" placeholder="Monto" style="max-width:110px;">
-            <select class="v14-inp" id="concBancoTipo" style="max-width:80px;">
-              <option value="1">+ Suma</option><option value="-1">- Resta</option>
-            </select>
-            <button class="btn-v14 p" onclick="agregarAjusteBanco()">+</button>
-          </div>
-        </div>
-        <!-- Columna Libros -->
-        <div class="v14-conc-box">
-          <h4>📚 Ajustes al Saldo en Libros</h4>
-          <table class="tbl-v14" id="concLibrosTbl">
-            <thead><tr><th>Concepto</th><th class="num">Monto (₡)</th><th style="width:34px;"></th></tr></thead>
-            <tbody id="concLibrosBody"></tbody>
-          </table>
-          <div class="v14-add-row">
-            <input class="v14-inp" id="concLibrosDesc" placeholder="Descripción">
-            <input class="v14-inp" id="concLibrosMonto" type="number" placeholder="Monto" style="max-width:110px;">
-            <select class="v14-inp" id="concLibrosTipo" style="max-width:80px;">
-              <option value="1">+ Suma</option><option value="-1">- Resta</option>
-            </select>
-            <button class="btn-v14 p" onclick="agregarAjusteLibros()">+</button>
-          </div>
-        </div>
-      </div>
-      <!-- Resumen final -->
-      <div id="concResumen" style="margin-top:12px;"></div>
-    </div>
-    <div class="mfoot-v14">
-      <button class="btn-v14 s" onclick="limpiarConciliacion()">🗑 Limpiar</button>
-      <button class="btn-v14 p" onclick="exportarConciliacionPDF()">📕 PDF</button>
-      <button class="btn-v14 s" onclick="cerrarV14('modalConciliacionV14')">Cerrar</button>
-    </div>
-  </div>
-</div>
-
-<!-- ═══ MODAL 5: DECLARACIÓN D-101 ══════════════════ -->
-<div class="modal-v14" id="modalD101">
-  <div class="mbox-v14">
-    <div class="mhead-v14">
-      <h3>📋 Declaración D-101 — Impuesto sobre la Renta CR</h3>
-      <button class="mcls-v14" onclick="cerrarV14('modalD101')">×</button>
-    </div>
-    <div class="mbody-v14">
-      <div class="v14-tabs">
-        <button class="v14-tab active" onclick="switchD101Tab('datos',this)">Datos Generales</button>
-        <button class="v14-tab" onclick="switchD101Tab('ingresos',this)">Ingresos</button>
-        <button class="v14-tab" onclick="switchD101Tab('gastos',this)">Gastos Deducibles</button>
-        <button class="v14-tab" onclick="switchD101Tab('calculo',this)">Cálculo</button>
-      </div>
-
-      <!-- DATOS GENERALES -->
-      <div class="v14-pane active" id="d101DatosPane">
-        <div class="v14-d101-sec">
-          <h4>Identificación del Declarante</h4>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-            <div><label style="font-size:11px;font-weight:600;color:var(--text2);display:block;margin-bottom:3px;">Nombre / Razón Social</label>
-              <input class="v14-inp" id="d101Nombre" placeholder="Nombre completo o razón social"></div>
-            <div><label style="font-size:11px;font-weight:600;color:var(--text2);display:block;margin-bottom:3px;">Cédula / Nº Jurídico</label>
-              <input class="v14-inp" id="d101Cedula" placeholder="000-000000-0000"></div>
-            <div><label style="font-size:11px;font-weight:600;color:var(--text2);display:block;margin-bottom:3px;">Actividad Económica</label>
-              <input class="v14-inp" id="d101Actividad" placeholder="Ej: Comercio al por menor"></div>
-            <div><label style="font-size:11px;font-weight:600;color:var(--text2);display:block;margin-bottom:3px;">Período Fiscal</label>
-              <select class="v14-inp" id="d101Periodo">
-                <option value="2025">2025</option>
-                <option value="2024">2024</option>
-                <option value="2023">2023</option>
-              </select></div>
-            <div><label style="font-size:11px;font-weight:600;color:var(--text2);display:block;margin-bottom:3px;">Tipo de Contribuyente</label>
-              <select class="v14-inp" id="d101TipoContrib" onchange="actualizarTramosRenta()">
-                <option value="persona_fisica">Persona Física</option>
-                <option value="empresa_micro">Microempresa (≤ ₡60M ventas)</option>
-                <option value="empresa_pequena">Empresa Pequeña (₡60M–₡120M)</option>
-                <option value="empresa_grande">Empresa Mediana/Grande</option>
-              </select></div>
-            <div><label style="font-size:11px;font-weight:600;color:var(--text2);display:block;margin-bottom:3px;">Teléfono</label>
-              <input class="v14-inp" id="d101Tel" placeholder="2222-2222"></div>
-          </div>
-        </div>
-        <div class="v14-d101-sec">
-          <h4>Información Fiscal</h4>
-          <div id="tramosRentaInfo" style="font-size:12px;color:var(--text2);background:var(--bg2);
-            border-radius:8px;padding:10px;line-height:1.6;"></div>
-        </div>
-      </div>
-
-      <!-- INGRESOS -->
-      <div class="v14-pane" id="d101IngresosPane">
-        <div class="v14-d101-sec">
-          <h4>Ingresos Gravables</h4>
-          <div id="d101IngresosRows"></div>
-          <button class="btn-v14 s" onclick="agregarFilaD101('ingresos')" style="margin-top:6px;">+ Agregar ingreso</button>
-        </div>
-        <div class="v14-d101-sec">
-          <h4>Ingresos No Gravables (Exentos)</h4>
-          <div id="d101ExentosRows"></div>
-          <button class="btn-v14 s" onclick="agregarFilaD101('exentos')" style="margin-top:6px;">+ Agregar exento</button>
-        </div>
-      </div>
-
-      <!-- GASTOS -->
-      <div class="v14-pane" id="d101GastosPane">
-        <div class="v14-d101-sec">
-          <h4>Gastos Deducibles según LISR CR</h4>
-          <div id="d101GastosRows"></div>
-          <button class="btn-v14 s" onclick="agregarFilaD101('gastos')" style="margin-top:6px;">+ Agregar gasto</button>
-        </div>
-        <div class="v14-d101-sec" style="background:#fffbeb;border-color:#fcd34d;">
-          <h4 style="color:#92400e;">⚠️ Gastos NO Deducibles (Referencia)</h4>
-          <ul style="font-size:12px;color:var(--text2);padding-left:16px;line-height:1.8;margin:0;">
-            <li>Multas y sanciones administrativas</li>
-            <li>Gastos personales del contribuyente</li>
-            <li>Depreciaciones sobre valores revaluados no autorizados</li>
-            <li>Donaciones (salvo las expresamente autorizadas)</li>
-            <li>Intereses sobre deudas de socios</li>
-          </ul>
-        </div>
-      </div>
-
-      <!-- CÁLCULO -->
-      <div class="v14-pane" id="d101CalculoPane">
-        <button class="btn-v14 p" onclick="calcularD101()" style="margin-bottom:12px;">⟳ Calcular Impuesto</button>
-        <div id="d101CalcBody">
-          <div style="text-align:center;padding:30px;color:var(--text3);">
-            <div style="font-size:28px;margin-bottom:8px;">📋</div>
-            <div>Completá los datos en las pestañas anteriores y presioná <strong>Calcular Impuesto</strong>.</div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="mfoot-v14">
-      <button class="btn-v14 s" onclick="limpiarD101()">🗑 Limpiar</button>
-      <button class="btn-v14 p" onclick="exportarD101PDF()">📕 Exportar PDF</button>
-      <button class="btn-v14 s" onclick="cerrarV14('modalD101')">Cerrar</button>
-    </div>
-  </div>
-</div>
-`;
-
-document.body.insertAdjacentHTML('beforeend', html);
-
-// ════════════════════════════════════════════════════
-// DATOS INTERNOS
-// ════════════════════════════════════════════════════
-var _mayorData = {};          // { cuenta: [{fecha,debe,haber,desc}] }
-var _balanceData = {};        // calculado desde mayorData
-var _flujoDirectoRows = [];   // [{desc, monto, tipo}]  tipo: 'entrada'|'salida'
-var _concBancoAjustes = [];   // [{desc, monto, signo}]
-var _concLibrosAjustes = [];
-var _d101Ingresos = [];
-var _d101Exentos  = [];
-var _d101Gastos   = [];
-
-// ════════════════════════════════════════════════════
-// UTILIDADES GENERALES
-// ════════════════════════════════════════════════════
-function abrirV14(id){ var el=document.getElementById(id); if(el) el.classList.add('active'); }
-function cerrarV14(id){ var el=document.getElementById(id); if(el) el.classList.remove('active'); }
-function fmtCRC(n){ return '₡' + Number(n).toLocaleString('es-CR',{minimumFractionDigits:2,maximumFractionDigits:2}); }
-function fmtN(n){ return Number(n).toLocaleString('es-CR',{minimumFractionDigits:2,maximumFractionDigits:2}); }
-
-// Leer datos de la hoja activa (sheetData global de v13)
-function leerHojaActiva(){
-  // sheetData es el objeto global del spreadsheet v13
-  var data = window.sheetData || {};
-  var rows = [];
-  // Detectar automáticamente filas con: Fecha | Cuenta | Debe | Haber
-  // Buscar la fila de encabezados primero
-  var headerRow = -1;
-  var colFecha=-1, colCuenta=-1, colDebe=-1, colHaber=-1, colDesc=-1;
-  var maxRow = 200, maxCol = 15;
-  for(var r=0;r<maxRow && headerRow===-1;r++){
-    for(var c=0;c<maxCol;c++){
-      var v = (data[window.cellId ? window.cellId(r,c) : (String.fromCharCode(65+c)+(r+1))] || '').toString().toLowerCase().trim();
-      if(v.indexOf('cuenta')>=0){ colCuenta=c; headerRow=r; }
-      if(v.indexOf('debe')>=0) colDebe=c;
-      if(v.indexOf('haber')>=0) colHaber=c;
-      if(v.indexOf('fecha')>=0) colFecha=c;
-      if(v.indexOf('descripcion')>=0||v.indexOf('concepto')>=0||v.indexOf('detalle')>=0) colDesc=c;
-    }
+// ── Helper: lee una hoja por índice (o la activa) y detecta columnas ──
+function leerHojaActiva(sheetIdx) {
+  var src = sheetData;
+  if (sheetIdx !== undefined && sheetIdx !== null && typeof sheets !== 'undefined') {
+    var idx = parseInt(sheetIdx);
+    if (idx === activeSheet) src = sheetData;
+    else if (sheets[idx]) src = sheets[idx].data || {};
   }
-  if(headerRow===-1 || colCuenta===-1) return { rows:[], headerFound:false };
-  if(colDebe===-1) colDebe=colCuenta+1;
-  if(colHaber===-1) colHaber=colCuenta+2;
-
-  for(var r2=headerRow+1;r2<maxRow;r2++){
-    var cid = window.cellId ? window.cellId : function(rr,cc){ return String.fromCharCode(65+cc)+(rr+1); };
-    var cuenta=(data[cid(r2,colCuenta)]||'').toString().trim();
-    if(!cuenta) continue;
-    var debe=parseFloat((data[cid(r2,colDebe)]||'0').toString().replace(/[₡,\s]/g,''))||0;
-    var haber=parseFloat((data[cid(r2,colHaber)]||'0').toString().replace(/[₡,\s]/g,''))||0;
-    var fecha=colFecha>=0?(data[cid(r2,colFecha)]||''):'';
-    var desc=colDesc>=0?(data[cid(r2,colDesc)]||''):'';
-    rows.push({fecha:fecha,cuenta:cuenta,debe:debe,haber:haber,desc:desc});
-  }
-  return { rows:rows, headerFound:true };
-}
-
-// ════════════════════════════════════════════════════
-// 1. LIBRO MAYOR AUTOMÁTICO
-// ════════════════════════════════════════════════════
-function generarLibroMayor(){
-  var r = leerHojaActiva();
-  var body = document.getElementById('libroMayorBody');
-  var filtroDiv = document.getElementById('lmCuentaFiltro');
-  var fecha = document.getElementById('lmFecha');
-  if(fecha) fecha.textContent = 'Generado: ' + new Date().toLocaleDateString('es-CR');
-
-  if(!r.headerFound){
-    body.innerHTML = '<div style="padding:20px;background:#fff9c4;border-radius:8px;color:#92400e;font-size:13px;">' +
-      '⚠️ No se encontró una fila de encabezados con <strong>Cuenta · Debe · Haber</strong> en la hoja activa.<br>' +
-      '<small>Tip: Usá el Libro Diario desde el menú Plantillas para comenzar.</small></div>';
-    return;
-  }
-  if(!r.rows.length){
-    body.innerHTML = '<div style="padding:20px;color:var(--text3);text-align:center;">No hay asientos registrados en la hoja activa.</div>';
-    return;
-  }
-
-  // Agrupar por cuenta
-  _mayorData = {};
-  r.rows.forEach(function(row){
-    var c = row.cuenta;
-    if(!_mayorData[c]) _mayorData[c] = [];
-    _mayorData[c].push(row);
+  var headers = [];
+  var maxCol = 0, maxRow = 0;
+  Object.keys(src).forEach(function(key){
+    var m = key.match(/^([A-Z]+)(\d+)/);
+    if (!m) return;
+    var c = colIndex(m[1]);
+    var r = parseInt(m[2]) - 1;
+    if (c > maxCol) maxCol = c;
+    if (r > maxRow) maxRow = r;
   });
+  if (Object.keys(src).length === 0) return { headers:[], rows:[], colMap:{} };
 
-  // Llenar select de cuentas
-  var sel = document.getElementById('lmSelectCuenta');
-  sel.innerHTML = '<option value="">— Todas las cuentas —</option>';
-  Object.keys(_mayorData).sort().forEach(function(c){
-    var opt = document.createElement('option'); opt.value=c; opt.textContent=c;
+  var headerRow = 0;
+  for (var c0 = 0; c0 <= maxCol; c0++) {
+    var v = src[cellId(headerRow, c0)];
+    if (v) headers[c0] = String(v).toLowerCase().trim();
+  }
+
+  var colMap = { fecha:-1, cuenta:-1, debe:-1, haber:-1 };
+  headers.forEach(function(h, i){
+    if (!h) return;
+    if (colMap.fecha < 0 && /fecha/.test(h)) colMap.fecha = i;
+    if (colMap.cuenta < 0 && /(cuenta|descripci|concepto)/.test(h)) colMap.cuenta = i;
+    if (colMap.debe < 0 && /debe|d[ée]bito/.test(h)) colMap.debe = i;
+    if (colMap.haber < 0 && /haber|cr[ée]dito/.test(h)) colMap.haber = i;
+  });
+  if (colMap.fecha  < 0) colMap.fecha  = 0;
+  if (colMap.cuenta < 0) colMap.cuenta = headers.length >= 4 ? 3 : (headers.length >= 2 ? 1 : 0);
+  if (colMap.debe   < 0) colMap.debe   = headers.length >= 5 ? 4 : Math.max(0, headers.length - 2);
+  if (colMap.haber  < 0) colMap.haber  = headers.length >= 6 ? 5 : Math.max(0, headers.length - 1);
+
+  var rows = [];
+  for (var r = headerRow + 1; r <= maxRow; r++) {
+    var raw = [];
+    var hasData = false;
+    for (var c = 0; c <= maxCol; c++) {
+      var val = src[cellId(r, c)] || '';
+      if (val !== '') hasData = true;
+      raw.push(val);
+    }
+    if (!hasData) continue;
+    if (String(raw[colMap.cuenta] || '').toUpperCase().indexOf('TOTAL') === 0) continue;
+    rows.push({
+      fecha: colMap.fecha  >= 0 ? raw[colMap.fecha]  || '' : '',
+      cuenta: colMap.cuenta >= 0 ? raw[colMap.cuenta] || '' : '',
+      debe:  parseFloat(String(raw[colMap.debe]  || '0').replace(/[₡,\s]/g,'')) || 0,
+      haber: parseFloat(String(raw[colMap.haber] || '0').replace(/[₡,\s]/g,'')) || 0,
+      raw: raw
+    });
+  }
+  return { headers: headers, rows: rows, colMap: colMap, maxRow: maxRow, maxCol: maxCol };
+}
+
+function fmtCRC(n) {
+  return '₡' + Number(n||0).toLocaleString('es-CR', {minimumFractionDigits:2, maximumFractionDigits:2});
+}
+
+function populateSheetSelect(selId) {
+  var sel = document.getElementById(selId);
+  if (!sel) return;
+  sel.innerHTML = '';
+  (typeof sheets !== 'undefined' ? sheets : [{name:'Hoja 1'}]).forEach(function(s, i){
+    var opt = document.createElement('option');
+    opt.value = i;
+    opt.textContent = s.name || ('Hoja ' + (i+1));
+    if (i === (typeof activeSheet !== 'undefined' ? activeSheet : 0)) opt.selected = true;
     sel.appendChild(opt);
   });
-  filtroDiv.style.display='block';
-  renderLibroMayor('');
 }
 
-function filtrarCuentaMayor(val){ renderLibroMayor(val); }
+function descargarBlob(content, filename, mime) {
+  var blob = new Blob([content], {type: mime});
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
 
-function renderLibroMayor(filtro){
-  var body = document.getElementById('libroMayorBody');
-  var cuentas = filtro ? [filtro] : Object.keys(_mayorData).sort();
-  var html2 = '';
-  cuentas.forEach(function(cuenta){
-    var movs = _mayorData[cuenta];
-    var totalDebe=0, totalHaber=0, saldoAcum=0;
-    var filas='';
+function nuevoPDF(orientation) {
+  var jsPDFLib = window.jspdf && window.jspdf.jsPDF;
+  if (!jsPDFLib) { alert('Exportar PDF no está disponible en este momento. Usá Ctrl+P como alternativa.'); return null; }
+  return new jsPDFLib({ orientation: orientation||'portrait', unit:'mm', format:'a4' });
+}
+
+function pdfHeader(doc, titulo) {
+  doc.setFillColor(45,122,12); doc.rect(0,0,doc.internal.pageSize.getWidth(),16,'F');
+  doc.setTextColor(255,255,255); doc.setFontSize(14); doc.setFont('helvetica','bold');
+  doc.text(titulo, 14, 10);
+  doc.setFontSize(8); doc.setFont('helvetica','normal');
+  doc.text('Matriz Contable CR · ' + new Date().toLocaleDateString('es-CR'), doc.internal.pageSize.getWidth()-14, 10, {align:'right'});
+  doc.setTextColor(0,0,0);
+}
+
+// ════════════════════════════════════════════════════
+// 1) LIBRO MAYOR AUTOMÁTICO
+// ════════════════════════════════════════════════════
+var _lmCuentas = {};
+
+function abrirLibroMayor() {
+  populateSheetSelect('lm-sheet-sel');
+  openModal('modalLibroMayor');
+  generarLibroMayor();
+}
+
+function generarLibroMayor() {
+  var selEl = document.getElementById('lm-sheet-sel');
+  var sheetIdx = selEl ? parseInt(selEl.value) : undefined;
+  var data = leerHojaActiva(sheetIdx);
+  var cont = document.getElementById('lmContenido');
+  if (!cont) return;
+  if (!data.rows.length) {
+    cont.innerHTML = '<p style="color:var(--text3);font-size:12.5px;">No se detectaron movimientos contables en la hoja activa. Cargá una plantilla (Libro Diario) o ingresá datos con columnas Fecha / Cuenta / Debe / Haber.</p>';
+    _lmCuentas = {};
+    return;
+  }
+  var cuentas = {};
+  data.rows.forEach(function(row){
+    var key = row.cuenta || '(sin cuenta)';
+    if (!cuentas[key]) cuentas[key] = [];
+    cuentas[key].push(row);
+  });
+
+  var html = '';
+  Object.keys(cuentas).sort().forEach(function(cuenta){
+    var movs = cuentas[cuenta];
+    var saldo = 0;
+    html += '<h4 style="font-size:12.5px;font-weight:800;color:var(--g3);margin:10px 0 6px;">' + cuenta + '</h4>';
+    html += '<table class="tbl-v14"><thead><tr><th>Fecha</th><th>Debe</th><th>Haber</th><th>Saldo</th></tr></thead><tbody>';
     movs.forEach(function(m){
-      saldoAcum += m.debe - m.haber;
-      totalDebe += m.debe; totalHaber += m.haber;
-      filas += '<tr><td>'+m.fecha+'</td><td>'+m.desc+'</td>' +
-        '<td class="num">'+(m.debe?fmtCRC(m.debe):'')+'</td>' +
-        '<td class="num">'+(m.haber?fmtCRC(m.haber):'')+'</td>' +
-        '<td class="num" style="color:'+(saldoAcum>=0?'var(--g3)':'var(--danger)')+'">'+fmtCRC(saldoAcum)+'</td></tr>';
+      saldo += m.debe - m.haber;
+      html += '<tr><td>' + (m.fecha||'') + '</td><td class="num">' + (m.debe?fmtCRC(m.debe):'') + '</td><td class="num">' + (m.haber?fmtCRC(m.haber):'') + '</td><td class="num">' + fmtCRC(saldo) + '</td></tr>';
     });
-    var saldoColor = saldoAcum>=0?'var(--g3)':'var(--danger)';
-    html2 += '<div style="margin-bottom:16px;">' +
-      '<div style="background:linear-gradient(90deg,var(--g3),var(--g2));color:#fff;padding:8px 12px;border-radius:8px 8px 0 0;font-weight:800;font-size:13px;">'+cuenta+'</div>' +
-      '<table class="tbl-v14"><thead><tr><th>Fecha</th><th>Descripción</th><th class="num">Debe (₡)</th><th class="num">Haber (₡)</th><th class="num">Saldo (₡)</th></tr></thead>' +
-      '<tbody>'+filas+'</tbody>' +
-      '<tfoot><tr class="total-row"><td></td><td><strong>TOTALES</strong></td>' +
-      '<td class="num">'+fmtCRC(totalDebe)+'</td><td class="num">'+fmtCRC(totalHaber)+'</td>' +
-      '<td class="num" style="color:'+saldoColor+'">'+fmtCRC(saldoAcum)+'</td></tr></tfoot>' +
-      '</table></div>';
+    html += '<tr class="total-row"><td>TOTAL</td><td class="num">' + fmtCRC(movs.reduce(function(a,m){return a+m.debe;},0)) + '</td><td class="num">' + fmtCRC(movs.reduce(function(a,m){return a+m.haber;},0)) + '</td><td class="num">' + fmtCRC(saldo) + '</td></tr>';
+    html += '</tbody></table>';
   });
-  body.innerHTML = html2;
+  cont.innerHTML = html;
+  _lmCuentas = cuentas;
 }
 
-function exportarLibroMayorCSV(){
-  var csv='Cuenta,Fecha,Descripción,Debe,Haber,Saldo\n';
-  var saldo=0;
-  Object.keys(_mayorData).sort().forEach(function(cuenta){
-    saldo=0;
-    (_mayorData[cuenta]||[]).forEach(function(m){
-      saldo+=m.debe-m.haber;
-      csv+='"'+cuenta+'","'+m.fecha+'","'+m.desc+'",'+m.debe+','+m.haber+','+saldo+'\n';
+function exportarLibroMayorCSV() {
+  var csv = 'Cuenta,Fecha,Debe,Haber,Saldo\n';
+  Object.keys(_lmCuentas).forEach(function(cuenta){
+    var saldo = 0;
+    _lmCuentas[cuenta].forEach(function(m){
+      saldo += m.debe - m.haber;
+      csv += '"'+cuenta+'","'+(m.fecha||'')+'",'+m.debe+','+m.haber+','+saldo.toFixed(2)+'\n';
     });
   });
-  descargarCSV(csv,'libro-mayor-cr');
+  descargarBlob('\uFEFF'+csv, 'LibroMayor_'+new Date().toISOString().split('T')[0]+'.csv', 'text/csv;charset=utf-8;');
 }
 
-function exportarLibroMayorPDF(){
-  var lib = window.jspdf && window.jspdf.jsPDF;
-  if(!lib){ window.print(); return; }
-  var doc = new lib({orientation:'landscape',unit:'mm',format:'a4'});
-  doc.setFillColor(45,122,12); doc.rect(0,0,297,18,'F');
-  doc.setTextColor(255,255,255); doc.setFontSize(14); doc.setFont('helvetica','bold');
-  doc.text('Libro Mayor — Matriz Contable CR',10,12);
-  doc.text(new Date().toLocaleDateString('es-CR'),287,12,{align:'right'});
-  var y=24; doc.setTextColor(0,0,0);
-  Object.keys(_mayorData).sort().forEach(function(cuenta){
-    if(y>170){doc.addPage();y=10;}
-    doc.setFillColor(58,158,16); doc.rect(8,y,281,8,'F');
-    doc.setTextColor(255,255,255); doc.setFontSize(10); doc.setFont('helvetica','bold');
-    doc.text(cuenta,11,y+5.5); y+=10;
-    doc.setTextColor(0,0,0); doc.setFont('helvetica','normal'); doc.setFontSize(9);
-    var saldo=0;
-    (_mayorData[cuenta]||[]).forEach(function(m){
-      saldo+=m.debe-m.haber;
-      doc.text(String(m.fecha).substring(0,10),11,y+5);
-      doc.text(String(m.desc).substring(0,50),35,y+5);
-      doc.text(m.debe?fmtN(m.debe):'',180,y+5,{align:'right'});
-      doc.text(m.haber?fmtN(m.haber):'',220,y+5,{align:'right'});
-      doc.text(fmtN(saldo),280,y+5,{align:'right'});
-      y+=7; if(y>185){doc.addPage();y=10;}
+function exportarLibroMayorPDF() {
+  var doc = nuevoPDF('portrait'); if (!doc) return;
+  pdfHeader(doc, 'Libro Mayor Automático');
+  var y = 24;
+  Object.keys(_lmCuentas).forEach(function(cuenta){
+    if (y > 270) { doc.addPage(); y = 14; }
+    doc.setFontSize(11); doc.setFont('helvetica','bold'); doc.setTextColor(45,122,12);
+    doc.text(cuenta, 14, y); y += 5;
+    doc.setFontSize(9); doc.setFont('helvetica','normal'); doc.setTextColor(0,0,0);
+    var saldo = 0;
+    _lmCuentas[cuenta].forEach(function(m){
+      saldo += m.debe - m.haber;
+      if (y > 280) { doc.addPage(); y = 14; }
+      doc.text(String(m.fecha||''), 14, y);
+      doc.text(m.debe?fmtCRC(m.debe):'-', 100, y, {align:'right'});
+      doc.text(m.haber?fmtCRC(m.haber):'-', 140, y, {align:'right'});
+      doc.text(fmtCRC(saldo), 196, y, {align:'right'});
+      y += 5;
     });
-    y+=4;
+    y += 4;
   });
-  doc.save('libro-mayor-cr.pdf');
+  doc.save('LibroMayor_'+new Date().toISOString().split('T')[0]+'.pdf');
 }
 
 // ════════════════════════════════════════════════════
-// 2. BALANCE DE COMPROBACIÓN
+// 2) BALANCE DE COMPROBACIÓN EN TIEMPO REAL
 // ════════════════════════════════════════════════════
-function generarBalanceComp(){
-  var r = leerHojaActiva();
-  var body = document.getElementById('balanceCompBody');
-  var statusEl = document.getElementById('balanceStatus');
-  var kpisEl = document.getElementById('balanceKPIs');
+var _bcCuentas = {};
+var _bcTotales = { debe:0, haber:0 };
 
-  if(!r.headerFound || !r.rows.length){
-    body.innerHTML='<div style="padding:16px;background:#fff9c4;border-radius:8px;color:#92400e;">⚠️ Cargá primero el Libro Diario en la hoja activa (Plantillas → Libro Diario).</div>';
-    statusEl.innerHTML=''; kpisEl.innerHTML=''; return;
+function abrirBalanceComp() {
+  populateSheetSelect('bc-sheet-sel');
+  openModal('modalBalanceComp');
+  generarBalanceComp();
+}
+
+function generarBalanceComp() {
+  var selEl = document.getElementById('bc-sheet-sel');
+  var sheetIdx = selEl ? parseInt(selEl.value) : undefined;
+  var data = leerHojaActiva(sheetIdx);
+  var kpisEl = document.getElementById('bcKpis');
+  var contEl = document.getElementById('bcContenido');
+  if (!kpisEl || !contEl) return;
+
+  if (!data.rows.length) {
+    kpisEl.innerHTML = '';
+    contEl.innerHTML = '<p style="color:var(--text3);font-size:12.5px;">No se detectaron movimientos contables en la hoja activa.</p>';
+    _bcCuentas = {}; _bcTotales = {debe:0,haber:0};
+    return;
   }
 
-  // Consolidar por cuenta
-  var cuentas={};
-  r.rows.forEach(function(row){
-    if(!cuentas[row.cuenta]) cuentas[row.cuenta]={debe:0,haber:0};
-    cuentas[row.cuenta].debe += row.debe;
-    cuentas[row.cuenta].haber += row.haber;
+  var cuentas = {};
+  data.rows.forEach(function(row){
+    var key = row.cuenta || '(sin cuenta)';
+    if (!cuentas[key]) cuentas[key] = { debe:0, haber:0 };
+    cuentas[key].debe += row.debe;
+    cuentas[key].haber += row.haber;
   });
 
-  var totalDebe=0, totalHaber=0;
-  var filas='';
-  Object.keys(cuentas).sort().forEach(function(c){
-    var d=cuentas[c].debe, h=cuentas[c].haber;
-    var saldoD=d>h?d-h:0, saldoH=h>d?h-d:0;
-    totalDebe+=d; totalHaber+=h;
-    filas+='<tr><td>'+c+'</td><td class="num">'+fmtCRC(d)+'</td><td class="num">'+fmtCRC(h)+'</td>' +
-      '<td class="num">'+(saldoD?fmtCRC(saldoD):'')+'</td><td class="num">'+(saldoH?fmtCRC(saldoH):'')+'</td></tr>';
+  var totalDebe = 0, totalHaber = 0;
+  var html = '<table class="tbl-v14"><thead><tr><th>Cuenta</th><th>Débitos</th><th>Créditos</th><th>Saldo D</th><th>Saldo A</th></tr></thead><tbody>';
+  Object.keys(cuentas).sort().forEach(function(cuenta){
+    var c = cuentas[cuenta];
+    totalDebe += c.debe; totalHaber += c.haber;
+    var saldo = c.debe - c.haber;
+    html += '<tr><td>'+cuenta+'</td><td class="num">'+(c.debe?fmtCRC(c.debe):'')+'</td><td class="num">'+(c.haber?fmtCRC(c.haber):'')+'</td>'+
+      '<td class="num">'+(saldo>0?fmtCRC(saldo):'')+'</td><td class="num">'+(saldo<0?fmtCRC(-saldo):'')+'</td></tr>';
   });
+  var diff = totalDebe - totalHaber;
+  html += '<tr class="total-row"><td>TOTALES</td><td class="num">'+fmtCRC(totalDebe)+'</td><td class="num">'+fmtCRC(totalHaber)+'</td><td class="num" colspan="2" style="text-align:right;">'+ (Math.abs(diff)<0.01 ? '✓ Cuadrado' : 'Diferencia: '+fmtCRC(Math.abs(diff))) +'</td></tr>';
+  html += '</tbody></table>';
+  contEl.innerHTML = html;
 
-  var balanceado = Math.abs(totalDebe-totalHaber)<0.01;
-  statusEl.innerHTML='<div class="v14-balance-status '+(balanceado?'ok':'bad')+'">' +
-    (balanceado?'✅ La contabilidad está CUADRADA — Debe = Haber':'❌ DESCUADRE DETECTADO — Debe ≠ Haber') +
-    '<span style="margin-left:auto;font-family:monospace;font-size:14px;">'+
-    (balanceado?fmtCRC(totalDebe):('Δ = '+fmtCRC(Math.abs(totalDebe-totalHaber))))+'</span></div>';
-
-  kpisEl.innerHTML='<div class="v14-kpi '+(balanceado?'ok':'bad')+'"><div class="v14-kpi-lbl">Total Debe</div><div class="v14-kpi-val">'+fmtCRC(totalDebe)+'</div></div>' +
-    '<div class="v14-kpi '+(balanceado?'ok':'bad')+'"><div class="v14-kpi-lbl">Total Haber</div><div class="v14-kpi-val">'+fmtCRC(totalHaber)+'</div></div>' +
-    '<div class="v14-kpi '+(balanceado?'ok':'bad')+'"><div class="v14-kpi-lbl">Diferencia</div><div class="v14-kpi-val">'+fmtCRC(Math.abs(totalDebe-totalHaber))+'</div><div class="v14-kpi-sub">'+(balanceado?'Cuadrado ✓':'¡Revisar!')+'</div></div>' +
-    '<div class="v14-kpi"><div class="v14-kpi-lbl">Cuentas</div><div class="v14-kpi-val">'+Object.keys(cuentas).length+'</div></div>';
-
-  body.innerHTML='<table class="tbl-v14"><thead><tr>' +
-    '<th>Cuenta</th><th class="num">Débitos (₡)</th><th class="num">Créditos (₡)</th>' +
-    '<th class="num">Saldo Deudor</th><th class="num">Saldo Acreedor</th></tr></thead>' +
-    '<tbody>'+filas+'</tbody>' +
-    '<tfoot><tr class="total-row"><td><strong>TOTALES</strong></td>' +
-    '<td class="num">'+fmtCRC(totalDebe)+'</td><td class="num">'+fmtCRC(totalHaber)+'</td>' +
-    '<td class="num"></td><td class="num"></td></tr></tfoot></table>';
-
-  _balanceData = cuentas;
-}
-
-function exportarBalanceCSV(){
-  var csv='Cuenta,Debe,Haber,Saldo Deudor,Saldo Acreedor\n';
-  Object.keys(_balanceData).sort().forEach(function(c){
-    var d=_balanceData[c].debe, h=_balanceData[c].haber;
-    csv+='"'+c+'",'+d+','+h+','+(d>h?d-h:0)+','+(h>d?h-d:0)+'\n';
-  });
-  descargarCSV(csv,'balance-comprobacion-cr');
-}
-
-function exportarBalancePDF(){
-  var lib = window.jspdf && window.jspdf.jsPDF;
-  if(!lib){ window.print(); return; }
-  var doc = new lib({orientation:'portrait',unit:'mm',format:'a4'});
-  doc.setFillColor(45,122,12); doc.rect(0,0,210,22,'F');
-  doc.setTextColor(255,255,255); doc.setFontSize(14); doc.setFont('helvetica','bold');
-  doc.text('Balance de Comprobación — CR',10,14);
-  doc.text(new Date().toLocaleDateString('es-CR'),200,14,{align:'right'});
-  var y=28; doc.setTextColor(0,0,0); doc.setFontSize(9); doc.setFont('helvetica','normal');
-  doc.setFillColor(226,242,212); doc.rect(8,y,194,7,'F');
-  doc.setFont('helvetica','bold');
-  doc.text('Cuenta',10,y+5); doc.text('Debe',100,y+5,{align:'right'});
-  doc.text('Haber',135,y+5,{align:'right'}); doc.text('S.Deudor',165,y+5,{align:'right'});
-  doc.text('S.Acreedor',200,y+5,{align:'right'}); y+=9;
-  doc.setFont('helvetica','normal');
-  Object.keys(_balanceData).sort().forEach(function(c,i){
-    var d=_balanceData[c].debe, h=_balanceData[c].haber;
-    if(i%2===0){doc.setFillColor(247,253,242);doc.rect(8,y,194,6,'F');}
-    doc.text(c.substring(0,35),10,y+4.5);
-    doc.text(fmtN(d),100,y+4.5,{align:'right'});
-    doc.text(fmtN(h),135,y+4.5,{align:'right'});
-    doc.text(d>h?fmtN(d-h):'',165,y+4.5,{align:'right'});
-    doc.text(h>d?fmtN(h-d):'',200,y+4.5,{align:'right'});
-    y+=6; if(y>270){doc.addPage();y=10;}
-  });
-  doc.save('balance-comprobacion-cr.pdf');
-}
-
-// ════════════════════════════════════════════════════
-// 3. FLUJO DE EFECTIVO
-// ════════════════════════════════════════════════════
-function switchFlujoTab(tab, btn){
-  document.querySelectorAll('#modalFlujoEfectivo .v14-tab').forEach(function(b){b.classList.remove('active');});
-  document.querySelectorAll('#modalFlujoEfectivo .v14-pane').forEach(function(p){p.classList.remove('active');});
-  btn.classList.add('active');
-  document.getElementById('flujo'+cap(tab)+'Pane').classList.add('active');
-}
-function cap(s){return s.charAt(0).toUpperCase()+s.slice(1);}
-
-function abrirFlujoEfectivo(){
-  // Setear período actual
-  var now=new Date();
-  var inp=document.getElementById('flujoPeriodo');
-  if(inp && !inp.value) inp.value=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
-  // Cargar datos desde hoja si hay
-  if(!_flujoDirectoRows.length) inicializarFlujoDefecto();
-  renderFlujoDirecto();
-  abrirV14('modalFlujoEfectivo');
-}
-
-function inicializarFlujoDefecto(){
-  _flujoDirectoRows=[
-    {desc:'Ventas cobradas a clientes', monto:0, tipo:'entrada', seccion:'operacion'},
-    {desc:'Cobros por servicios', monto:0, tipo:'entrada', seccion:'operacion'},
-    {desc:'Pago a proveedores', monto:0, tipo:'salida', seccion:'operacion'},
-    {desc:'Pago de planilla', monto:0, tipo:'salida', seccion:'operacion'},
-    {desc:'Pago de CCSS patronal', monto:0, tipo:'salida', seccion:'operacion'},
-    {desc:'Pago de impuestos (IVA)', monto:0, tipo:'salida', seccion:'operacion'},
-    {desc:'Compra de activos fijos', monto:0, tipo:'salida', seccion:'inversion'},
-    {desc:'Venta de activos', monto:0, tipo:'entrada', seccion:'inversion'},
-    {desc:'Préstamos obtenidos', monto:0, tipo:'entrada', seccion:'financiamiento'},
-    {desc:'Pago de préstamos', monto:0, tipo:'salida', seccion:'financiamiento'},
-  ];
-}
-
-function renderFlujoDirecto(){
-  var body=document.getElementById('flujoDirectoBody');
-  if(!body) return;
-  var secciones={operacion:'🔄 Actividades de Operación',inversion:'🏗 Actividades de Inversión',financiamiento:'💳 Actividades de Financiamiento'};
-  var html2=''; var lastSec='';
-  _flujoDirectoRows.forEach(function(row,i){
-    if(row.seccion!==lastSec){
-      html2+='<tr class="section-row"><td colspan="3">'+secciones[row.seccion||'operacion']+'</td></tr>';
-      lastSec=row.seccion;
-    }
-    html2+='<tr><td><input class="v14-inp" value="'+escH(row.desc)+'" onchange="_flujoDirectoRows['+i+'].desc=this.value"></td>' +
-      '<td><input class="v14-inp" type="number" value="'+row.monto+'" style="text-align:right;" onchange="_flujoDirectoRows['+i+'].monto=parseFloat(this.value)||0;calcularFlujoDirecto()"></td>' +
-      '<td style="text-align:center;"><span style="color:'+(row.tipo==='entrada'?'var(--g3)':'var(--danger)')+';">'+(row.tipo==='entrada'?'▲':'▼')+'</span>' +
-      ' <button onclick="_flujoDirectoRows.splice('+i+',1);renderFlujoDirecto();calcularFlujoDirecto()" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:12px;">×</button></td></tr>';
-  });
-  body.innerHTML=html2;
-  calcularFlujoDirecto();
-}
-
-function agregarFilaFlujo(metodo, tipo){
-  var sec=prompt('Sección:\n1 = Operación\n2 = Inversión\n3 = Financiamiento','1');
-  var secMap={'1':'operacion','2':'inversion','3':'financiamiento'};
-  _flujoDirectoRows.push({desc:'Nueva partida',monto:0,tipo:tipo,seccion:secMap[sec]||'operacion'});
-  renderFlujoDirecto();
-}
-
-function calcularFlujoDirecto(){
-  var neto=0;
-  _flujoDirectoRows.forEach(function(r){ neto += r.tipo==='entrada' ? r.monto : -r.monto; });
-  var el=document.getElementById('flujoNetoVal');
-  if(el){ el.textContent=fmtCRC(neto); el.style.color=neto>=0?'#fff':'#fca5a5'; }
-  var box=document.getElementById('flujoTotalBox');
-  if(box) box.style.background=neto>=0?'linear-gradient(135deg,var(--g3),var(--g4))':'linear-gradient(135deg,#b91c1c,#7f1d1d)';
-}
-
-function calcularFlujoIndirecto(){
-  var r=leerHojaActiva();
-  var body=document.getElementById('flujoIndirectoBody');
-  if(!body) return;
-  // Estimación desde los datos de la hoja
-  var util=0, deprec=0, cxc=0, inv=0, cxp=0;
-  if(r.rows.length){
-    r.rows.forEach(function(row){
-      var c=row.cuenta.toLowerCase();
-      if(c.indexOf('utilidad')>=0||c.indexOf('ingreso')>=0||c.indexOf('venta')>=0) util+=row.haber-row.debe;
-      if(c.indexOf('deprec')>=0||c.indexOf('amort')>=0) deprec+=row.debe;
-      if(c.indexOf('cuentas por cobrar')>=0||c.indexOf('clientes')>=0) cxc+=row.debe-row.haber;
-      if(c.indexOf('inventario')>=0||c.indexOf('mercanc')>=0) inv+=row.debe-row.haber;
-      if(c.indexOf('cuentas por pagar')>=0||c.indexOf('proveed')>=0) cxp+=row.haber-row.debe;
-    });
-  }
-  var neto=util+deprec-cxc-inv+cxp;
-  var filas=[
-    {label:'Utilidad Neta del Período',val:util,seccion:'Actividades de Operación'},
-    {label:'(+) Depreciaciones y amortizaciones',val:deprec,seccion:null},
-    {label:'(−) Aumento en Cuentas por Cobrar',val:-cxc,seccion:null},
-    {label:'(−) Aumento en Inventarios',val:-inv,seccion:null},
-    {label:'(+) Aumento en Cuentas por Pagar',val:cxp,seccion:null},
-  ];
-  var html2='<tr class="section-row"><td colspan="2">🔄 Actividades de Operación (estimado)</td></tr>';
-  filas.forEach(function(f){
-    if(f.seccion&&f.label!==filas[0].label) html2+='<tr class="section-row"><td colspan="2">'+f.seccion+'</td></tr>';
-    html2+='<tr><td>'+f.label+'</td><td class="num" style="color:'+(f.val>=0?'var(--g3)':'var(--danger)')+'">'+fmtCRC(f.val)+'</td></tr>';
-  });
-  body.innerHTML=html2;
-  var el=document.getElementById('flujoNetoIndVal');
-  if(el) el.textContent=fmtCRC(neto);
-}
-
-function exportarFlujoPDF(){
-  var lib=window.jspdf&&window.jspdf.jsPDF;
-  if(!lib){window.print();return;}
-  var doc=new lib({orientation:'portrait',unit:'mm',format:'a4'});
-  doc.setFillColor(45,122,12);doc.rect(0,0,210,22,'F');
-  doc.setTextColor(255,255,255);doc.setFontSize(14);doc.setFont('helvetica','bold');
-  doc.text('Estado de Flujo de Efectivo — CR',10,14);
-  doc.text(new Date().toLocaleDateString('es-CR'),200,14,{align:'right'});
-  var y=28;doc.setTextColor(0,0,0);doc.setFontSize(9);doc.setFont('helvetica','normal');
-  var neto=0;
-  _flujoDirectoRows.forEach(function(row){
-    var v=row.tipo==='entrada'?row.monto:-row.monto; neto+=v;
-    doc.text((row.tipo==='entrada'?'  ▲ ':'  ▼ ')+row.desc.substring(0,60),10,y);
-    doc.text((row.tipo==='entrada'?'+':'-')+fmtN(row.monto),200,y,{align:'right'});
-    y+=6;if(y>270){doc.addPage();y=10;}
-  });
-  doc.setDrawColor(58,158,16);doc.line(10,y,200,y);y+=6;
-  doc.setFont('helvetica','bold');
-  doc.text('FLUJO NETO',10,y);doc.text((neto>=0?'+':'')+fmtN(neto),200,y,{align:'right'});
-  doc.save('flujo-efectivo-cr.pdf');
-}
-
-// ════════════════════════════════════════════════════
-// 4. CONCILIACIÓN BANCARIA INTERACTIVA
-// ════════════════════════════════════════════════════
-function abrirConciliacionV14(){
-  var fi=document.getElementById('concFecha');
-  if(fi&&!fi.value) fi.value=new Date().toISOString().split('T')[0];
-  renderConciliacion();
-  abrirV14('modalConciliacionV14');
-}
-
-function agregarAjusteBanco(){
-  var desc=(document.getElementById('concBancoDesc')||{}).value||'';
-  var monto=parseFloat((document.getElementById('concBancoMonto')||{}).value)||0;
-  var signo=parseInt((document.getElementById('concBancoTipo')||{}).value)||1;
-  if(!desc||!monto) return;
-  _concBancoAjustes.push({desc:desc,monto:monto,signo:signo});
-  document.getElementById('concBancoDesc').value='';
-  document.getElementById('concBancoMonto').value='';
-  renderConciliacion();
-}
-
-function agregarAjusteLibros(){
-  var desc=(document.getElementById('concLibrosDesc')||{}).value||'';
-  var monto=parseFloat((document.getElementById('concLibrosMonto')||{}).value)||0;
-  var signo=parseInt((document.getElementById('concLibrosTipo')||{}).value)||1;
-  if(!desc||!monto) return;
-  _concLibrosAjustes.push({desc:desc,monto:monto,signo:signo});
-  document.getElementById('concLibrosDesc').value='';
-  document.getElementById('concLibrosMonto').value='';
-  renderConciliacion();
-}
-
-function renderConciliacion(){
-  renderTablaAjustes('concBancoBody',_concBancoAjustes,'banco');
-  renderTablaAjustes('concLibrosBody',_concLibrosAjustes,'libros');
-  calcularConciliacion();
-}
-
-function renderTablaAjustes(bodyId,arr,tipo){
-  var body=document.getElementById(bodyId);
-  if(!body) return;
-  if(!arr.length){body.innerHTML='<tr><td colspan="3" style="text-align:center;color:var(--text3);font-size:11px;padding:8px;">Sin ajustes</td></tr>';return;}
-  body.innerHTML=arr.map(function(a,i){
-    return '<tr><td>'+escH(a.desc)+'</td><td class="num" style="color:'+(a.signo>0?'var(--g3)':'var(--danger)')+'">'+
-      (a.signo>0?'+':'-')+fmtCRC(a.monto)+'</td>' +
-      '<td style="text-align:center;"><button onclick="_conc'+cap(tipo)+'Ajustes.splice('+i+',1);renderConciliacion()" style="background:none;border:none;color:var(--text3);cursor:pointer;">×</button></td></tr>';
-  }).join('');
-}
-
-function calcularConciliacion(){
-  var saldoBanco=parseFloat((document.getElementById('concSaldoBanco')||{}).value)||0;
-  var saldoLibros=parseFloat((document.getElementById('concSaldoLibros')||{}).value)||0;
-  var ajBanco=0; _concBancoAjustes.forEach(function(a){ajBanco+=a.signo*a.monto;});
-  var ajLibros=0; _concLibrosAjustes.forEach(function(a){ajLibros+=a.signo*a.monto;});
-  var saldoAjBanco=saldoBanco+ajBanco;
-  var saldoAjLibros=saldoLibros+ajLibros;
-  var diff=Math.abs(saldoAjBanco-saldoAjLibros);
-  var cuadrada=diff<0.01;
-
-  var statusEl=document.getElementById('concStatus');
-  if(statusEl) statusEl.innerHTML='<div class="v14-balance-status '+(cuadrada?'ok':'bad')+'">' +
-    (cuadrada?'✅ CONCILIACIÓN CUADRADA':'❌ DIFERENCIA DETECTADA: '+fmtCRC(diff)) +
+  var cuadrado = Math.abs(diff) < 0.01;
+  kpisEl.innerHTML = '<div class="v14-kpis">' +
+    '<div class="v14-kpi"><div class="v14-kpi-label">Total Débitos</div><div class="v14-kpi-value">'+fmtCRC(totalDebe)+'</div></div>' +
+    '<div class="v14-kpi"><div class="v14-kpi-label">Total Créditos</div><div class="v14-kpi-value">'+fmtCRC(totalHaber)+'</div></div>' +
+    '<div class="v14-kpi '+(cuadrado?'ok':'bad')+'"><div class="v14-kpi-label">'+(cuadrado?'Balance cuadrado':'Diferencia')+'</div><div class="v14-kpi-value">'+(cuadrado?'✓ OK':fmtCRC(Math.abs(diff)))+'</div></div>' +
     '</div>';
 
-  var kpisEl=document.getElementById('concKPIs');
-  if(kpisEl) kpisEl.innerHTML=
-    '<div class="v14-kpi"><div class="v14-kpi-lbl">Saldo Banco Ajustado</div><div class="v14-kpi-val" style="font-size:15px;">'+fmtCRC(saldoAjBanco)+'</div></div>' +
-    '<div class="v14-kpi"><div class="v14-kpi-lbl">Saldo Libros Ajustado</div><div class="v14-kpi-val" style="font-size:15px;">'+fmtCRC(saldoAjLibros)+'</div></div>' +
-    '<div class="v14-kpi '+(cuadrada?'ok':'bad')+'"><div class="v14-kpi-lbl">Diferencia</div><div class="v14-kpi-val" style="font-size:15px;">'+fmtCRC(diff)+'</div><div class="v14-kpi-sub">'+(cuadrada?'OK ✓':'Revisar')+'</div></div>';
-
-  var res=document.getElementById('concResumen');
-  if(res) res.innerHTML='<div style="background:var(--off);border:1.5px solid var(--border);border-radius:10px;padding:12px;">' +
-    '<strong style="font-size:12px;color:var(--g3);display:block;margin-bottom:8px;">📊 Resumen de Conciliación</strong>' +
-    '<table class="tbl-v14" style="margin:0;"><tbody>' +
-    '<tr><td>Saldo según Estado de Cuenta Bancario</td><td class="num">'+fmtCRC(saldoBanco)+'</td></tr>' +
-    '<tr><td>Ajustes al Saldo Bancario</td><td class="num">'+fmtCRC(ajBanco)+'</td></tr>' +
-    '<tr class="subtotal-row"><td>Saldo Bancario Ajustado</td><td class="num">'+fmtCRC(saldoAjBanco)+'</td></tr>' +
-    '<tr><td colspan="2" style="height:6px;"></td></tr>' +
-    '<tr><td>Saldo según Libros Contables</td><td class="num">'+fmtCRC(saldoLibros)+'</td></tr>' +
-    '<tr><td>Ajustes al Saldo en Libros</td><td class="num">'+fmtCRC(ajLibros)+'</td></tr>' +
-    '<tr class="subtotal-row"><td>Saldo en Libros Ajustado</td><td class="num">'+fmtCRC(saldoAjLibros)+'</td></tr>' +
-    '<tr class="total-row"><td>DIFERENCIA</td><td class="num" style="color:'+(cuadrada?'var(--g3)':'var(--danger)')+'">'+fmtCRC(diff)+'</td></tr>' +
-    '</tbody></table></div>';
+  _bcCuentas = cuentas;
+  _bcTotales = { debe: totalDebe, haber: totalHaber };
 }
 
-function limpiarConciliacion(){
-  _concBancoAjustes=[];_concLibrosAjustes=[];
-  ['concSaldoBanco','concSaldoLibros'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
-  renderConciliacion();
-  ['concStatus','concKPIs','concResumen'].forEach(function(id){var el=document.getElementById(id);if(el)el.innerHTML='';});
-}
-
-function exportarConciliacionPDF(){
-  var lib=window.jspdf&&window.jspdf.jsPDF;
-  if(!lib){window.print();return;}
-  var doc=new lib({orientation:'portrait',unit:'mm',format:'a4'});
-  doc.setFillColor(45,122,12);doc.rect(0,0,210,22,'F');
-  doc.setTextColor(255,255,255);doc.setFontSize(14);doc.setFont('helvetica','bold');
-  doc.text('Conciliación Bancaria — CR',10,14);
-  var fi=(document.getElementById('concFecha')||{}).value||new Date().toLocaleDateString('es-CR');
-  doc.text(fi,200,14,{align:'right'});
-  var saldoBanco=parseFloat((document.getElementById('concSaldoBanco')||{}).value)||0;
-  var saldoLibros=parseFloat((document.getElementById('concSaldoLibros')||{}).value)||0;
-  var ajBanco=0;_concBancoAjustes.forEach(function(a){ajBanco+=a.signo*a.monto;});
-  var ajLibros=0;_concLibrosAjustes.forEach(function(a){ajLibros+=a.signo*a.monto;});
-  var y=28;doc.setTextColor(0,0,0);doc.setFontSize(10);doc.setFont('helvetica','bold');
-  doc.text('SALDO SEGÚN BANCO',10,y);doc.text(fmtN(saldoBanco),200,y,{align:'right'});y+=7;
-  doc.setFont('helvetica','normal');doc.setFontSize(9);
-  _concBancoAjustes.forEach(function(a){doc.text((a.signo>0?'  + ':' - ')+a.desc,12,y);doc.text(fmtN(a.monto),200,y,{align:'right'});y+=6;});
-  doc.setFont('helvetica','bold');doc.setFontSize(10);
-  doc.text('Saldo Banco Ajustado',10,y);doc.text(fmtN(saldoBanco+ajBanco),200,y,{align:'right'});y+=10;
-  doc.text('SALDO SEGÚN LIBROS',10,y);doc.text(fmtN(saldoLibros),200,y,{align:'right'});y+=7;
-  doc.setFont('helvetica','normal');doc.setFontSize(9);
-  _concLibrosAjustes.forEach(function(a){doc.text((a.signo>0?'  + ':' - ')+a.desc,12,y);doc.text(fmtN(a.monto),200,y,{align:'right'});y+=6;});
-  doc.setFont('helvetica','bold');doc.setFontSize(10);
-  doc.text('Saldo Libros Ajustado',10,y);doc.text(fmtN(saldoLibros+ajLibros),200,y,{align:'right'});
-  doc.save('conciliacion-bancaria-cr.pdf');
-}
-
-// ════════════════════════════════════════════════════
-// 5. DECLARACIÓN D-101
-// ════════════════════════════════════════════════════
-var _tramosRenta = {
-  persona_fisica: [
-    {desde:0,hasta:3031000,tasa:0,desc:'Exento'},
-    {desde:3031001,hasta:4549000,tasa:0.10,desc:'10%'},
-    {desde:4549001,hasta:7581000,tasa:0.15,desc:'15%'},
-    {desde:7581001,hasta:15163000,tasa:0.20,desc:'20%'},
-    {desde:15163001,hasta:Infinity,tasa:0.25,desc:'25%'},
-  ],
-  empresa_micro: [
-    {desde:0,hasta:5765000,tasa:0,desc:'Exento (base 2025)'},
-    {desde:5765001,hasta:8647000,tasa:0.05,desc:'5%'},
-    {desde:8647001,hasta:Infinity,tasa:0.10,desc:'10%'},
-  ],
-  empresa_pequena: [
-    {desde:0,hasta:Infinity,tasa:0.20,desc:'20% (PyME)'},
-  ],
-  empresa_grande: [
-    {desde:0,hasta:Infinity,tasa:0.30,desc:'30% (tarifa general)'},
-  ],
-};
-
-function actualizarTramosRenta(){
-  var tipo=(document.getElementById('d101TipoContrib')||{}).value||'persona_fisica';
-  var tramos=_tramosRenta[tipo]||[];
-  var info=document.getElementById('tramosRentaInfo');
-  if(!info) return;
-  var txt='<strong>Tramos aplicables (2025):</strong><br>';
-  tramos.forEach(function(t){
-    txt+='• '+(t.desde===0?'₡0':fmtCRC(t.desde))+' – '+(t.hasta===Infinity?'en adelante':fmtCRC(t.hasta))+' → <strong>'+t.desc+'</strong><br>';
+function exportarBalanceCompCSV() {
+  var csv = 'Cuenta,Debitos,Creditos,Saldo Deudor,Saldo Acreedor\n';
+  Object.keys(_bcCuentas).sort().forEach(function(cuenta){
+    var c = _bcCuentas[cuenta];
+    var saldo = c.debe - c.haber;
+    csv += '"'+cuenta+'",'+c.debe+','+c.haber+','+(saldo>0?saldo:0)+','+(saldo<0?-saldo:0)+'\n';
   });
-  txt+='<small style="color:var(--text3);margin-top:4px;display:block;">Referencia aproximada. Verificá en Hacienda CR: <a href="https://www.hacienda.go.cr" target="_blank" style="color:var(--g2);">hacienda.go.cr</a></small>';
-  info.innerHTML=txt;
+  descargarBlob('\uFEFF'+csv, 'BalanceComprobacion_'+new Date().toISOString().split('T')[0]+'.csv', 'text/csv;charset=utf-8;');
 }
 
-function switchD101Tab(tab,btn){
-  document.querySelectorAll('#modalD101 .v14-tab').forEach(function(b){b.classList.remove('active');});
-  document.querySelectorAll('#modalD101 .v14-pane').forEach(function(p){p.classList.remove('active');});
-  btn.classList.add('active');
-  document.getElementById('d101'+cap(tab)+'Pane').classList.add('active');
+function exportarBalanceCompPDF() {
+  var doc = nuevoPDF('portrait'); if (!doc) return;
+  pdfHeader(doc, 'Balance de Comprobación');
+  var y = 24;
+  doc.setFontSize(9); doc.setFont('helvetica','bold');
+  doc.text('Cuenta', 14, y); doc.text('Débitos', 110, y, {align:'right'}); doc.text('Créditos', 150, y, {align:'right'}); doc.text('Saldo', 196, y, {align:'right'});
+  y += 5;
+  doc.setFont('helvetica','normal');
+  Object.keys(_bcCuentas).sort().forEach(function(cuenta){
+    if (y > 280) { doc.addPage(); y = 14; }
+    var c = _bcCuentas[cuenta]; var saldo = c.debe - c.haber;
+    doc.text(String(cuenta).substring(0,40), 14, y);
+    doc.text(fmtCRC(c.debe), 110, y, {align:'right'});
+    doc.text(fmtCRC(c.haber), 150, y, {align:'right'});
+    doc.text((saldo>=0?'D ':'A ')+fmtCRC(Math.abs(saldo)), 196, y, {align:'right'});
+    y += 5;
+  });
+  y += 3;
+  doc.setFont('helvetica','bold');
+  doc.text('TOTALES', 14, y);
+  doc.text(fmtCRC(_bcTotales.debe), 110, y, {align:'right'});
+  doc.text(fmtCRC(_bcTotales.haber), 150, y, {align:'right'});
+  var diff2 = Math.abs(_bcTotales.debe - _bcTotales.haber);
+  doc.setTextColor(diff2<0.01?45:220, diff2<0.01?122:38, diff2<0.01?12:38);
+  doc.text(diff2<0.01?'✓ Cuadrado':'Dif: '+fmtCRC(diff2), 196, y, {align:'right'});
+  doc.save('BalanceComprobacion_'+new Date().toISOString().split('T')[0]+'.pdf');
 }
 
-function agregarFilaD101(tipo){
-  var arr=tipo==='ingresos'?_d101Ingresos:tipo==='exentos'?_d101Exentos:_d101Gastos;
-  arr.push({desc:'',monto:0});
+// ════════════════════════════════════════════════════
+// 3) FLUJO DE EFECTIVO (DIRECTO E INDIRECTO)
+// ════════════════════════════════════════════════════
+var _feDirecto = [
+  { concepto:'Cobros a clientes', monto:0, tipo:'operacion' },
+  { concepto:'Pagos a proveedores', monto:0, tipo:'operacion' },
+  { concepto:'Pagos a empleados', monto:0, tipo:'operacion' },
+  { concepto:'Compra de activos fijos', monto:0, tipo:'inversion' },
+  { concepto:'Préstamos recibidos', monto:0, tipo:'financiamiento' },
+  { concepto:'Pago de dividendos', monto:0, tipo:'financiamiento' }
+];
+
+function abrirFlujoEfectivo() {
+  openModal('modalFlujoEfectivo');
+  renderFlujoDirecto();
+  renderFlujoIndirecto();
+}
+
+function switchFlujoTab(tab) {
+  ['directo','indirecto'].forEach(function(t){
+    var tabEl = document.getElementById('feTab-'+t);
+    var paneEl = document.getElementById('fePane-'+t);
+    if (tabEl) tabEl.classList.toggle('active', t===tab);
+    if (paneEl) paneEl.classList.toggle('active', t===tab);
+  });
+}
+
+function renderFlujoDirecto() {
+  var body = document.getElementById('feDirectoBody');
+  if (!body) return;
+  var html = '<table class="tbl-v14"><thead><tr><th>Concepto</th><th>Categoría</th><th>Monto (₡)</th><th></th></tr></thead><tbody>';
+  _feDirecto.forEach(function(item, i){
+    html += '<tr><td><input class="inp" style="font-size:12px;padding:4px 7px;" value="'+(item.concepto||'').replace(/"/g,'&quot;')+'" oninput="window._feSetConcepto('+i+',this.value)"></td>'+
+      '<td><select class="v14-select-inline" onchange="window._feSetTipo('+i+',this.value)">'+
+      ['operacion','inversion','financiamiento'].map(function(t){return '<option value="'+t+'"'+(item.tipo===t?' selected':'')+'>'+(t==='operacion'?'Operación':t==='inversion'?'Inversión':'Financiamiento')+'</option>';}).join('')+
+      '</select></td>'+
+      '<td><input class="inp" type="number" style="text-align:right;" value="'+item.monto+'" oninput="window._feSetMonto('+i+',this.value)"></td>'+
+      '<td><button onclick="window._feEliminarFila('+i+')" style="background:none;border:none;color:var(--danger);font-size:15px;cursor:pointer;">×</button></td></tr>';
+  });
+  html += '</tbody></table>';
+  body.innerHTML = html;
+}
+
+function agregarFilaFlujoDirecto() {
+  _feDirecto.push({ concepto:'Nuevo concepto', monto:0, tipo:'operacion' });
+  renderFlujoDirecto();
+}
+
+function _feSetConcepto(i, val) { if (_feDirecto[i]) _feDirecto[i].concepto = val; }
+function _feSetTipo(i, val) { if (_feDirecto[i]) _feDirecto[i].tipo = val; }
+function _feSetMonto(i, val) { if (_feDirecto[i]) _feDirecto[i].monto = parseFloat(val)||0; }
+function _feEliminarFila(i) { _feDirecto.splice(i,1); renderFlujoDirecto(); }
+
+function recalcularFlujoEfectivo() {
+  renderFlujoDirecto();
+  renderFlujoIndirecto();
+}
+
+function renderFlujoIndirecto() {
+  var body = document.getElementById('feIndirectoBody');
+  if (!body) return;
+  // Estimar a partir de los nombres de cuenta detectados en la hoja activa
+  var data = leerHojaActiva();
+  var resultadoNeto = 0, depreciacion = 0, cambioCxC = 0, cambioCxP = 0, cambioInventario = 0;
+  data.rows.forEach(function(row){
+    var c = (row.cuenta||'').toLowerCase();
+    var neto = row.debe - row.haber;
+    if (/venta|ingreso/.test(c)) resultadoNeto -= neto; // ventas son crédito, suman al resultado
+    if (/costo|gasto|compra/.test(c)) resultadoNeto += neto;
+    if (/deprecia/.test(c)) depreciacion += Math.abs(neto);
+    if (/cliente|cuenta.*cobrar/.test(c)) cambioCxC += neto;
+    if (/proveedor|cuenta.*pagar/.test(c)) cambioCxP -= neto;
+    if (/inventario|mercader/.test(c)) cambioInventario += neto;
+  });
+  var flujoOperacion = resultadoNeto + depreciacion - cambioCxC + cambioCxP - cambioInventario;
+
+  var html = '<table class="tbl-v14"><thead><tr><th>Concepto</th><th>Monto (₡)</th></tr></thead><tbody>'+
+    '<tr><td>Resultado neto del período (estimado)</td><td class="num">'+fmtCRC(resultadoNeto)+'</td></tr>'+
+    '<tr><td>(+) Depreciación y amortización</td><td class="num">'+fmtCRC(depreciacion)+'</td></tr>'+
+    '<tr><td>(–) Aumento en cuentas por cobrar</td><td class="num">'+fmtCRC(-cambioCxC)+'</td></tr>'+
+    '<tr><td>(+) Aumento en cuentas por pagar</td><td class="num">'+fmtCRC(cambioCxP)+'</td></tr>'+
+    '<tr><td>(–) Aumento en inventarios</td><td class="num">'+fmtCRC(-cambioInventario)+'</td></tr>'+
+    '<tr class="total-row"><td>Flujo neto de actividades de operación</td><td class="num">'+fmtCRC(flujoOperacion)+'</td></tr>'+
+    '</tbody></table>'+
+    '<p style="font-size:11px;color:var(--text3);margin-top:6px;">Estimado automáticamente según nombres de cuenta detectados en la hoja activa (ventas/costos/depreciación/clientes/proveedores/inventario). Ajustá manualmente si tu plan de cuentas usa otra nomenclatura.</p>';
+  body.innerHTML = html;
+  window._feIndirectoFlujo = flujoOperacion;
+}
+
+function exportarFlujoCSV() {
+  var csv = 'Concepto,Categoria,Monto\n';
+  _feDirecto.forEach(function(item){
+    csv += '"'+item.concepto+'","'+item.tipo+'",'+item.monto+'\n';
+  });
+  descargarBlob('\uFEFF'+csv, 'FlujoEfectivo_'+new Date().toISOString().split('T')[0]+'.csv', 'text/csv;charset=utf-8;');
+}
+
+function exportarFlujoPDF() {
+  var doc = nuevoPDF('portrait'); if (!doc) return;
+  pdfHeader(doc, 'Flujo de Efectivo');
+  var y = 24;
+  ['operacion','inversion','financiamiento'].forEach(function(cat){
+    var items = _feDirecto.filter(function(i){return i.tipo===cat;});
+    if (!items.length) return;
+    doc.setFontSize(11); doc.setFont('helvetica','bold'); doc.setTextColor(45,122,12);
+    doc.text(cat==='operacion'?'Actividades de Operación':cat==='inversion'?'Actividades de Inversión':'Actividades de Financiamiento', 14, y);
+    y += 6;
+    doc.setFontSize(9); doc.setFont('helvetica','normal'); doc.setTextColor(0,0,0);
+    var subtotal = 0;
+    items.forEach(function(item){
+      if (y > 280) { doc.addPage(); y = 14; }
+      doc.text(item.concepto, 14, y);
+      doc.text(fmtCRC(item.monto), 196, y, {align:'right'});
+      subtotal += item.monto;
+      y += 5;
+    });
+    doc.setFont('helvetica','bold');
+    doc.text('Subtotal', 14, y); doc.text(fmtCRC(subtotal), 196, y, {align:'right'});
+    y += 8;
+  });
+  doc.save('FlujoEfectivo_'+new Date().toISOString().split('T')[0]+'.pdf');
+}
+
+// ════════════════════════════════════════════════════
+// 4) CONCILIACIÓN BANCARIA INTERACTIVA
+// ════════════════════════════════════════════════════
+var _concAjustes = { banco: [], libros: [] };
+
+function abrirConciliacionV14() {
+  openModal('modalConciliacionV14');
+  if (!_concAjustes.banco.length) _concAjustes.banco = [{concepto:'Depósitos en tránsito', monto:0},{concepto:'Cheques pendientes de cobro', monto:0}];
+  if (!_concAjustes.libros.length) _concAjustes.libros = [{concepto:'Notas de crédito no registradas', monto:0},{concepto:'Notas de débito no registradas', monto:0}];
+  renderAjustesConc('banco');
+  renderAjustesConc('libros');
+  recalcularConciliacionV14();
+}
+
+function renderAjustesConc(lado) {
+  var cont = document.getElementById(lado==='banco'?'concBancoAjustes':'concLibrosAjustes');
+  if (!cont) return;
+  var html = '';
+  _concAjustes[lado].forEach(function(item, i){
+    html += '<div class="v14-conc-row">'+
+      '<input type="text" class="inp" value="'+(item.concepto||'').replace(/"/g,'&quot;')+'" oninput="window._concSetConcepto(\''+lado+'\','+i+',this.value)">'+
+      '<input type="number" class="inp" value="'+item.monto+'" oninput="window._concSetMonto(\''+lado+'\','+i+',this.value)">'+
+      '<button onclick="window._concEliminarAjuste(\''+lado+'\','+i+')">×</button></div>';
+  });
+  cont.innerHTML = html;
+}
+
+function agregarAjusteConc(lado) {
+  _concAjustes[lado].push({ concepto:'Ajuste', monto:0 });
+  renderAjustesConc(lado);
+  recalcularConciliacionV14();
+}
+
+function _concSetConcepto(lado, i, val) { if (_concAjustes[lado][i]) { _concAjustes[lado][i].concepto = val; recalcularConciliacionV14(); } }
+function _concSetMonto(lado, i, val) { if (_concAjustes[lado][i]) { _concAjustes[lado][i].monto = parseFloat(val)||0; recalcularConciliacionV14(); } }
+function _concEliminarAjuste(lado, i) { _concAjustes[lado].splice(i,1); renderAjustesConc(lado); recalcularConciliacionV14(); }
+
+function recalcularConciliacionV14() {
+  var saldoBancoBase = parseFloat((document.getElementById('conc-saldo-banco')||{}).value) || 0;
+  var saldoLibrosBase = parseFloat((document.getElementById('conc-saldo-libros')||{}).value) || 0;
+
+  var ajusteBanco = _concAjustes.banco.reduce(function(s,a){return s+a.monto;}, 0);
+  var ajusteLibros = _concAjustes.libros.reduce(function(s,a){return s+a.monto;}, 0);
+
+  var saldoAjustadoBanco = saldoBancoBase + ajusteBanco;
+  var saldoAjustadoLibros = saldoLibrosBase + ajusteLibros;
+  var diff = saldoAjustadoBanco - saldoAjustadoLibros;
+  var conciliado = Math.abs(diff) < 0.01;
+
+  var kpisEl = document.getElementById('concKpis');
+  if (kpisEl) {
+    kpisEl.innerHTML =
+      '<div class="v14-kpi"><div class="v14-kpi-label">Saldo Ajustado Banco</div><div class="v14-kpi-value">'+fmtCRC(saldoAjustadoBanco)+'</div></div>'+
+      '<div class="v14-kpi"><div class="v14-kpi-label">Saldo Ajustado Libros</div><div class="v14-kpi-value">'+fmtCRC(saldoAjustadoLibros)+'</div></div>'+
+      '<div class="v14-kpi '+(conciliado?'ok':'bad')+'"><div class="v14-kpi-label">'+(conciliado?'Conciliado':'Diferencia')+'</div><div class="v14-kpi-value">'+(conciliado?'✓ OK':fmtCRC(Math.abs(diff)))+'</div></div>';
+  }
+  window._concResultado = { saldoAjustadoBanco: saldoAjustadoBanco, saldoAjustadoLibros: saldoAjustadoLibros, diff: diff, conciliado: conciliado };
+}
+
+function exportarConciliacionCSV() {
+  var r = window._concResultado || {};
+  var csv = 'Seccion,Concepto,Monto\n';
+  csv += '"Banco","Saldo según estado de cuenta",'+(parseFloat((document.getElementById('conc-saldo-banco')||{}).value)||0)+'\n';
+  _concAjustes.banco.forEach(function(a){ csv += '"Banco","'+a.concepto+'",'+a.monto+'\n'; });
+  csv += '"Libros","Saldo según libros",'+(parseFloat((document.getElementById('conc-saldo-libros')||{}).value)||0)+'\n';
+  _concAjustes.libros.forEach(function(a){ csv += '"Libros","'+a.concepto+'",'+a.monto+'\n'; });
+  csv += '"Resultado","Saldo ajustado banco",'+(r.saldoAjustadoBanco||0)+'\n';
+  csv += '"Resultado","Saldo ajustado libros",'+(r.saldoAjustadoLibros||0)+'\n';
+  csv += '"Resultado","Diferencia",'+(r.diff||0)+'\n';
+  descargarBlob('\uFEFF'+csv, 'ConciliacionBancaria_'+new Date().toISOString().split('T')[0]+'.csv', 'text/csv;charset=utf-8;');
+}
+
+function exportarConciliacionPDF() {
+  var doc = nuevoPDF('portrait'); if (!doc) return;
+  pdfHeader(doc, 'Conciliación Bancaria');
+  var y = 24;
+  doc.setFontSize(11); doc.setFont('helvetica','bold'); doc.setTextColor(45,122,12);
+  doc.text('Según Banco', 14, y); y += 6;
+  doc.setFontSize(9); doc.setFont('helvetica','normal'); doc.setTextColor(0,0,0);
+  doc.text('Saldo según estado de cuenta', 14, y);
+  doc.text(fmtCRC(parseFloat((document.getElementById('conc-saldo-banco')||{}).value)||0), 196, y, {align:'right'}); y += 5;
+  _concAjustes.banco.forEach(function(a){ doc.text(a.concepto, 14, y); doc.text(fmtCRC(a.monto), 196, y, {align:'right'}); y += 5; });
+  y += 4;
+  doc.setFontSize(11); doc.setFont('helvetica','bold'); doc.setTextColor(45,122,12);
+  doc.text('Según Libros', 14, y); y += 6;
+  doc.setFontSize(9); doc.setFont('helvetica','normal'); doc.setTextColor(0,0,0);
+  doc.text('Saldo según libros', 14, y);
+  doc.text(fmtCRC(parseFloat((document.getElementById('conc-saldo-libros')||{}).value)||0), 196, y, {align:'right'}); y += 5;
+  _concAjustes.libros.forEach(function(a){ doc.text(a.concepto, 14, y); doc.text(fmtCRC(a.monto), 196, y, {align:'right'}); y += 5; });
+  y += 6;
+  var r = window._concResultado || {};
+  doc.setFont('helvetica','bold');
+  doc.text('Diferencia final', 14, y);
+  doc.setTextColor(r.conciliado?45:220, r.conciliado?122:38, r.conciliado?12:38);
+  doc.text(r.conciliado?'✓ Conciliado':fmtCRC(Math.abs(r.diff||0)), 196, y, {align:'right'});
+  doc.save('ConciliacionBancaria_'+new Date().toISOString().split('T')[0]+'.pdf');
+}
+
+// ════════════════════════════════════════════════════
+// 5) DECLARACIÓN D-101 — IMPUESTO SOBRE LA RENTA (CR, período fiscal 2026)
+// Fuente: Decreto Ejecutivo N° 45333-H (La Gaceta N° 229, 05/12/2025)
+// Umbral pyme por renta bruta: ₡119,174,000 anuales (2026)
+// ════════════════════════════════════════════════════
+var _d101Ingresos = [{concepto:'Ventas / servicios prestados', monto:0}];
+var _d101Gastos = [{concepto:'Salarios y cargas sociales', monto:0},{concepto:'Alquiler', monto:0},{concepto:'Servicios públicos', monto:0}];
+
+// Tramos persona física con actividad lucrativa (anual, renta neta) — 2026
+var TRAMOS_PF_2026 = [
+  { hasta: 4181000,   tasa: 0 },
+  { hasta: 6244000,   tasa: 0.10 },
+  { hasta: 10412000,  tasa: 0.15 },
+  { hasta: 20865000,  tasa: 0.20 },
+  { hasta: Infinity,  tasa: 0.25 }
+];
+// Escala reducida pyme (renta bruta ≤ ₡119,174,000) — tramos referenciales 2026, tasas confirmadas 5/10/15/20%
+var TRAMOS_PYME_2026 = [
+  { hasta: 5644000,   tasa: 0 },
+  { hasta: 8436000,   tasa: 0.05 },
+  { hasta: 14066000,  tasa: 0.10 },
+  { hasta: 21185000,  tasa: 0.15 },
+  { hasta: Infinity,  tasa: 0.20 }
+];
+
+function abrirD101() {
+  openModal('modalD101');
+  renderD101Filas('ingresos');
+  renderD101Filas('gastos');
+  switchD101Tab('datos');
+}
+
+function switchD101Tab(tab) {
+  ['datos','ingresos','gastos','calculo'].forEach(function(t){
+    var tabEl = document.getElementById('d101Tab-'+t);
+    var paneEl = document.getElementById('d101Pane-'+t);
+    if (tabEl) tabEl.classList.toggle('active', t===tab);
+    if (paneEl) paneEl.classList.toggle('active', t===tab);
+  });
+  if (tab === 'calculo') calcularD101();
+}
+
+function renderD101Filas(tipo) {
+  var arr = tipo === 'ingresos' ? _d101Ingresos : _d101Gastos;
+  var body = document.getElementById(tipo === 'ingresos' ? 'd101IngresosBody' : 'd101GastosBody');
+  if (!body) return;
+  var html = '<table class="tbl-v14"><thead><tr><th>Concepto</th><th>Monto (₡)</th><th></th></tr></thead><tbody>';
+  arr.forEach(function(item, i){
+    html += '<tr><td><input class="inp" style="font-size:12px;padding:4px 7px;" value="'+(item.concepto||'').replace(/"/g,'&quot;')+'" oninput="window._d101SetConcepto(\''+tipo+'\','+i+',this.value)"></td>'+
+      '<td><input class="inp" type="number" style="text-align:right;" value="'+item.monto+'" oninput="window._d101SetMonto(\''+tipo+'\','+i+',this.value)"></td>'+
+      '<td><button onclick="window._d101EliminarFila(\''+tipo+'\','+i+')" style="background:none;border:none;color:var(--danger);font-size:15px;cursor:pointer;">×</button></td></tr>';
+  });
+  var total = arr.reduce(function(s,i){return s+i.monto;},0);
+  html += '<tr class="total-row"><td>TOTAL</td><td class="num">'+fmtCRC(total)+'</td><td></td></tr>';
+  html += '</tbody></table>';
+  body.innerHTML = html;
+}
+
+function agregarFilaD101(tipo) {
+  (tipo === 'ingresos' ? _d101Ingresos : _d101Gastos).push({ concepto:'Nuevo concepto', monto:0 });
   renderD101Filas(tipo);
 }
+function _d101SetConcepto(tipo, i, val) { var arr = tipo==='ingresos'?_d101Ingresos:_d101Gastos; if (arr[i]) arr[i].concepto = val; }
+function _d101SetMonto(tipo, i, val) { var arr = tipo==='ingresos'?_d101Ingresos:_d101Gastos; if (arr[i]) { arr[i].monto = parseFloat(val)||0; renderD101Filas(tipo); } }
+function _d101EliminarFila(tipo, i) { var arr = tipo==='ingresos'?_d101Ingresos:_d101Gastos; arr.splice(i,1); renderD101Filas(tipo); }
 
-function renderD101Filas(tipo){
-  var arr=tipo==='ingresos'?_d101Ingresos:tipo==='exentos'?_d101Exentos:_d101Gastos;
-  var containerId='d101'+cap(tipo)+'Rows';
-  var container=document.getElementById(containerId);
-  if(!container) return;
-  if(!arr.length){container.innerHTML='<div style="text-align:center;padding:12px;color:var(--text3);font-size:12px;">Sin partidas. Agregá usando el botón.</div>';return;}
-  container.innerHTML=arr.map(function(row,i){
-    return '<div class="v14-d101-row" style="margin-bottom:6px;">' +
-      '<input class="v14-inp" placeholder="Descripción" value="'+escH(row.desc)+'" onchange="_d101'+cap(tipo)+'['+i+'].desc=this.value">' +
-      '<div style="display:flex;gap:5px;">' +
-      '<input class="v14-inp" type="number" placeholder="Monto ₡" value="'+row.monto+'" style="text-align:right;" onchange="_d101'+cap(tipo)+'['+i+'].monto=parseFloat(this.value)||0">' +
-      '<button onclick="_d101'+cap(tipo)+'.splice('+i+',1);renderD101Filas(\''+tipo+'\')" style="background:var(--bg3);border:none;border-radius:5px;padding:4px 8px;cursor:pointer;color:var(--text3);">×</button>' +
-      '</div></div>';
-  }).join('');
+function calcularImpuestoPorTramos(rentaNeta, tramos) {
+  var impuesto = 0, anterior = 0;
+  for (var i = 0; i < tramos.length; i++) {
+    var tramo = tramos[i];
+    if (rentaNeta <= anterior) break;
+    var enEsteTramo = Math.min(rentaNeta, tramo.hasta) - anterior;
+    if (enEsteTramo > 0) impuesto += enEsteTramo * tramo.tasa;
+    anterior = tramo.hasta;
+  }
+  return impuesto;
 }
 
-function calcularD101(){
-  var tipo=(document.getElementById('d101TipoContrib')||{}).value||'persona_fisica';
-  var nombre=(document.getElementById('d101Nombre')||{}).value||'—';
-  var cedula=(document.getElementById('d101Cedula')||{}).value||'—';
-  var periodo=(document.getElementById('d101Periodo')||{}).value||'2025';
+function calcularD101() {
+  var totalIngresos = _d101Ingresos.reduce(function(s,i){return s+i.monto;},0);
+  var totalGastos = _d101Gastos.reduce(function(s,i){return s+i.monto;},0);
+  var rentaNeta = Math.max(0, totalIngresos - totalGastos);
+  var tipo = (document.getElementById('d101-tipo')||{}).value || 'persona_fisica';
 
-  var totalIngresos=0; _d101Ingresos.forEach(function(r){totalIngresos+=r.monto;});
-  var totalExentos=0; _d101Exentos.forEach(function(r){totalExentos+=r.monto;});
-  var totalGastos=0; _d101Gastos.forEach(function(r){totalGastos+=r.monto;});
-
-  var rentaGravable=Math.max(0,totalIngresos-totalGastos);
-  var tramos=_tramosRenta[tipo]||[];
-
-  // Cálculo progresivo
-  var impuesto=0;
-  if(tipo==='persona_fisica'){
-    tramos.forEach(function(t,i){
-      var prev=i>0?tramos[i-1].hasta:0;
-      if(rentaGravable>t.desde){
-        var base=Math.min(rentaGravable,t.hasta)-t.desde;
-        if(base>0) impuesto+=base*t.tasa;
-      }
-    });
+  var impuesto = 0, tasaInfo = '';
+  if (tipo === 'persona_fisica') {
+    impuesto = calcularImpuestoPorTramos(rentaNeta, TRAMOS_PF_2026);
+    tasaInfo = 'Tarifa progresiva 0% / 10% / 15% / 20% / 25% sobre renta neta anual (persona física con actividad lucrativa, 2026).';
+  } else if (tipo === 'empresa_micro' || tipo === 'empresa_pequena') {
+    impuesto = calcularImpuestoPorTramos(rentaNeta, TRAMOS_PYME_2026);
+    tasaInfo = 'Escala reducida 0% / 5% / 10% / 15% / 20% — aplica solo si la renta bruta anual no supera ₡119,174,000 (umbral 2026).';
   } else {
-    impuesto=rentaGravable*tramos[tramos.length-1].tasa;
+    impuesto = rentaNeta * 0.30;
+    tasaInfo = 'Tarifa plana del 30% sobre renta neta imponible (renta bruta superior a ₡119,174,000).';
   }
 
-  var body=document.getElementById('d101CalcBody');
-  if(!body) return;
-  body.innerHTML='<div class="v14-kpis">' +
-    '<div class="v14-kpi"><div class="v14-kpi-lbl">Ingresos Gravables</div><div class="v14-kpi-val" style="font-size:15px;">'+fmtCRC(totalIngresos)+'</div></div>' +
-    '<div class="v14-kpi"><div class="v14-kpi-lbl">Gastos Deducibles</div><div class="v14-kpi-val" style="font-size:15px;">'+fmtCRC(totalGastos)+'</div></div>' +
-    '<div class="v14-kpi"><div class="v14-kpi-lbl">Renta Gravable</div><div class="v14-kpi-val" style="font-size:15px;">'+fmtCRC(rentaGravable)+'</div></div>' +
-    '<div class="v14-kpi bad"><div class="v14-kpi-lbl">Impuesto Estimado</div><div class="v14-kpi-val" style="font-size:15px;">'+fmtCRC(impuesto)+'</div><div class="v14-kpi-sub">D-101 Período '+periodo+'</div></div>' +
-    '</div>' +
-    '<div style="background:var(--off);border:1.5px solid var(--border);border-radius:10px;padding:14px;margin-top:10px;">' +
-    '<strong style="font-size:12px;color:var(--g3);display:block;margin-bottom:10px;">📋 Resumen D-101 · '+nombre+' · '+cedula+'</strong>' +
-    '<table class="tbl-v14" style="margin:0;"><tbody>' +
-    '<tr><td>Total Ingresos Gravables</td><td class="num">'+fmtCRC(totalIngresos)+'</td></tr>' +
-    '<tr><td>Total Ingresos Exentos</td><td class="num">'+fmtCRC(totalExentos)+'</td></tr>' +
-    '<tr><td>Total Gastos Deducibles</td><td class="num">('+fmtCRC(totalGastos)+')</td></tr>' +
-    '<tr class="subtotal-row"><td>Renta Neta Gravable</td><td class="num">'+fmtCRC(rentaGravable)+'</td></tr>' +
-    '<tr class="total-row"><td>IMPUESTO ESTIMADO ('+periodo+')</td><td class="num" style="color:var(--danger);">'+fmtCRC(impuesto)+'</td></tr>' +
-    '</tbody></table>' +
-    '<div style="margin-top:10px;padding:8px;background:#fff9c4;border-radius:6px;font-size:11px;color:#92400e;">'+
-    '⚠️ Este cálculo es referencial. Presentá tu D-101 en la plataforma ATV de Ministerio de Hacienda: '+
-    '<a href="https://www.atv.hacienda.go.cr" target="_blank" style="color:var(--g2);">atv.hacienda.go.cr</a></div>' +
-    '</div>';
+  var body = document.getElementById('d101CalculoBody');
+  if (body) {
+    body.innerHTML =
+      '<div class="v14-kpis">' +
+        '<div class="v14-kpi"><div class="v14-kpi-label">Total Ingresos</div><div class="v14-kpi-value">'+fmtCRC(totalIngresos)+'</div></div>' +
+        '<div class="v14-kpi"><div class="v14-kpi-label">Total Gastos Deducibles</div><div class="v14-kpi-value">'+fmtCRC(totalGastos)+'</div></div>' +
+        '<div class="v14-kpi"><div class="v14-kpi-label">Renta Neta</div><div class="v14-kpi-value">'+fmtCRC(rentaNeta)+'</div></div>' +
+        '<div class="v14-kpi ok"><div class="v14-kpi-label">Impuesto Estimado</div><div class="v14-kpi-value">'+fmtCRC(impuesto)+'</div></div>' +
+      '</div>' +
+      '<div class="v14-d101-sec"><p style="font-size:11.5px;color:var(--text2);line-height:1.5;">'+tasaInfo+'</p>'+
+      '<p style="font-size:11px;color:var(--text3);margin-top:6px;">⚠️ Los tramos de la escala reducida (pyme) son referenciales para el período fiscal 2026; verificá los montos exactos vigentes en la tabla oficial de Hacienda antes de presentar la declaración. El umbral de ₡119,174,000 de renta bruta anual y la tasa plana del 30% sí están confirmados por el Decreto 45333-H.</p></div>';
+  }
+  window._d101Resultado = { totalIngresos: totalIngresos, totalGastos: totalGastos, rentaNeta: rentaNeta, impuesto: impuesto, tipo: tipo };
 }
 
-function limpiarD101(){
-  _d101Ingresos=[];_d101Exentos=[];_d101Gastos=[];
-  ['d101Nombre','d101Cedula','d101Actividad','d101Tel'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
-  ['ingresos','exentos','gastos'].forEach(renderD101Filas);
-  var b=document.getElementById('d101CalcBody');
-  if(b) b.innerHTML='<div style="text-align:center;padding:30px;color:var(--text3);">Datos limpiados. Ingresá la información nuevamente.</div>';
+function exportarD101CSV() {
+  var r = window._d101Resultado || calcularD101() || window._d101Resultado || {};
+  var csv = 'Seccion,Concepto,Monto\n';
+  _d101Ingresos.forEach(function(i){ csv += '"Ingresos","'+i.concepto+'",'+i.monto+'\n'; });
+  _d101Gastos.forEach(function(i){ csv += '"Gastos","'+i.concepto+'",'+i.monto+'\n'; });
+  csv += '"Resultado","Renta Neta",'+(r.rentaNeta||0)+'\n';
+  csv += '"Resultado","Impuesto Estimado",'+(r.impuesto||0)+'\n';
+  descargarBlob('\uFEFF'+csv, 'D101_'+new Date().toISOString().split('T')[0]+'.csv', 'text/csv;charset=utf-8;');
 }
 
-function exportarD101PDF(){
-  calcularD101(); // asegurar cálculo actualizado
-  var lib=window.jspdf&&window.jspdf.jsPDF;
-  if(!lib){window.print();return;}
-  var doc=new lib({orientation:'portrait',unit:'mm',format:'a4'});
-  doc.setFillColor(45,122,12);doc.rect(0,0,210,22,'F');
-  doc.setTextColor(255,255,255);doc.setFontSize(13);doc.setFont('helvetica','bold');
-  doc.text('Declaración D-101 — Impuesto sobre la Renta CR',10,14);
-  var y=28;doc.setTextColor(0,0,0);doc.setFontSize(9);doc.setFont('helvetica','normal');
-  var nombre=(document.getElementById('d101Nombre')||{}).value||'—';
-  var cedula=(document.getElementById('d101Cedula')||{}).value||'—';
-  var periodo=(document.getElementById('d101Periodo')||{}).value||'2025';
-  doc.text('Contribuyente: '+nombre,10,y);doc.text('Cédula: '+cedula,200,y,{align:'right'});y+=6;
-  doc.text('Período Fiscal: '+periodo,10,y);y+=10;
-  var totalI=0;_d101Ingresos.forEach(function(r){totalI+=r.monto;});
-  var totalG=0;_d101Gastos.forEach(function(r){totalG+=r.monto;});
-  var renta=Math.max(0,totalI-totalG);
-  var tipo=(document.getElementById('d101TipoContrib')||{}).value||'persona_fisica';
-  var tramos=_tramosRenta[tipo]||[];
-  var imp=0;
-  if(tipo==='persona_fisica'){tramos.forEach(function(t,i){var prev=i>0?tramos[i-1].hasta:0;if(renta>t.desde){var base=Math.min(renta,t.hasta)-t.desde;if(base>0)imp+=base*t.tasa;}});}
-  else{imp=renta*tramos[tramos.length-1].tasa;}
-  [['Total Ingresos Gravables',totalI],['Total Gastos Deducibles',totalG],['Renta Gravable',renta],['IMPUESTO ESTIMADO',imp]]
-    .forEach(function(row){
-      doc.setFont('helvetica',row[0].startsWith('IMP')?'bold':'normal');
-      doc.text(row[0],10,y);doc.text(fmtN(row[1]),200,y,{align:'right'});y+=7;
-    });
-  doc.setFontSize(8);doc.setTextColor(120,120,120);
-  doc.text('Referencial. Presentá en ATV Hacienda CR: atv.hacienda.go.cr',10,y+10);
-  doc.save('d101-renta-cr.pdf');
+function exportarD101PDF() {
+  calcularD101();
+  var r = window._d101Resultado || {};
+  var doc = nuevoPDF('portrait'); if (!doc) return;
+  pdfHeader(doc, 'Declaración D-101 — Impuesto sobre la Renta');
+  var y = 24;
+  doc.setFontSize(10); doc.setFont('helvetica','normal');
+  doc.text('Contribuyente: ' + ((document.getElementById('d101-nombre')||{}).value || '—'), 14, y); y += 6;
+  doc.text('Cédula: ' + ((document.getElementById('d101-cedula')||{}).value || '—'), 14, y); y += 6;
+  doc.text('Período fiscal: ' + ((document.getElementById('d101-periodo')||{}).value || '—'), 14, y); y += 8;
+
+  doc.setFont('helvetica','bold'); doc.setTextColor(45,122,12);
+  doc.text('Ingresos', 14, y); y += 6;
+  doc.setFont('helvetica','normal'); doc.setTextColor(0,0,0);
+  _d101Ingresos.forEach(function(i){ doc.text(i.concepto, 14, y); doc.text(fmtCRC(i.monto), 196, y, {align:'right'}); y += 5; });
+  y += 3;
+  doc.setFont('helvetica','bold'); doc.setTextColor(45,122,12);
+  doc.text('Gastos Deducibles', 14, y); y += 6;
+  doc.setFont('helvetica','normal'); doc.setTextColor(0,0,0);
+  _d101Gastos.forEach(function(i){ doc.text(i.concepto, 14, y); doc.text(fmtCRC(i.monto), 196, y, {align:'right'}); y += 5; });
+  y += 6;
+  doc.setFont('helvetica','bold');
+  doc.text('Renta Neta', 14, y); doc.text(fmtCRC(r.rentaNeta||0), 196, y, {align:'right'}); y += 6;
+  doc.setTextColor(45,122,12);
+  doc.text('Impuesto Estimado', 14, y); doc.text(fmtCRC(r.impuesto||0), 196, y, {align:'right'}); y += 8;
+  doc.setFontSize(8); doc.setFont('helvetica','normal'); doc.setTextColor(120,120,120);
+  doc.text('Montos referenciales — verificar tramos exactos vigentes en Hacienda antes de presentar.', 14, y);
+  doc.save('D101_'+new Date().toISOString().split('T')[0]+'.pdf');
 }
 
 // ════════════════════════════════════════════════════
-// UTILIDADES COMPARTIDAS
+// EXPOSICIÓN GLOBAL DE FUNCIONES (requerido por onclick= en HTML)
 // ════════════════════════════════════════════════════
-function descargarCSV(csv,nombre){
-  var blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
-  var a=document.createElement('a');a.href=URL.createObjectURL(blob);
-  a.download=nombre+'-'+new Date().toISOString().split('T')[0]+'.csv';a.click();
-}
-function escH(s){ return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+window.leerHojaActiva = leerHojaActiva;
+window.fmtCRC = fmtCRC;
+
+window.abrirLibroMayor = abrirLibroMayor;
+window.generarLibroMayor = generarLibroMayor;
+window.exportarLibroMayorCSV = exportarLibroMayorCSV;
+window.exportarLibroMayorPDF = exportarLibroMayorPDF;
+
+window.abrirBalanceComp = abrirBalanceComp;
+window.generarBalanceComp = generarBalanceComp;
+window.exportarBalanceCompCSV = exportarBalanceCompCSV;
+window.exportarBalanceCompPDF = exportarBalanceCompPDF;
+
+window.abrirFlujoEfectivo = abrirFlujoEfectivo;
+window.switchFlujoTab = switchFlujoTab;
+window.agregarFilaFlujoDirecto = agregarFilaFlujoDirecto;
+window._feSetConcepto = _feSetConcepto;
+window._feSetTipo = _feSetTipo;
+window._feSetMonto = _feSetMonto;
+window._feEliminarFila = _feEliminarFila;
+window.recalcularFlujoEfectivo = recalcularFlujoEfectivo;
+window.exportarFlujoCSV = exportarFlujoCSV;
+window.exportarFlujoPDF = exportarFlujoPDF;
+
+window.abrirConciliacionV14 = abrirConciliacionV14;
+window.agregarAjusteConc = agregarAjusteConc;
+window._concSetConcepto = _concSetConcepto;
+window._concSetMonto = _concSetMonto;
+window._concEliminarAjuste = _concEliminarAjuste;
+window.recalcularConciliacionV14 = recalcularConciliacionV14;
+window.exportarConciliacionCSV = exportarConciliacionCSV;
+window.exportarConciliacionPDF = exportarConciliacionPDF;
+
+window.abrirD101 = abrirD101;
+window.switchD101Tab = switchD101Tab;
+window.agregarFilaD101 = agregarFilaD101;
+window._d101SetConcepto = _d101SetConcepto;
+window._d101SetMonto = _d101SetMonto;
+window._d101EliminarFila = _d101EliminarFila;
+window.calcularD101 = calcularD101;
+window.exportarD101CSV = exportarD101CSV;
+window.exportarD101PDF = exportarD101PDF;
 
 // ════════════════════════════════════════════════════
-// INYECCIÓN EN SIDEBAR Y MENÚ
+// AUTO-INYECCIÓN: botones en sidebar + items en menú Plantillas
 // ════════════════════════════════════════════════════
-// Agregar botones al sidebar
-window.addEventListener('load',function(){
-  // Sidebar: nueva sección v14
-  var sb=document.querySelector('.sidebar .sb-sec:first-child');
-  if(sb){
-    var div=document.createElement('div');
-    div.innerHTML='<div class="sb-div"></div>' +
-      '<div class="sb-title" style="font-size:10px;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:1px;padding:8px 14px 3px;">v14 — Nuevas herramientas</div>' +
-      '<button class="sb-btn" onclick="generarLibroMayor();abrirV14(\'modalLibroMayor\');closeSidebar&&closeSidebar()"><span class="si">📗</span>Libro Mayor Auto</button>' +
-      '<button class="sb-btn" onclick="generarBalanceComp();abrirV14(\'modalBalanceComp\');closeSidebar&&closeSidebar()"><span class="si">⚖️</span>Balance Comprobación</button>' +
-      '<button class="sb-btn" onclick="abrirFlujoEfectivo();closeSidebar&&closeSidebar()"><span class="si">💰</span>Flujo de Efectivo</button>' +
-      '<button class="sb-btn" onclick="abrirConciliacionV14();closeSidebar&&closeSidebar()"><span class="si">🏦</span>Conciliación Bancaria</button>' +
-      '<button class="sb-btn" onclick="actualizarTramosRenta();abrirV14(\'modalD101\');closeSidebar&&closeSidebar()"><span class="si">📋</span>Declaración D-101</button>';
-    sb.parentNode.insertBefore(div,sb.nextSibling);
+function inyectarUIv145() {
+  // Sección en sidebar
+  var sidebar = document.getElementById('sidebar');
+  if (sidebar && !document.getElementById('v14-sidebar-sec')) {
+    var sec = document.createElement('div');
+    sec.id = 'v14-sidebar-sec';
+    sec.innerHTML =
+      '<div class="sb-div"></div>' +
+      '<div class="sb-sec">' +
+        '<div class="sb-title">v14 — Nuevas herramientas</div>' +
+        '<button class="sb-btn" onclick="abrirLibroMayor()"><span class="si">📗</span><span>Libro Mayor Automático</span></button>' +
+        '<button class="sb-btn" onclick="abrirBalanceComp()"><span class="si">📊</span><span>Balance Comprobación (en vivo)</span></button>' +
+        '<button class="sb-btn" onclick="abrirFlujoEfectivo()"><span class="si">💧</span><span>Flujo de Efectivo</span></button>' +
+        '<button class="sb-btn" onclick="abrirConciliacionV14()"><span class="si">🏦</span><span>Conciliación Bancaria</span></button>' +
+        '<button class="sb-btn" onclick="abrirD101()"><span class="si">🇨🇷</span><span>Declaración D-101 (Renta)</span></button>' +
+      '</div>';
+    // Insertar antes del widget de Sibö si existe, sino al final
+    var siboWidget = sidebar.querySelector('.sibo-widget');
+    if (siboWidget) sidebar.insertBefore(sec, siboWidget);
+    else sidebar.appendChild(sec);
   }
 
-  // Cerrar modales v14 al hacer clic en backdrop
-  document.querySelectorAll('.modal-v14').forEach(function(m){
-    m.addEventListener('click',function(e){if(e.target===m) m.classList.remove('active');});
-  });
-
-  // Inyectar items en menú Plantillas (m-plantillas)
-  var mPlant=document.getElementById('m-plantillas');
-  if(mPlant){
-    var sep=document.createElement('div'); sep.className='dd-sep';
-    var tit=document.createElement('div'); tit.className='dd-section-title'; tit.textContent='v14 · Nuevas herramientas';
-    mPlant.appendChild(sep); mPlant.appendChild(tit);
-    [
-      {ico:'📗',txt:'Libro Mayor Automático',fn:"closeMenu&&closeMenu();generarLibroMayor();abrirV14('modalLibroMayor')"},
-      {ico:'⚖️',txt:'Balance de Comprobación',fn:"closeMenu&&closeMenu();generarBalanceComp();abrirV14('modalBalanceComp')"},
-      {ico:'💰',txt:'Flujo de Efectivo',fn:"closeMenu&&closeMenu();abrirFlujoEfectivo()"},
-      {ico:'🏦',txt:'Conciliación Bancaria Interactiva',fn:"closeMenu&&closeMenu();abrirConciliacionV14()"},
-      {ico:'📋',txt:'Declaración D-101 (Renta)',fn:"closeMenu&&closeMenu();actualizarTramosRenta();abrirV14('modalD101')"},
-    ].forEach(function(item){
-      var el=document.createElement('div'); el.className='dd-item';
-      el.innerHTML='<span class="di">'+item.ico+'</span>'+item.txt;
-      el.setAttribute('onclick',item.fn);
-      mPlant.appendChild(el);
-    });
-  }
-
-  // Inicializar D-101
-  actualizarTramosRenta();
-  // Inicializar filas D-101 por defecto
-  if(!_d101Ingresos.length){
-    _d101Ingresos=[{desc:'Ventas de bienes y servicios',monto:0},{desc:'Otros ingresos gravables',monto:0}];
-    _d101Gastos=[
-      {desc:'Costo de ventas / mercancías',monto:0},
-      {desc:'Sueldos y salarios',monto:0},
-      {desc:'Cargas sociales (CCSS patronal)',monto:0},
-      {desc:'Alquiler de local',monto:0},
-      {desc:'Servicios públicos',monto:0},
-      {desc:'Depreciaciones',monto:0},
+  // Items en el menú dropdown de Plantillas
+  var menuPlantillas = document.getElementById('m-plantillas');
+  if (menuPlantillas && !document.getElementById('v14-dd-sep')) {
+    var sep = document.createElement('div');
+    sep.className = 'dd-sep'; sep.id = 'v14-dd-sep';
+    var title = document.createElement('div');
+    title.className = 'dd-section-title'; title.textContent = 'Herramientas v14';
+    var items = [
+      ['📗','Libro Mayor Automático','abrirLibroMayor()'],
+      ['📊','Balance Comprobación','abrirBalanceComp()'],
+      ['💧','Flujo de Efectivo','abrirFlujoEfectivo()'],
+      ['🏦','Conciliación Bancaria','abrirConciliacionV14()'],
+      ['🇨🇷','Declaración D-101','abrirD101()']
     ];
-    renderD101Filas('ingresos');renderD101Filas('exentos');renderD101Filas('gastos');
+    menuPlantillas.appendChild(sep);
+    menuPlantillas.appendChild(title);
+    items.forEach(function(it){
+      var div = document.createElement('div');
+      div.className = 'dd-item';
+      div.setAttribute('onclick', "closeMenu();" + it[2]);
+      div.innerHTML = '<span class="di">'+it[0]+'</span>'+it[1];
+      menuPlantillas.appendChild(div);
+    });
   }
+}
 
-  console.log('✅ Patch v14.0 cargado — 5 nuevas herramientas contables CR');
-});
-
-// Exponer funciones globalmente
-window.abrirV14=abrirV14; window.cerrarV14=cerrarV14;
-window.generarLibroMayor=generarLibroMayor; window.filtrarCuentaMayor=filtrarCuentaMayor;
-window.exportarLibroMayorCSV=exportarLibroMayorCSV; window.exportarLibroMayorPDF=exportarLibroMayorPDF;
-window.generarBalanceComp=generarBalanceComp;
-window.exportarBalanceCSV=exportarBalanceCSV; window.exportarBalancePDF=exportarBalancePDF;
-window.abrirFlujoEfectivo=abrirFlujoEfectivo;
-window.switchFlujoTab=switchFlujoTab; window.agregarFilaFlujo=agregarFilaFlujo;
-window.calcularFlujoDirecto=calcularFlujoDirecto; window.calcularFlujoIndirecto=calcularFlujoIndirecto;
-window.exportarFlujoPDF=exportarFlujoPDF;
-window.abrirConciliacionV14=abrirConciliacionV14;
-window.agregarAjusteBanco=agregarAjusteBanco; window.agregarAjusteLibros=agregarAjusteLibros;
-window.calcularConciliacion=calcularConciliacion; window.limpiarConciliacion=limpiarConciliacion;
-window.exportarConciliacionPDF=exportarConciliacionPDF;
-window._concBancoAjustes=_concBancoAjustes; window._concLibrosAjustes=_concLibrosAjustes;
-window.actualizarTramosRenta=actualizarTramosRenta; window.switchD101Tab=switchD101Tab;
-window.agregarFilaD101=agregarFilaD101; window.renderD101Filas=renderD101Filas;
-window.calcularD101=calcularD101; window.limpiarD101=limpiarD101;
-window.exportarD101PDF=exportarD101PDF;
-window._d101Ingresos=_d101Ingresos; window._d101Exentos=_d101Exentos; window._d101Gastos=_d101Gastos;
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', inyectarUIv145);
+} else {
+  inyectarUIv145();
+}
 
 })();
+
+
+
+
 </script>
 </body>
 </html>
