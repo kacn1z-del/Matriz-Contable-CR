@@ -772,7 +772,7 @@ button{cursor:pointer;}
   }
   .mhead { padding: 12px 16px; }
   .mhead h3 { font-size: 14px; }
-  .fn-wrap { grid-template-columns: 1fr; height: auto; }
+  .fn-wrap { grid-template-columns: 1fr; height: 70vh; }
   .fn-sb { display: none; }
   .fn-grid { padding: 7px 9px; }
   .fn-card { padding: 8px 9px; }
@@ -2172,6 +2172,13 @@ async function sendSiboMobile() {
 var fnData = {};
 var fnDataReady = fetch('wc-fndata.json').then(function(r){ return r.json(); }).then(function(data){ fnData = data; fnCurrentCat = Object.keys(fnData)[0] || 'Búsqueda y Referencia'; }).catch(function(e){ console.error('No se pudo cargar wc-fndata.json', e); });
 
+var fnColors={
+  'Búsqueda y Referencia':'#3a9e10','Texto':'#0e7490','Lógicas':'#a16207',
+  'Fecha y Hora':'#7c3aed','Base de Datos':'#be185d','Matemáticas':'#16a34a',
+  'Financieras':'#ca8a04','Estadísticas':'#2563eb','Información':'#65a30d',
+  'Ingeniería':'#9333ea','Cubo':'#0d9488','Web':'#dc2626',
+  'Duración':'#7c3aed','Trigonométricas':'#16a34a'
+};
 var fnCurrentCat=Object.keys(fnData)[0]||'Búsqueda y Referencia';
 var fnSelected=null;
 
@@ -2239,8 +2246,11 @@ function selectFn(name,cat) {
 }
 function insertarFuncion() {
   if(!fnSelected) return;
-  var cv=document.getElementById('canvas');
-  if(cv) cv.innerHTML+='<div style="background:var(--bg3);border:1.5px solid var(--border2);border-radius:9px;padding:10px 13px;margin:6px 0;font-family:monospace;font-size:13px;color:var(--g3);">'+(fnSelected.x||'')+'</div>';
+  if(activeCell){
+    var key=cellId(activeCell.r, activeCell.c);
+    sheetData[key]=fnSelected.x||('='+fnSelected.n+'()');
+    renderCell(activeCell.r, activeCell.c);
+  }
   closeModal('modalFunciones');
 }
 
