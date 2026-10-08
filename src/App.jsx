@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
 import './App.css'
 
-// Componentes Nuevos
-import FacturaElectronica from './components/FacturaElectronica'
-import SiboModule from './components/SiboModule'
-import FormulasModule from './components/FormulasModule'
+// Componentes Nuevos (CON EXTENSIÓN .jsx)
+import FacturaElectronica from './components/FacturaElectronica.jsx'
+import SiboModule from './components/SiboModule.jsx'
+import FormulasModule from './components/FormulasModule.jsx'
 
 // Mock i18n
 const i18n = {
