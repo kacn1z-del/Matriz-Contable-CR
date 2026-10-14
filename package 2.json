@@ -1,0 +1,33 @@
+{
+  "name": "matriz-contable-cr",
+  "version": "39.5.0",
+  "description": "Matriz Contable CR - aplicación de escritorio para Windows",
+  "main": "main.js",
+  "author": "Keny Chinchilla Navarro",
+  "license": "UNLICENSED",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "dist:win": "electron-builder --win portable --publish never"
+  },
+  "devDependencies": {
+    "electron": "^31.7.0",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "cr.matrizcontable.desktop",
+    "productName": "Matriz Contable CR",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "index.html"
+    ],
+    "win": {
+      "target": [
+        "portable"
+      ]
+    }
+  }
+}
