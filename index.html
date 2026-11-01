@@ -647,19 +647,31 @@
   #reportesOverlay.show { display: flex; }
   #plantillasOverlay { position: fixed; inset: 0; background: rgba(10,30,5,.65); z-index: 9600; display: none; align-items: flex-end; justify-content: center; }
   #plantillasOverlay.show { display: flex; }
-  #templateGalleryOverlay { position: fixed; inset: 0; background: rgba(10,30,5,.65); z-index: 9600; display: none; align-items: flex-end; justify-content: center; }
+  #templateGalleryOverlay { position: fixed; inset: 0; background: #0f2214; z-index: 9600; display: none; flex-direction: column; }
   #templateGalleryOverlay.show { display: flex; }
-  #templateGalleryModal { background: #fff; border-radius: 14px 14px 0 0; width: 100%; max-width: 520px; max-height: 80vh; display: flex; flex-direction: column; overflow: hidden; }
-  #templateGalleryHead { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: #217346; flex-shrink: 0; }
-  #templateGalleryHead h3 { margin: 0; color: #fff; font-size: 13px; }
-  #templateGalleryHead button { background: none; border: none; color: #fff; font-size: 16px; padding: 10px 12px; }
-  #templateGalleryGrid { overflow-y: auto; padding: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background: #f3f2f1; }
-  .templateCard { background: #fff; border-radius: 10px; overflow: hidden; text-align: left; border: 1px solid #e1e1e1; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+  #templateGalleryModal { position: absolute; inset: 0; background: #0f2214; display: flex; flex-direction: column; overflow: hidden; width: 100%; height: 100%; }
+  #templateGalleryHead { display: flex; align-items: center; justify-content: space-between; padding: calc(env(safe-area-inset-top, 0px) + 14px) 16px 6px; flex-shrink: 0; }
+  #templateGalleryHead h3 { margin: 0; color: #fff; font-size: 26px; font-weight: 700; }
+  #templateGalleryHead button { background: rgba(255,255,255,.12); border: none; color: #fff; font-size: 18px; width: 40px; height: 40px; border-radius: 20px; }
+  #templateGallerySearch { margin: 6px 16px 4px; padding: 10px 14px; border-radius: 10px; border: none; font-size: 15px; background: rgba(255,255,255,.14); color: #fff; outline: none; flex-shrink: 0; }
+  #templateGallerySearch::placeholder { color: rgba(255,255,255,.6); }
+  #templateGalleryTabs { display: flex; gap: 8px; overflow-x: auto; padding: 8px 16px 6px; flex-shrink: 0; -webkit-overflow-scrolling: touch; }
+  #templateGalleryTabs::-webkit-scrollbar, .tgRow::-webkit-scrollbar { display: none; }
+  .tgChip { border: none; border-radius: 18px; padding: 8px 14px; background: rgba(255,255,255,.12); color: #fff; font-size: 14px; white-space: nowrap; flex-shrink: 0; }
+  .tgChip.on { background: #fff; color: #1f4d2b; font-weight: 700; }
+  #templateGalleryGrid { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 24px); }
+  .tgSecHead { display: flex; justify-content: space-between; align-items: center; padding: 18px 16px 8px; color: #fff; font-size: 18px; font-weight: 700; }
+  .tgVerTodo { background: none; border: none; color: #7ddc7a; font-size: 14px; padding: 6px 0; }
+  .tgRow { display: flex; gap: 12px; overflow-x: auto; padding: 4px 16px 10px; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; }
+  .tgRow .templateCard { flex: 0 0 150px; scroll-snap-align: start; }
+  .tgGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; padding: 8px 16px 16px; }
+  .tgVacio { color: rgba(255,255,255,.7); padding: 30px 16px; font-size: 15px; grid-column: 1 / -1; }
+  .templateCard { background: #fff; border-radius: 12px; overflow: hidden; text-align: left; border: none; padding: 0; font-family: inherit; box-shadow: 0 2px 6px rgba(0,0,0,.25); cursor: pointer; }
   .templateCard:active { transform: scale(.97); }
-  .templateCardTop { height: 54px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+  .templateCardTop { height: 110px; display: flex; align-items: center; justify-content: center; font-size: 44px; }
   .templateCardBody { padding: 8px 10px 10px; }
-  .templateCardTitle { font-size: 14px; font-weight: 700; color: #2d3b1f; line-height: 1.3; }
-  .templateCardDesc { font-size: 14px; color: #767676; margin-top: 3px; line-height: 1.3; }
+  .templateCardTitle { font-size: 13px; font-weight: 700; color: #1f2a1f; line-height: 1.25; }
+  .templateCardDesc { font-size: 11px; color: #6b7280; margin-top: 3px; line-height: 1.3; }
   #plantillasModal { background: #fff; border-radius: 14px 14px 0 0; width: 100%; max-width: 480px; max-height: 70vh; display: flex; flex-direction: column; overflow: hidden; }
   #plantillasList { overflow-y: auto; padding: 6px 10px; }
   .plItem { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 9px 4px; border-bottom: 1px solid #eee; }
@@ -1292,9 +1304,11 @@
   <div id="templateGalleryOverlay">
     <div id="templateGalleryModal">
       <div id="templateGalleryHead">
-        <h3>📁 Plantillas contables</h3>
+        <h3>Nuevo</h3>
         <button id="templateGalleryClose">✕</button>
       </div>
+      <input id="templateGallerySearch" type="search" placeholder="Buscar plantillas" />
+      <div id="templateGalleryTabs"></div>
       <div id="templateGalleryGrid"></div>
     </div>
   </div>
@@ -3445,6 +3459,21 @@ function expandirFuncionesPropias(expr, prof) {
   }
   return out;
 }
+function parseComplejoTxt(s0) {
+  var s = String(s0).replace(/\s/g, '').replace(/j$/i, 'i');
+  if (!/i$/i.test(s)) return { re: parseFloat(s) || 0, im: 0 };
+  s = s.slice(0, -1);
+  var m = s.match(/^(.*?)([+-][^+-]*)?$/);
+  var reS = m[1] || '', imS = m[2] || '';
+  if (!imS) return { re: 0, im: parseFloat(reS) || 0 };
+  var im = imS.length === 1 ? (imS === '-' ? -1 : 1) : (parseFloat(imS) || 0);
+  return { re: reS ? (parseFloat(reS) || 0) : 0, im: im };
+}
+function convBaseTxt(valor, desde, hasta) {
+  var n = parseInt(String(valor).toUpperCase().replace(/\s/g, ''), desde);
+  if (isNaN(n) || n < 0) return '#NUM!';
+  return n.toString(hasta).toUpperCase();
+}
 function computeExpr(expr) {
   expr = quitarDolaresDeRefs(expr);
   expr = sustituirRangosNombrados(expr);
@@ -3676,6 +3705,72 @@ function computeExpr(expr) {
       var totalAg = numsAg.reduce(function (a, b) { return a + b; }, 0);
       return fmtNum(totalAg / 12);
     }
+    // ===== Correcciones de auditoría: funciones que devolvían error =====
+    if ((inner = matchFn('FALSO')) !== null && inner.trim() === '') return 'FALSO';
+    if ((inner = matchFn('VERDADERO')) !== null && inner.trim() === '') return 'VERDADERO';
+    if ((inner = matchFn('T')) !== null) {
+      var vTx = resolveArg(splitArgs(inner)[0] || '');
+      return (typeof vTx === 'string' && vTx !== '' && isNaN(parseFloat(vTx))) ? vTx : '';
+    }
+    if ((inner = matchFn('DECIMAL')) !== null) {
+      args = splitArgs(inner);
+      var nDec = Number(resolveNum(args[0] || '0'));
+      var dDec = args[1] ? Math.max(0, parseInt(resolveNum(args[1]))) : 2;
+      var sinSep = args[2] ? esVerdaderoArg(args[2]) : false;
+      return nDec.toLocaleString('es-CR', { minimumFractionDigits: dDec, maximumFractionDigits: dDec, useGrouping: !sinSep });
+    }
+    if ((inner = matchFn('UNICAR|UNICHAR')) !== null) { return String.fromCodePoint(parseInt(resolveNum(splitArgs(inner)[0] || '0'))); }
+    if ((inner = matchFn('DIA360|DAYS360')) !== null) {
+      args = splitArgs(inner);
+      var f1 = fechaDe(String(resolveArg(args[0] || ''))), f2 = fechaDe(String(resolveArg(args[1] || '')));
+      if (isNaN(f1.getTime()) || isNaN(f2.getTime())) return '#VALOR!';
+      var y1 = f1.getFullYear(), m1 = f1.getMonth() + 1, d1 = f1.getDate();
+      var y2 = f2.getFullYear(), m2 = f2.getMonth() + 1, d2 = f2.getDate();
+      if (d1 === 31) d1 = 30;
+      if (d2 === 31 && d1 >= 30) d2 = 30;
+      return String((y2 - y1) * 360 + (m2 - m1) * 30 + (d2 - d1));
+    }
+    if ((inner = matchFn('ALEATORIO|RAND')) !== null) { return fmtNum(Math.random()); }
+    if ((inner = matchFn('COT')) !== null) { return fmtNum(1 / Math.tan(resolveNum(splitArgs(inner)[0] || '0'))); }
+    if ((inner = matchFn('ACOT')) !== null) { return fmtNum(Math.atan(1 / resolveNum(splitArgs(inner)[0] || '0'))); }
+    if ((inner = matchFn('SEC')) !== null) { return fmtNum(1 / Math.cos(resolveNum(splitArgs(inner)[0] || '0'))); }
+    if ((inner = matchFn('CSC')) !== null) { return fmtNum(1 / Math.sin(resolveNum(splitArgs(inner)[0] || '0'))); }
+    if ((inner = matchFn('COMBIN')) !== null) {
+      args = splitArgs(inner); var cnC = resolveNum(args[0]), ckC = resolveNum(args[1]), crC = 1;
+      for (var ikC = 1; ikC <= ckC; ikC++) crC = crC * (cnC - ckC + ikC) / ikC;
+      return fmtNum(Math.round(crC));
+    }
+    if ((inner = matchFn('COMBINA')) !== null) {
+      args = splitArgs(inner); var cnA = resolveNum(args[0]), ckA = resolveNum(args[1]), crA = 1;
+      var nAr = cnA + ckA - 1;
+      for (var ikA = 1; ikA <= ckA; ikA++) crA = crA * (nAr - ckA + ikA) / ikA;
+      return fmtNum(Math.round(crA));
+    }
+    if ((inner = matchFn('COMPLEJO')) !== null) {
+      args = splitArgs(inner);
+      var cA = resolveNum(args[0] || '0'), cB = resolveNum(args[1] || '0');
+      var cSuf = args[2] ? String(resolveArg(args[2])) : 'i';
+      if (cB === 0) return String(cA);
+      var parteIm = (Math.abs(cB) === 1 ? '' : String(Math.abs(cB))) + cSuf;
+      return (cA ? String(cA) : '') + (cB < 0 ? '-' : (cA ? '+' : '')) + parteIm;
+    }
+    if ((inner = matchFn('IMAGINARIO')) !== null) { return fmtNum(parseComplejoTxt(resolveArg(splitArgs(inner)[0] || '0')).im); }
+    if ((inner = matchFn('IM\\.REAL|IMREAL')) !== null) { return fmtNum(parseComplejoTxt(resolveArg(splitArgs(inner)[0] || '0')).re); }
+    if ((inner = matchFn('IM\\.ABS|IMABS')) !== null) {
+      var cz = parseComplejoTxt(resolveArg(splitArgs(inner)[0] || '0'));
+      return fmtNum(Math.sqrt(cz.re * cz.re + cz.im * cz.im));
+    }
+    var nombresConv = ['BIN', 'OCT', 'DEC', 'HEX'], basesConv = [2, 8, 10, 16];
+    var resConv = null;
+    for (var iaC = 0; iaC < 4 && resConv === null; iaC++) {
+      for (var ibC = 0; ibC < 4 && resConv === null; ibC++) {
+        if (iaC === ibC) continue;
+        if ((inner = matchFn(nombresConv[iaC] + '\\.A\\.' + nombresConv[ibC])) !== null) {
+          resConv = convBaseTxt(resolveArg(splitArgs(inner)[0] || '0'), basesConv[iaC], basesConv[ibC]);
+        }
+      }
+    }
+    if (resConv !== null) return resConv;
     // (Había aquí una CESANTIA simplificada, sueldo × años, que tapaba a la versión con la tabla del Art. 29; se quitó.)
     if ((inner = matchFn('VALIDACEDULA')) !== null) {
       args = splitArgs(inner);
@@ -3704,8 +3799,8 @@ function computeExpr(expr) {
       args = splitArgs(inner);
       var salBruto = resolveNum(args[0]);
       var modoCcss = args[1] ? resolveNum(args[1]) : 0;
-      var trabajadorCcss = salBruto * 0.1083;
-      var patronoCcss = salBruto * 0.2683;
+      var trabajadorCcss = salBruto * CCSS_OBRERO_PCT / 100;
+      var patronoCcss = salBruto * CCSS_PATRONO_PCT / 100;
       if (modoCcss === 1) return fmtNum(patronoCcss);
       if (modoCcss === 2) return fmtNum(trabajadorCcss + patronoCcss);
       return fmtNum(trabajadorCcss);
@@ -3839,9 +3934,11 @@ function computeExpr(expr) {
       return fmtNum(npv);
     }
     if ((inner = matchFn('NPER')) !== null) {
-      args = splitArgs(inner); var r9 = resolveNum(args[0]), pmt4 = resolveNum(args[1]), pv4 = resolveNum(args[2]);
-      if (r9 === 0) return fmtNum(-pv4 / pmt4);
-      return fmtNum(Math.log(-pmt4 / (pmt4 + r9 * pv4)) / Math.log(1 + r9));
+      args = splitArgs(inner);
+      var r9 = resolveNum(args[0]), pmt4 = resolveNum(args[1]), pv4 = resolveNum(args[2]), fv9 = args[3] ? resolveNum(args[3]) : 0;
+      if (r9 === 0) return fmtNum(-(pv4 + fv9) / pmt4);
+      var nperVal = Math.log((pmt4 - fv9 * r9) / (pmt4 + pv4 * r9)) / Math.log(1 + r9);
+      return isNaN(nperVal) ? '#NUM!' : fmtNum(nperVal);
     }
     if ((inner = matchFn('SLN')) !== null) { args = splitArgs(inner); return fmtNum((resolveNum(args[0]) - resolveNum(args[1])) / resolveNum(args[2])); }
     if ((inner = matchFn('IVA')) !== null) {
@@ -3859,7 +3956,7 @@ function computeExpr(expr) {
       args = splitArgs(inner);
       var salario = resolveNum(args[0]);
       var tipo = args[1] ? String(resolveArg(args[1])).toLowerCase() : 'total';
-      var patronal = 0.2683, obrero = 0.1083;
+      var patronal = CCSS_PATRONO_PCT / 100, obrero = CCSS_OBRERO_PCT / 100;
       if (tipo === 'patronal') return fmtNum(salario * patronal);
       if (tipo === 'obrero') return fmtNum(salario * obrero);
       return fmtNum(salario * (patronal + obrero));
@@ -6345,8 +6442,8 @@ if((inner=matchFn('PLANILLA\.CCSS|CARGAS\.SOCIALES'))!==null){
       var salario=resolveNum(args[0]);
       var tipo=args[1]?String(resolveArg(args[1])).toLowerCase():'total';
       // Tasas CCSS 2026 CR (vigentes desde 1° enero 2026, ajuste IVM)
-      var patronal=0.2683; // 26.83% patronal
-      var obrero=0.1083;   // 10.83% obrero
+      var patronal=CCSS_PATRONO_PCT/100; // patronal
+      var obrero=CCSS_OBRERO_PCT/100;   // obrero
       if(tipo==='patronal')return fmtNum(salario*patronal);
       if(tipo==='obrero')return fmtNum(salario*obrero);
       return fmtNum(salario*(patronal+obrero));
@@ -15444,28 +15541,102 @@ var TEMPLATES_GALERIA = [
   { tipo: 'prestamo', icono: '🏠', color: '#0e7490', titulo: 'Préstamo / Amortización', desc: 'Cuota, intereses y saldo mes a mes, con abonos extra' },
 ];
 
+// Categorías de la galería (estilo "Nuevo" de Office): pestañas, filas horizontales y "Ver todo"
+var TG_CATEGORIAS = [
+  { id: 'contabilidad', nombre: 'Contabilidad' },
+  { id: 'planillas', nombre: 'Planillas' },
+  { id: 'finanzas', nombre: 'Finanzas' },
+  { id: 'fiscal', nombre: 'Fiscal' }
+];
+var TG_CATEGORIA_DE = {
+  diario: 'contabilidad', mayor: 'contabilidad', balance: 'contabilidad', conciliacion: 'contabilidad',
+  resultados: 'contabilidad', balancegeneral: 'contabilidad', sistemacontable: 'contabilidad',
+  planilla: 'planillas', aguinaldo: 'planillas', liquidacion: 'planillas',
+  flujocaja: 'finanzas', depreciacion: 'finanzas', prestamo: 'finanzas',
+  d151: 'fiscal', rentalucrativa: 'fiscal'
+};
+var TG_RECOMENDADAS = ['diario', 'balancegeneral', 'planilla', 'flujocaja', 'd151', 'prestamo'];
+var tgCategoriaActiva = 'todo';
+var tgBusqueda = '';
+
+function tgTarjetaHTML(t) {
+  return '<button class="templateCard" data-tipo="' + t.tipo + '">' +
+    '<div class="templateCardTop" style="background:' + t.color + ';">' + t.icono + '</div>' +
+    '<div class="templateCardBody">' +
+      '<div class="templateCardTitle">' + t.titulo + '</div>' +
+      '<div class="templateCardDesc">' + t.desc + '</div>' +
+    '</div>' +
+  '</button>';
+}
+
+function tgSeccionHTML(nombre, lista, catId) {
+  return '<section>' +
+    '<div class="tgSecHead"><span>' + nombre + '</span>' +
+      '<button class="tgVerTodo" data-cat="' + catId + '">Ver todo</button></div>' +
+    '<div class="tgRow">' + lista.map(tgTarjetaHTML).join('') + '</div>' +
+  '</section>';
+}
+
 function renderizarTemplateGaleria() {
   var grid = document.getElementById('templateGalleryGrid');
-  grid.innerHTML = TEMPLATES_GALERIA.map(function (t) {
-    return '<button class="templateCard" data-tipo="' + t.tipo + '">' +
-      '<div class="templateCardTop" style="background:' + t.color + ';">' + t.icono + '</div>' +
-      '<div class="templateCardBody">' +
-        '<div class="templateCardTitle">' + t.titulo + '</div>' +
-        '<div class="templateCardDesc">' + t.desc + '</div>' +
-      '</div>' +
-    '</button>';
+  var tabs = document.getElementById('templateGalleryTabs');
+  var q = tgBusqueda.trim().toLowerCase();
+  var chips = [{ id: 'todo', nombre: 'Todo' }, { id: 'recomendadas', nombre: 'Recomendaciones' }].concat(TG_CATEGORIAS);
+  tabs.innerHTML = chips.map(function (c) {
+    return '<button class="tgChip' + (c.id === tgCategoriaActiva ? ' on' : '') + '" data-cat="' + c.id + '">' + c.nombre + '</button>';
   }).join('');
-  grid.querySelectorAll('.templateCard').forEach(function (card) {
-    card.addEventListener('click', function () {
-      var tipo = card.dataset.tipo;
-      document.getElementById('templateGalleryOverlay').classList.remove('show');
-      document.getElementById('ribbonOverlay').classList.remove('show');
-      snapshot();
-      if (tipo === 'sistemacontable') crearSistemaContable(); else loadTemplate(tipo);
+  var html;
+  if (q) {
+    var hallados = TEMPLATES_GALERIA.filter(function (t) {
+      return (t.titulo + ' ' + t.desc).toLowerCase().indexOf(q) !== -1;
     });
-  });
+    html = '<div class="tgGrid">' + (hallados.map(tgTarjetaHTML).join('') || '<div class="tgVacio">Sin resultados</div>') + '</div>';
+  } else if (tgCategoriaActiva === 'todo') {
+    html = tgSeccionHTML('Recomendaciones', TEMPLATES_GALERIA.filter(function (t) { return TG_RECOMENDADAS.indexOf(t.tipo) !== -1; }), 'recomendadas');
+    TG_CATEGORIAS.forEach(function (c) {
+      html += tgSeccionHTML(c.nombre, TEMPLATES_GALERIA.filter(function (t) { return TG_CATEGORIA_DE[t.tipo] === c.id; }), c.id);
+    });
+  } else {
+    var lista = tgCategoriaActiva === 'recomendadas'
+      ? TEMPLATES_GALERIA.filter(function (t) { return TG_RECOMENDADAS.indexOf(t.tipo) !== -1; })
+      : TEMPLATES_GALERIA.filter(function (t) { return TG_CATEGORIA_DE[t.tipo] === tgCategoriaActiva; });
+    html = '<div class="tgGrid">' + lista.map(tgTarjetaHTML).join('') + '</div>';
+  }
+  grid.innerHTML = html;
 }
+
+// Delegación de eventos: se enlazan una sola vez aunque la galería se redibuje
+document.getElementById('templateGalleryGrid').addEventListener('click', function (e) {
+  var card = e.target.closest('.templateCard');
+  if (card) {
+    var tipo = card.dataset.tipo;
+    document.getElementById('templateGalleryOverlay').classList.remove('show');
+    document.getElementById('ribbonOverlay').classList.remove('show');
+    snapshot();
+    if (tipo === 'sistemacontable') crearSistemaContable(); else loadTemplate(tipo);
+    return;
+  }
+  var verTodo = e.target.closest('.tgVerTodo');
+  if (verTodo) {
+    tgCategoriaActiva = verTodo.dataset.cat;
+    renderizarTemplateGaleria();
+    document.getElementById('templateGalleryGrid').scrollTop = 0;
+  }
+});
+document.getElementById('templateGalleryTabs').addEventListener('click', function (e) {
+  var chip = e.target.closest('.tgChip');
+  if (!chip) return;
+  tgCategoriaActiva = chip.dataset.cat;
+  renderizarTemplateGaleria();
+  document.getElementById('templateGalleryGrid').scrollTop = 0;
+});
+document.getElementById('templateGallerySearch').addEventListener('input', function () {
+  tgBusqueda = this.value;
+  renderizarTemplateGaleria();
+});
 document.getElementById('btnTemplateGallery').addEventListener('click', function () {
+  tgBusqueda = '';
+  document.getElementById('templateGallerySearch').value = '';
   renderizarTemplateGaleria();
   document.getElementById('templateGalleryOverlay').classList.add('show');
 });
@@ -21411,6 +21582,8 @@ var TRAMOS_RENTA_SALARIO = [
   { hasta: Infinity, tasa: 0.25 }
 ];
 var CREDITO_HIJO_MENSUAL = 1710, CREDITO_CONYUGE_MENSUAL = 2590;
+// Tasas CCSS en % (verificar con la CCSS vigente antes de usar en producción)
+var CCSS_OBRERO_PCT = 10.83, CCSS_PATRONO_PCT = 26.83;
 function redondear2(n) { return Math.round((n + Number.EPSILON) * 100) / 100; }
 function calcularPlanilla(bruto, hijos, conyuge, pctObrero, pctPatrono) {
   var impuestoBruto = 0, anterior = 0;
