@@ -1,0 +1,42 @@
+name: Build Windows EXE
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - desktop-windows
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Descargar código
+        uses: actions/checkout@v4
+
+      - name: Instalar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Mostrar package.json que se va a usar
+        shell: bash
+        run: cat package.json
+
+      - name: Instalar dependencias
+        run: npm install
+
+      - name: Instalar Electron y electron-builder (versiones fijas)
+        run: npm install --save-dev electron@31.7.0 electron-builder@25.1.8
+
+      - name: Verificar instalación
+        run: npx electron --version && npx electron-builder --version
+
+      - name: Generar el .exe portable
+        run: npx electron-builder --win portable --publish never
+
+      - name: Subir el .exe como artefacto
+        uses: actions/upload-artifact@v4
+        with:
+          name: matriz-contable-cr-windows
+          path: dist/*.exe
+          if-no-files-found: error
