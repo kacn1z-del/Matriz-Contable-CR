@@ -1,4 +1,3 @@
- # build 2
 name: Build Windows EXE
 
 on:
@@ -19,11 +18,14 @@ jobs:
         with:
           node-version: 22
 
-      - name: Instalar dependencias
+      - name: Instalar dependencias (incluye Electron)
         run: npm install
 
+      - name: Verificar Electron instalado
+        run: npm ls electron electron-builder
+
       - name: Generar el .exe portable
-        run: npx electron-builder --win portable --publish never
+        run: npm run dist:win
 
       - name: Subir el .exe como artefacto
         uses: actions/upload-artifact@v4
