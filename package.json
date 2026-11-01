@@ -11,8 +11,8 @@
     "dist:win": "electron-builder --win portable --publish never"
   },
   "devDependencies": {
-    "electron": "^31.7.0",
-    "electron-builder": "^25.1.8"
+    "electron": "31.7.0",
+    "electron-builder": "25.1.8"
   },
   "build": {
     "appId": "cr.matrizcontable.desktop",
@@ -22,7 +22,8 @@
     },
     "files": [
       "main.js",
-      "index.html"
+      "index.html",
+      "package.json"
     ],
     "win": {
       "target": [
