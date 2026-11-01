@@ -672,6 +672,28 @@
   .templateCardBody { padding: 8px 10px 10px; }
   .templateCardTitle { font-size: 13px; font-weight: 700; color: #1f2a1f; line-height: 1.25; }
   .templateCardDesc { font-size: 11px; color: #6b7280; margin-top: 3px; line-height: 1.3; }
+  .templateCard { background: transparent; border: none; box-shadow: none; padding: 0; text-align: left; font-family: inherit; color: #fff; }
+  .tgPage { background: #fff; border-radius: 4px; aspect-ratio: 0.72; padding: 10px 9px; box-shadow: 0 3px 10px rgba(0,0,0,.4); overflow: hidden; display: flex; flex-direction: column; gap: 6px; }
+  .tgMTitle { height: 14px; width: 62%; border-radius: 2px; flex-shrink: 0; }
+  .tgMRow { height: 6px; border-bottom: 1px solid #e5e7eb; flex-shrink: 0; }
+  .tgMHead { height: 9px; border: none; background: #e5e7eb; }
+  .tgMCheck { position: relative; padding-left: 12px; }
+  .tgMCheck::before { content: ''; position: absolute; left: 0; top: -1px; width: 6px; height: 6px; border: 1px solid #9ca3af; }
+  .tgMTotal { height: 12px; width: 40%; margin-top: auto; margin-left: auto; border-radius: 2px; flex-shrink: 0; }
+  .tgMTwo { display: flex; gap: 6px; flex-shrink: 0; }
+  .tgMTwo div { flex: 1; height: 22px; background: #f3f4f6; border-radius: 2px; }
+  .tgMBars { display: flex; align-items: flex-end; gap: 5px; height: 55%; flex-shrink: 0; border-bottom: 1px solid #9ca3af; }
+  .tgMBars div { flex: 1; border-radius: 2px 2px 0 0; }
+  .templateCardTitle { color: #fff; font-size: 13px; font-weight: 600; margin-top: 8px; line-height: 1.25; }
+  .tgPage { background-color: #fff; background-image: linear-gradient(to right, #e5e7eb 1px, transparent 1px), linear-gradient(to bottom, #e5e7eb 1px, transparent 1px); background-size: 16.66% 13px; position: relative; }
+  .tgXlCols { display: flex; margin: -10px -9px 4px; background: #f3f2f1; border-bottom: 1px solid #c8c6c4; flex-shrink: 0; }
+  .tgXlCols span { flex: 1; text-align: center; font-size: 7px; color: #605e5c; padding: 2px 0; border-right: 1px solid #e1dfdd; }
+  .tgXlTabs { display: flex; gap: 2px; margin: auto -9px -10px; padding: 3px 6px 0; background: #f3f2f1; border-top: 1px solid #c8c6c4; flex-shrink: 0; }
+  .tgXlTabs span { font-size: 7px; color: #605e5c; background: #e1dfdd; padding: 2px 5px; border-top: 2px solid transparent; }
+  .tgXlTabs span.tgXlTabAct { background: #fff; color: #201f1e; font-weight: 700; }
+  #btnSalirPantalla { display: none; position: fixed; top: calc(env(safe-area-inset-top, 0px) + 6px); right: 8px; z-index: 9800; background: rgba(0,0,0,.6); color: #fff; border: none; border-radius: 16px; padding: 6px 12px; font-size: 13px; }
+  body.modoPantallaCompleta #btnSalirPantalla { display: block; }
+  body.modoPantallaCompleta #ribbonTrigger, body.modoPantallaCompleta #toolbar, body.modoPantallaCompleta #ribbonOverlay { display: none !important; }
   #plantillasModal { background: #fff; border-radius: 14px 14px 0 0; width: 100%; max-width: 480px; max-height: 70vh; display: flex; flex-direction: column; overflow: hidden; }
   #plantillasList { overflow-y: auto; padding: 6px 10px; }
   .plItem { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 9px 4px; border-bottom: 1px solid #eee; }
@@ -15539,6 +15561,9 @@ var TEMPLATES_GALERIA = [
   { tipo: 'rentalucrativa', icono: '🧑‍💼', color: '#9a3412', titulo: 'Renta Persona Física', desc: 'Actividad lucrativa 2026: tramos, créditos y pagos parciales' },
   { tipo: 'sistemacontable', icono: '📚', color: '#1e3a8a', titulo: 'Libros Contables Conectados', desc: 'Catálogo + Diario + Mayor por cuenta + Balanza, todo en vivo' },
   { tipo: 'prestamo', icono: '🏠', color: '#0e7490', titulo: 'Préstamo / Amortización', desc: 'Cuota, intereses y saldo mes a mes, con abonos extra' },
+  { tipo: 'facturaventa', icono: '🧾', color: '#1d4ed8', titulo: 'Factura de Venta', desc: 'Detalle con cantidad, precio e IVA 13% y total' },
+  { tipo: 'presupuesto', icono: '💰', color: '#a16207', titulo: 'Presupuesto Mensual', desc: 'Ingresos y gastos presupuestados contra lo real' },
+  { tipo: 'cierre', icono: '✅', color: '#15803d', titulo: 'Cierre Mensual', desc: 'Lista de tareas para cerrar el mes contable' },
 ];
 
 // Categorías de la galería (estilo "Nuevo" de Office): pestañas, filas horizontales y "Ver todo"
@@ -15546,28 +15571,81 @@ var TG_CATEGORIAS = [
   { id: 'contabilidad', nombre: 'Contabilidad' },
   { id: 'planillas', nombre: 'Planillas' },
   { id: 'finanzas', nombre: 'Finanzas' },
-  { id: 'fiscal', nombre: 'Fiscal' }
+  { id: 'fiscal', nombre: 'Fiscal' },
+  { id: 'facturas', nombre: 'Facturas' },
+  { id: 'listas', nombre: 'Listas' }
 ];
 var TG_CATEGORIA_DE = {
   diario: 'contabilidad', mayor: 'contabilidad', balance: 'contabilidad', conciliacion: 'contabilidad',
   resultados: 'contabilidad', balancegeneral: 'contabilidad', sistemacontable: 'contabilidad',
   planilla: 'planillas', aguinaldo: 'planillas', liquidacion: 'planillas',
   flujocaja: 'finanzas', depreciacion: 'finanzas', prestamo: 'finanzas',
-  d151: 'fiscal', rentalucrativa: 'fiscal'
+  d151: 'fiscal', rentalucrativa: 'fiscal',
+  facturaventa: 'facturas', presupuesto: 'finanzas', cierre: 'listas'
 };
 var TG_RECOMENDADAS = ['diario', 'balancegeneral', 'planilla', 'flujocaja', 'd151', 'prestamo'];
 var tgCategoriaActiva = 'todo';
 var tgBusqueda = '';
 
+// Vista previa tipo miniatura de hoja para cada plantilla de la galería
+var TG_LAYOUT = { facturaventa: 'factura', prestamo: 'amortizacion', presupuesto: 'presupuesto', cierre: 'lista' };
+function tgLineasHTML(n, extraClase) {
+  var s = '';
+  for (var i = 0; i < n; i++) s += '<div class="tgMRow ' + (extraClase || '') + '"></div>';
+  return s;
+}
+function tgMiniPaginaHTML(t) {
+  var c = t.color;
+  var tipoL = TG_LAYOUT[t.tipo] || 'tabla';
+  var titulo = '<div class="tgMTitle" style="background:' + c + ';"></div>';
+  if (tipoL === 'factura') {
+    return titulo +
+      '<div class="tgMRow tgMHead" style="background:#dbeafe;"></div>' + tgLineasHTML(7) +
+      '<div class="tgMTotal" style="background:' + c + ';"></div>';
+  }
+  if (tipoL === 'amortizacion') {
+    return titulo +
+      '<div class="tgMTwo"><div></div><div></div></div>' +
+      '<div class="tgMRow tgMHead" style="background:' + c + '33;"></div>' + tgLineasHTML(10);
+  }
+  if (tipoL === 'presupuesto') {
+    var alturas = [45, 70, 35, 60, 80];
+    var barras = '';
+    for (var i = 0; i < alturas.length; i++) barras += '<div style="height:' + alturas[i] + '%;background:' + (i % 2 ? '#fca5a5' : c) + ';"></div>';
+    return titulo + '<div class="tgMBars">' + barras + '</div>' + tgLineasHTML(4);
+  }
+  if (tipoL === 'lista') {
+    return titulo + '<div class="tgMRow tgMHead" style="background:' + c + '33;"></div>' + tgLineasHTML(9, 'tgMCheck');
+  }
+  return titulo + '<div class="tgMRow tgMHead" style="background:' + c + '33;"></div>' + tgLineasHTML(10);
+}
+// Vista previa estilo Excel: encabezado de columnas, cuadrícula y pestañas de hoja
+function tgXlColsHTML() {
+  var letras = ['A', 'B', 'C', 'D', 'E', 'F'], s = '<div class="tgXlCols">';
+  for (var i = 0; i < letras.length; i++) s += '<span>' + letras[i] + '</span>';
+  return s + '</div>';
+}
+function tgXlTabsHTML(t) {
+  return '<div class="tgXlTabs"><span class="tgXlTabAct" style="border-top-color:' + t.color + ';">Hoja1</span><span>Hoja2</span></div>';
+}
 function tgTarjetaHTML(t) {
   return '<button class="templateCard" data-tipo="' + t.tipo + '">' +
-    '<div class="templateCardTop" style="background:' + t.color + ';">' + t.icono + '</div>' +
-    '<div class="templateCardBody">' +
-      '<div class="templateCardTitle">' + t.titulo + '</div>' +
-      '<div class="templateCardDesc">' + t.desc + '</div>' +
-    '</div>' +
+    '<div class="tgPage">' + tgXlColsHTML() + tgMiniPaginaHTML(t) + tgXlTabsHTML(t) + '</div>' +
+    '<div class="templateCardTitle">' + t.titulo + '</div>' +
   '</button>';
 }
+// Pantalla completa al abrir una plantilla (con botón para salir)
+function activarPantallaCompleta() {
+  document.body.classList.add('modoPantallaCompleta');
+  try { if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(function () {}); } catch (e) {}
+}
+function salirPantallaCompleta() {
+  document.body.classList.remove('modoPantallaCompleta');
+  try { if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(function () {}); } catch (e) {}
+}
+document.addEventListener('fullscreenchange', function () {
+  if (!document.fullscreenElement) document.body.classList.remove('modoPantallaCompleta');
+});
 
 function tgSeccionHTML(nombre, lista, catId) {
   return '<section>' +
@@ -15614,6 +15692,7 @@ document.getElementById('templateGalleryGrid').addEventListener('click', functio
     document.getElementById('ribbonOverlay').classList.remove('show');
     snapshot();
     if (tipo === 'sistemacontable') crearSistemaContable(); else loadTemplate(tipo);
+    activarPantallaCompleta();
     return;
   }
   var verTodo = e.target.closest('.tgVerTodo');
@@ -16307,7 +16386,7 @@ function loadTemplate(tipo) {
   var hoy = new Date().toLocaleDateString('es-CR');
   var n = sheets.length + 1;
   var baseName = tipo === 'diario' ? 'Diario' : tipo === 'mayor' ? 'Mayor' : tipo === 'balance' ? 'Balance' : tipo === 'conciliacion' ? 'Conciliacion' : tipo === 'd151' ? 'D151' : tipo === 'resultados' ? 'EstadoResultados' : tipo === 'balancegeneral' ? 'BalanceGeneral' : 'Hoja';
-  var nombresPlantillaNueva = { planilla: 'Planilla', aguinaldo: 'Aguinaldo', liquidacion: 'Liquidacion', flujocaja: 'FlujoCaja', depreciacion: 'Depreciacion' };
+  var nombresPlantillaNueva = { planilla: 'Planilla', aguinaldo: 'Aguinaldo', liquidacion: 'Liquidacion', flujocaja: 'FlujoCaja', depreciacion: 'Depreciacion', facturaventa: 'FacturaVenta', presupuesto: 'Presupuesto', cierre: 'CierreMensual' };
   if (nombresPlantillaNueva[tipo]) baseName = nombresPlantillaNueva[tipo];
   var name = baseName;
   while (sheets.indexOf(name) >= 0) name = baseName + n++;
@@ -16662,6 +16741,74 @@ function loadTemplate(tipo) {
     styleRange(34, 0, 34, 1, { bold: true });
     set(36, 0, 'Tramos y créditos según el Decreto 45333-H (2026, personas físicas con actividades lucrativas). Cambian cada año: actualizá las celdas amarillas. Los pagos parciales se pagan en tres cuotas (30 de junio, 30 de septiembre y 31 de diciembre, según Siempre al Día); confirmá las fechas y tu situación con Hacienda. Esto es un cálculo de referencia, no sustituye la declaración D-101 ni asesoría profesional.');
     colWidths[name] = { 0: 330, 1: 160, 2: 90, 3: 160, 4: 160 };
+  } else if (tipo === 'facturaventa') {
+    var colorFv = '#1d4ed8';
+    titleBar(0, 5, '🧾 FACTURA DE VENTA', colorFv);
+    set(2, 0, 'Cliente'); set(2, 1, '');
+    set(3, 0, 'Cédula / identificación'); set(3, 1, '');
+    set(4, 0, 'Fecha'); set(4, 1, hoy);
+    styleRange(2, 1, 4, 1, { bgColor: '#fef9c3', border: true });
+    ['Cant.', 'Descripción', 'Precio unitario (₡)', 'Importe (₡)', 'IVA (₡)'].forEach(function (h, i) { set(6, i, h, true); });
+    headerRow(6, 5, '#dbeafe');
+    for (var fvr = 7; fvr <= 14; fvr++) {
+      d[cellId(fvr, 3)] = '=SI(A' + (fvr + 1) + '="";"";REDONDEAR(A' + (fvr + 1) + '*C' + (fvr + 1) + ';2))';
+      d[cellId(fvr, 4)] = '=SI(D' + (fvr + 1) + '="";"";REDONDEAR(D' + (fvr + 1) + '*$B$17;2))';
+    }
+    styleRange(7, 0, 14, 2, { bgColor: '#fef9c3', border: true });
+    styleRange(7, 2, 17, 4, { numFormat: { type: 'number', decimals: 2, thousands: true } });
+    set(15, 2, 'Subtotal', true); d[cellId(15, 3)] = '=SUMA(D8:D15)'; d[cellId(15, 4)] = '=SUMA(E8:E15)';
+    set(16, 0, 'Tasa de IVA'); set(16, 1, '0.13');
+    styleRange(16, 1, 16, 1, { bgColor: '#fef9c3', border: true });
+    set(17, 2, 'TOTAL A PAGAR', true); d[cellId(17, 3)] = '=D16+E16';
+    totalRow(17, 2, 4, '#dbeafe');
+    gridBorder(6, 0, 14, 4);
+    colWidths[name] = { 0: 90, 1: 260, 2: 150, 3: 140, 4: 120 };
+  } else if (tipo === 'presupuesto') {
+    var colorPs = '#a16207';
+    titleBar(0, 4, '💰 PRESUPUESTO MENSUAL', colorPs);
+    ['Concepto', 'Presupuestado (₡)', 'Real (₡)', 'Diferencia (₡)'].forEach(function (h, i) { set(2, i, h, true); });
+    headerRow(2, 4, '#fde68a');
+    sectionBar(3, 0, 4, 'INGRESOS', '#15803d');
+    ['Ventas', 'Servicios', 'Otros ingresos'].forEach(function (c, i) { set(4 + i, 0, c); });
+    styleRange(4, 1, 6, 2, { bgColor: '#fef9c3', border: true });
+    set(7, 0, 'Total ingresos', true);
+    d[cellId(7, 1)] = '=SUMA(B5:B7)'; d[cellId(7, 2)] = '=SUMA(C5:C7)'; d[cellId(7, 3)] = '=C8-B8';
+    totalRow(7, 0, 3, '#dcfce7');
+    sectionBar(8, 0, 4, 'GASTOS', '#b91c1c');
+    ['Alquiler', 'Planilla y CCSS', 'Servicios (agua, luz, internet)', 'Compras / inventario', 'Impuestos', 'Publicidad', 'Otros gastos'].forEach(function (c, i) { set(9 + i, 0, c); });
+    styleRange(9, 1, 15, 2, { bgColor: '#fef9c3', border: true });
+    set(16, 0, 'Total gastos', true);
+    d[cellId(16, 1)] = '=SUMA(B10:B16)'; d[cellId(16, 2)] = '=SUMA(C10:C16)'; d[cellId(16, 3)] = '=B17-C17';
+    totalRow(16, 0, 3, '#fee2e2');
+    set(18, 0, 'SALDO (ingresos − gastos)', true);
+    d[cellId(18, 1)] = '=B8-B17'; d[cellId(18, 2)] = '=C8-C17'; d[cellId(18, 3)] = '=C19-B19';
+    totalRow(18, 0, 3, '#dbeafe');
+    styleRange(4, 1, 18, 3, { numFormat: { type: 'number', decimals: 2, thousands: true } });
+    set(20, 0, 'Diferencia de ingresos: real − presupuesto. Diferencia de gastos: presupuesto − real (positivo = dentro del presupuesto).');
+    gridBorder(2, 0, 18, 3);
+    colWidths[name] = { 0: 260, 1: 150, 2: 150, 3: 150 };
+  } else if (tipo === 'cierre') {
+    var colorCi = '#15803d';
+    titleBar(0, 4, '✅ LISTA DE CIERRE MENSUAL', colorCi);
+    set(2, 0, 'Periodo (mes/año)'); set(2, 1, '');
+    styleRange(2, 1, 2, 1, { bgColor: '#fef9c3', border: true });
+    ['Hecho', 'Tarea', 'Responsable', 'Notas'].forEach(function (h, i) { set(4, i, h, true); });
+    headerRow(4, 4, '#dcfce7');
+    ['Conciliar bancos (todas las cuentas)',
+     'Registrar facturas de compra del mes',
+     'Registrar facturas y tiquetes de venta',
+     'Revisar planilla, CCSS y renta de salarios',
+     'Pagar retenciones de renta y de IVA',
+     'Hacer arqueo de caja chica',
+     'Revisar cuentas por cobrar y por pagar',
+     'Generar balance de comprobación',
+     'Revisar estado de resultados',
+     'Guardar respaldo de la información'].forEach(function (t, i) { set(5 + i, 1, t); });
+    styleRange(5, 0, 14, 3, { border: true });
+    styleRange(5, 0, 14, 0, { bgColor: '#fef9c3' });
+    styleRange(5, 2, 14, 3, { bgColor: '#fef9c3' });
+    gridBorder(4, 0, 14, 3);
+    colWidths[name] = { 0: 80, 1: 340, 2: 160, 3: 200 };
   } else if (tipo === 'prestamo') {
     var colorPr = '#0e7490', FILAS_PR = 360, PRIMERA = 15; // fila (1 = primera) donde empieza la tabla
     if (ROWS < PRIMERA + FILAS_PR + 2) ROWS = PRIMERA + FILAS_PR + 2;
@@ -25040,5 +25187,6 @@ window.addEventListener("resize",optimizarMobile);
 optimizarMobile();
 habilitarGestos();
 </script>
+<button id="btnSalirPantalla" onclick="salirPantallaCompleta()">⤡ Salir</button>
 </body>
 </html>
