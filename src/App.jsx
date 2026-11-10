@@ -3,6 +3,7 @@ import './App.css'
 
 // Componentes Nuevos (CON EXTENSIÓN .jsx)
 import FacturaElectronica from './components/FacturaElectronica.jsx'
+import FacturacionModule from './components/FacturacionModule.jsx'
 import SiboModule from './components/SiboModule.jsx'
 import FormulasModule from './components/FormulasModule.jsx'
 
@@ -45,6 +46,12 @@ function App() {
             >
               📄 Factura Electrónica
             </button>
+            <button
+              className={`nav-btn ${activePage === 'facturacion-cabys' ? 'active' : ''}`}
+              onClick={() => setActivePage('facturacion-cabys')}
+            >
+              🧾 Facturación con CABYS
+            </button>
           </div>
 
           <div className="nav-section">
@@ -73,6 +80,11 @@ function App() {
           {/* Factura Electrónica */}
           {activePage === 'factura' && (
             <FacturaElectronica i18n={i18n} />
+          )}
+
+          {/* Facturación con CABYS */}
+          {activePage === 'facturacion-cabys' && (
+            <FacturacionModule i18n={i18n} />
           )}
 
           {/* Sibo */}
